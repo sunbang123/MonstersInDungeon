@@ -47,7 +47,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -4998,8 +4998,8 @@ TextureImporter:
       Fruit+_59: 107128992
       Fruit+_2: -1805857053
       Fruit+_72: 117622734
-      Fruit+_162: -1358313478
       Fruit+_186: 94095609
+      Fruit+_162: -1358313478
       Fruit+_58: -2071852310
       Fruit+_106: -1841620292
       Fruit+_108: -707852533
@@ -5028,13 +5028,13 @@ TextureImporter:
       Fruit+_82: 337723487
       Fruit+_65: 258594022
       Fruit+_29: -1538662279
-      Fruit+_81: 1094238445
       Fruit+_152: 42594019
+      Fruit+_208: 779846869
       Fruit+_55: -1959629526
       Fruit+_79: -850413104
       Fruit+_19: 983582771
       Fruit+_212: -40393562
-      Fruit+_208: 779846869
+      Fruit+_81: 1094238445
       Fruit+_153: -972098013
       Fruit+_105: -1794730496
       Fruit+_20: 1774698573
@@ -5051,12 +5051,12 @@ TextureImporter:
       Fruit+_189: -1191753084
       Fruit+_171: -1042425519
       Fruit+_17: 675553381
-      Fruit+_75: 1895778006
-      Fruit+_154: 517471938
       Fruit+_181: -1676136207
+      Fruit+_75: 1895778006
       Fruit+_125: -1084689204
       Fruit+_36: 1205088807
       Fruit+_157: 205446359
+      Fruit+_154: 517471938
       Fruit+_143: -682860580
       Fruit+_221: 665751849
       Fruit+_187: 1676924114
@@ -5068,12 +5068,11 @@ TextureImporter:
       Fruit+_172: -1045588903
       Fruit+_101: -435237408
       Fruit+_37: -1353835372
+      Fruit+_185: -380258682
+      Fruit+_139: -1298630344
+      Fruit+_23: 1915930903
       Fruit+_104: -266838870
       Fruit+_119: 1205161705
-      Fruit+_23: 1915930903
-      Fruit+_138: 300336469
-      Fruit+_139: -1298630344
-      Fruit+_185: -380258682
       Fruit+_193: -565400046
       Fruit+_198: 1173857127
       Fruit+_73: 162321056
@@ -5087,6 +5086,7 @@ TextureImporter:
       Fruit+_149: -1799408113
       Fruit+_90: -148393539
       Fruit+_89: -1579529006
+      Fruit+_138: 300336469
       Fruit+_61: 1575355265
       Fruit+_197: -1462003027
       Fruit+_27: -231302409

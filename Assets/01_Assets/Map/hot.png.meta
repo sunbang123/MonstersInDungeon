@@ -47,7 +47,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -3015,7 +3015,6 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      hot_119: 1697686521
       hot_23: 123490149
       hot_69: -460888283
       hot_88: -1678763992
@@ -3142,11 +3141,12 @@ TextureImporter:
       hot_21: 192331412
       hot_55: 2088597459
       hot_6: -1712326802
-      hot_92: -314710455
+      hot_119: 1697686521
       hot_40: -2115237463
       hot_65: -1650527230
-      hot_114: -1442060755
+      hot_92: -314710455
       hot_54: 1386396148
+      hot_114: -1442060755
       hot_39: 2086987671
       hot_132: -1211037865
       hot_129: -657844827

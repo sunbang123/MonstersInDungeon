@@ -47,7 +47,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -3042,10 +3042,10 @@ TextureImporter:
       cold_98: -1186414117
       cold_125: 468037116
       cold_104: 466468288
-      cold_40: 1812777180
-      cold_113: -1050228688
-      cold_58: 1491491474
       cold_132: 822279572
+      cold_40: 1812777180
+      cold_58: 1491491474
+      cold_113: -1050228688
       cold_116: -1182662927
       cold_71: -1703004238
       cold_106: -832284668
