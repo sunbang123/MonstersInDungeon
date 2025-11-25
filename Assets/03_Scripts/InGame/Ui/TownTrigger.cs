@@ -7,7 +7,7 @@ public class TownTrigger : MonoBehaviour
     public List<GameObject> map;
     public List<Transform> spawnPoint;
 
-    public TownManager townText;
+    public TownUIManager townText;
     public string townA;
     public string townB;
 
@@ -15,7 +15,7 @@ public class TownTrigger : MonoBehaviour
 
     void Awake()
     {
-        townText = FindObjectOfType<TownManager>();
+        townText = FindObjectOfType<TownUIManager>();
     }
     void OnTriggerEnter2D(Collider2D other)
     {

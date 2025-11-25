@@ -3897,7 +3897,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   map: []
   spawnPoint: []
-  townText: {fileID: 2124823945}
+  townText: {fileID: 0}
   townA: "\uAE30\uBCF8 \uB9C8\uC744"
   townB: "\uC11C\uCABD \uC232"
 --- !u!19719996 &391182640
