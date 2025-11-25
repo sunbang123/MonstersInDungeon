@@ -3895,6 +3895,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d8551d49e667bb43bc9ea8602dfd101, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  map: []
+  spawnPoint: []
   townText: {fileID: 2124823945}
   townA: "\uAE30\uBCF8 \uB9C8\uC744"
   townB: "\uC11C\uCABD \uC232"
@@ -4143,6 +4145,37 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &415912458
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 415912459}
+  m_Layer: 0
+  m_Name: SpawnPoint_map1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &415912459
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 415912458}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.5, y: 12.46, z: -0.05716531}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &474856396
 GameObject:
   m_ObjectHideFlags: 0
@@ -23828,6 +23861,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1121374881
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1121374882}
+  m_Layer: 0
+  m_Name: SpawnPoint_map2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1121374882
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1121374881}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.499393, y: -13.005702, z: -0.05716531}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1187629109
 GameObject:
   m_ObjectHideFlags: 0
@@ -23878,6 +23942,11 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
+--- !u!4 &1197692865 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8735610680819728983, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
+  m_PrefabInstance: {fileID: 1326659251}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1218979963
 GameObject:
   m_ObjectHideFlags: 0
@@ -24229,9 +24298,53 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 8735610680819728968, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
+      propertyPath: map
+      value: 
+      objectReference: {fileID: 969689702}
+    - target: {fileID: 8735610680819728968, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
+      propertyPath: townA
+      value: "\uC232 \uB358\uC804"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8735610680819728968, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
+      propertyPath: townB
+      value: "\uAE30\uBCF8 \uB9C8\uC744"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8735610680819728968, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
       propertyPath: townText
       value: 
       objectReference: {fileID: 2124823945}
+    - target: {fileID: 8735610680819728968, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
+      propertyPath: spawnPoint
+      value: 
+      objectReference: {fileID: 1121374882}
+    - target: {fileID: 8735610680819728968, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
+      propertyPath: map.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8735610680819728968, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
+      propertyPath: prevSpawnPoint
+      value: 
+      objectReference: {fileID: 1197692865}
+    - target: {fileID: 8735610680819728968, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
+      propertyPath: map.Array.data[0]
+      value: 
+      objectReference: {fileID: 969689702}
+    - target: {fileID: 8735610680819728968, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
+      propertyPath: map.Array.data[1]
+      value: 
+      objectReference: {fileID: 480825038}
+    - target: {fileID: 8735610680819728968, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
+      propertyPath: spawnPoint.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8735610680819728968, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
+      propertyPath: spawnPoint.Array.data[0]
+      value: 
+      objectReference: {fileID: 1121374882}
+    - target: {fileID: 8735610680819728968, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
+      propertyPath: spawnPoint.Array.data[1]
+      value: 
+      objectReference: {fileID: 415912459}
     - target: {fileID: 8735610680819728971, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
       propertyPath: m_Name
       value: TownNameTrigger_two
@@ -24246,7 +24359,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8735610680819728983, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 11.49
+      value: 14.26
       objectReference: {fileID: 0}
     - target: {fileID: 8735610680819728983, guid: 908b162d0bbe9df4cb2c908e76caa98e, type: 3}
       propertyPath: m_LocalPosition.z
