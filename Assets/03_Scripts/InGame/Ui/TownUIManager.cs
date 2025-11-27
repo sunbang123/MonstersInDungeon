@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class TownManager : MonoBehaviour
+public class TownUIManager : MonoBehaviour
 {
 
     public TMP_Text townText;
