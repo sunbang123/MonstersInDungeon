@@ -1,15 +1,29 @@
 using UnityEngine;
+using System;
 
+// 이동 모드 Enum
+public enum MovementMode
+{
+    Walk,
+    Run
+}
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private JoyStickController virtualJoystick;
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float walkSpeed = 5f;
+    [SerializeField] private float runSpeed = 10f;
 
+    private float moveSpeed;
     private SpriteRenderer spriteRenderer;
+    private MovementMode currentMode = MovementMode.Walk;
+
+    // 이동 모드 변경 이벤트
+    public event Action<MovementMode> OnMovementModeChanged;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        moveSpeed = walkSpeed; // 초기값은 걷기
     }
 
     private void Update()
@@ -28,5 +42,27 @@ public class PlayerController : MonoBehaviour
             else if (x > 0)
                 spriteRenderer.flipX = false;
         }
+    }
+
+    public void SetMovementMode(MovementMode mode)
+    {
+        currentMode = mode;
+
+        switch (mode)
+        {
+            case MovementMode.Walk:
+                moveSpeed = walkSpeed;
+                break;
+            case MovementMode.Run:
+                moveSpeed = runSpeed;
+                break;
+        }
+
+        OnMovementModeChanged?.Invoke(mode);
+    }
+
+    public MovementMode GetCurrentMode()
+    {
+        return currentMode;
     }
 }
