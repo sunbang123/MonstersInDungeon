@@ -3,19 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEditor.U2D.Path.GUIFramework;
 
 public class PlayerInteraction : MonoBehaviour
 {
     public Button interButton;
     public Button hideButton;
     public Button pickUpButton;
+    public Button runButton;
 
-
-
+    private PlayerController _controll;
     [SerializeField] private TMP_Text hideText;
+    [SerializeField] private string walkButtonText = "걷기";
+    [SerializeField] private string runButtonText = "달리기";
 
     private void Awake()
     {
+        _controll = GetComponent<PlayerController>();
+
         if (hideButton && pickUpButton!= null)
         {
             hideButton.gameObject.SetActive(false);
@@ -25,12 +30,16 @@ public class PlayerInteraction : MonoBehaviour
         {
             interButton.interactable = false;
         }
+        if (runButton != null)
+        {
+            runButton.onClick.AddListener(ToggleMovementMode);
+            UpdateRunButtonText(MovementMode.Walk); // 초기 텍스트 설정
+        }
     }
 
     public void Hide()
     {
         SpriteRenderer _sprite = GetComponent<SpriteRenderer>();
-        PlayerController _controll = GetComponent<PlayerController>();
         if (_sprite.enabled == true)
         {
             _sprite.enabled = false;
@@ -58,6 +67,26 @@ public class PlayerInteraction : MonoBehaviour
                 Debug.Log("Item picked up!");
                 return;
             }
+        }
+    }
+
+    // 이동 모드 토글 (걷기 ↔ 뛰기)
+    public void ToggleMovementMode()
+    {
+        MovementMode currentMode = _controll.GetCurrentMode();
+        MovementMode newMode = currentMode == MovementMode.Walk ? MovementMode.Run : MovementMode.Walk;
+
+        _controll.SetMovementMode(newMode);
+        UpdateRunButtonText(newMode);
+    }
+
+    // 버튼 텍스트 업데이트
+    private void UpdateRunButtonText(MovementMode mode)
+    {
+        TMP_Text buttonText = runButton.GetComponentInChildren<TMP_Text>();
+        if (buttonText != null)
+        {
+            buttonText.text = mode == MovementMode.Walk ? runButtonText : walkButtonText;
         }
     }
 
