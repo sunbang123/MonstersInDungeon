@@ -33,7 +33,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -47,7 +47,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 36
+  spritePixelsToUnits: 40
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -69,7 +69,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -131,10 +131,10 @@ TextureImporter:
       name: normal_vender_0
       rect:
         serializedVersion: 2
-        x: 55
-        y: 19
-        width: 37
-        height: 34
+        x: 49
+        y: 20
+        width: 39
+        height: 35
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -142,8 +142,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 56e5f8991a1712f469f4f3d8676a2c69
-      internalID: -272668952
+      spriteID: 851698dff9ffb0a4bbf1ac1eac3b5a1a
+      internalID: -449551798
       vertices: []
       indices: 
       edges: []
@@ -152,10 +152,10 @@ TextureImporter:
       name: normal_vender_1
       rect:
         serializedVersion: 2
-        x: 98
-        y: 17
-        width: 37
-        height: 36
+        x: 92
+        y: 18
+        width: 39
+        height: 37
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -163,8 +163,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9b97b5612f0886743b90d393891f9add
-      internalID: -378061408
+      spriteID: 96923694d366e1e45a3d3cf5e9387fc1
+      internalID: 1998493591
       vertices: []
       indices: 
       edges: []
@@ -173,10 +173,10 @@ TextureImporter:
       name: normal_vender_2
       rect:
         serializedVersion: 2
-        x: 137
-        y: 17
-        width: 37
-        height: 36
+        x: 131
+        y: 18
+        width: 39
+        height: 37
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -184,8 +184,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d3443044ba61190499cfab54a4bb1cac
-      internalID: 188845373
+      spriteID: 76af99dc66dd38147bb1af656e94004f
+      internalID: 1305518928
       vertices: []
       indices: 
       edges: []
@@ -194,10 +194,10 @@ TextureImporter:
       name: normal_vender_3
       rect:
         serializedVersion: 2
-        x: 180
-        y: 17
-        width: 32
-        height: 36
+        x: 174
+        y: 18
+        width: 34
+        height: 37
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -205,8 +205,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ee66c35ff1c78f74c885e686774bfc0b
-      internalID: 2144609234
+      spriteID: d66c4eaf3bba0474a8ef1e5c19d770d3
+      internalID: 988231433
       vertices: []
       indices: 
       edges: []
@@ -222,10 +222,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      normal_vender_1: -378061408
-      normal_vender_3: 2144609234
-      normal_vender_0: -272668952
-      normal_vender_2: 188845373
+      normal_vender_1: 1998493591
+      normal_vender_3: 988231433
+      normal_vender_0: -449551798
+      normal_vender_2: 1305518928
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
