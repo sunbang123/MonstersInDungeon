@@ -5,13 +5,9 @@ public class TownTrigger : MonoBehaviour
 {
     [Header("MapSet")]
     public List<GameObject> map;
-    public List<Transform> spawnPoint;
-
+    public MapData mapData;
     public TownUIManager townText;
-    public string townA;
-    public string townB;
-
-    private string lastTown = "";
+    public int mapIndex;
 
     void Awake()
     {
@@ -22,10 +18,7 @@ public class TownTrigger : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
-        string result = (lastTown == townA) ? townB : townA;
-        lastTown = result;
-
-        townText.SetTownName(result);
+        townText.SetTownName(mapData.mapName);
 
         if (map.Count >= 2)
         {
@@ -33,10 +26,7 @@ public class TownTrigger : MonoBehaviour
             map[1].SetActive(!map[1].activeSelf);
         }
 
-        if(spawnPoint.Count >= 2)
-        {
-            other.transform.position = spawnPoint[(lastTown == townA) ? 0 : 1].position;
-            this.transform.position = spawnPoint[(lastTown == townA) ? 0 : 1].position;
-        }
+        other.transform.position = mapData.playerSpawnPosition;
+        CameraController.instance.currentMapIndex = mapIndex;
     }
 }
