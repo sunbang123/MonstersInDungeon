@@ -7,21 +7,31 @@ using UnityEditor.U2D.Path.GUIFramework;
 
 public class PlayerInteraction : MonoBehaviour
 {
+    bool isFunctionExecuted = false;
+
+    [Header("Button")]
     public Button interButton;
     public Button hideButton;
     public Button pickUpButton;
     public Button runButton;
+    public Button inventoryButton;
 
     private PlayerController _controll;
+
+    [Header("Text")]
     [SerializeField] private TMP_Text hideText;
     [SerializeField] private string walkButtonText = "걷기";
     [SerializeField] private string runButtonText = "달리기";
+
+    [Header("Image")]
+    [SerializeField] public Image newItemText;
+    [SerializeField] public Image inventoryImage;
 
     private void Awake()
     {
         _controll = GetComponent<PlayerController>();
 
-        if (hideButton && pickUpButton!= null)
+        if (hideButton && pickUpButton != null)
         {
             hideButton.gameObject.SetActive(false);
             pickUpButton.gameObject.SetActive(false); 
@@ -30,10 +40,21 @@ public class PlayerInteraction : MonoBehaviour
         {
             interButton.interactable = false;
         }
+
         if (runButton != null)
         {
             runButton.onClick.AddListener(ToggleMovementMode);
             UpdateRunButtonText(MovementMode.Walk); // 초기 텍스트 설정
+        }
+
+        if (newItemText != null)
+        {
+            newItemText.gameObject.SetActive(false);
+        }
+        
+        if (inventoryImage != null)
+        {
+            inventoryImage.gameObject.SetActive(false);
         }
     }
 
@@ -54,7 +75,6 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-
     public void PickUp()
     {
         Item[] items = FindObjectsOfType<Item>();
@@ -62,11 +82,15 @@ public class PlayerInteraction : MonoBehaviour
         foreach (Item item in items)
         {
             if (item.IsPlayerNear())
-            {
+            { 
                 item.DestroyItem();
-                Debug.Log("Item picked up!");
-                return;
             }
+        }
+        
+        isFunctionExecuted = true;
+        if (isFunctionExecuted == true)
+        {
+            newItemText.gameObject.SetActive(true);
         }
     }
 
@@ -90,6 +114,25 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
+    public void Inventory()
+    {
+        isFunctionExecuted = false;
+        
+        if (inventoryImage.gameObject.activeSelf == false)
+        {
+            inventoryImage.gameObject.SetActive(true);
+            newItemText.gameObject.SetActive(false);
+            _controll.enabled = false;
+
+        }
+        else
+        {
+            inventoryImage.gameObject.SetActive(false);
+            _controll.enabled = true;
+        }
+        
+    }
+
 
     //버튼 활성화 비활성화
     private void OnTriggerEnter2D(Collider2D collision)
@@ -103,7 +146,6 @@ public class PlayerInteraction : MonoBehaviour
         {
             pickUpButton.gameObject.SetActive(true);
             interButton.gameObject.SetActive(false);
-            Debug.Log("줍기");
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
