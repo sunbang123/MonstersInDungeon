@@ -4082,9 +4082,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   map: []
-  mapData: {fileID: 0}
+  spawnPoint: []
   townText: {fileID: 0}
-  mapIndex: 0
+  townA: "\uAE30\uBCF8 \uB9C8\uC744"
+  townB: "\uC11C\uCABD \uC232"
 --- !u!19719996 &391182640
 TilemapCollider2D:
   m_ObjectHideFlags: 0
@@ -27795,7 +27796,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!156049354 &969689703
 Grid:
   m_ObjectHideFlags: 0
@@ -28291,7 +28292,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1183070356
 Transform:
   m_ObjectHideFlags: 0
@@ -47134,8 +47135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b7df5e92f402474d8714c60bffe8ada, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapData: []
-  currentMapIndex: 0
+  targetTilemap: {fileID: 774847685}
 --- !u!114 &1714383330
 MonoBehaviour:
   m_ObjectHideFlags: 0
