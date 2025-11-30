@@ -29,9 +29,6 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (currentMode == MovementMode.Stop)
-            return;
-
         float x = virtualJoystick.Horizontal;
         float y = virtualJoystick.Vertical;
 
@@ -54,6 +51,10 @@ public class PlayerController : MonoBehaviour
 
         switch (mode)
         {
+            case MovementMode.Stop:
+                moveSpeed = 0;
+                virtualJoystick.OnPointerUp(null); // 조이스틱 초기화
+                break;
             case MovementMode.Walk:
                 moveSpeed = walkSpeed;
                 break;
