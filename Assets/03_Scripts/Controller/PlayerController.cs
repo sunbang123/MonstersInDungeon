@@ -4,6 +4,7 @@ using System;
 // 이동 모드 Enum
 public enum MovementMode
 {
+    Stop,
     Walk,
     Run
 }
@@ -50,6 +51,10 @@ public class PlayerController : MonoBehaviour
 
         switch (mode)
         {
+            case MovementMode.Stop:
+                moveSpeed = 0;
+                virtualJoystick.OnPointerUp(null); // 조이스틱 초기화
+                break;
             case MovementMode.Walk:
                 moveSpeed = walkSpeed;
                 break;
