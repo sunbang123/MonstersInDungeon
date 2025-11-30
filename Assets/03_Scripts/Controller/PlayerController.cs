@@ -4,6 +4,7 @@ using System;
 // 이동 모드 Enum
 public enum MovementMode
 {
+    Stop,
     Walk,
     Run
 }
@@ -28,6 +29,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (currentMode == MovementMode.Stop)
+            return;
+
         float x = virtualJoystick.Horizontal;
         float y = virtualJoystick.Vertical;
 
