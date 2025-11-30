@@ -18,7 +18,7 @@ public class PoisonArea : MonoBehaviour
     // 플레이어의 원래 색상 저장
     private Dictionary<GameObject, Color> originalColors = new Dictionary<GameObject, Color>();
 
-    public PlayerDmg playerDmg;
+    public Player player;
 
     void Start()
     {
@@ -81,12 +81,12 @@ public class PoisonArea : MonoBehaviour
         }
     }
 
-    void ApplyDamageToPlayer(GameObject player, float damage)
+    void ApplyDamageToPlayer(GameObject p_go, float damage)
     {
-        PlayerDmg playerDmg = player.GetComponent<PlayerDmg>();
-        if (playerDmg != null)
+        Player player = p_go.GetComponent<Player>();
+        if (player != null)
         {
-            playerDmg.TakeDamage(damage);
+            player.TakeDamage(damage);
             return;
         }
     }

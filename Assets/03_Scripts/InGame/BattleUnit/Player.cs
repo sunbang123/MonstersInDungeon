@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class PlayerDmg : MonoBehaviour
+public class Player : MonoBehaviour
 {
     [Header("Health & Mana")]
     public float playerHp = 500f;
@@ -19,7 +19,7 @@ public class PlayerDmg : MonoBehaviour
 
     [Header("Skills")]
     public GameObject[] playerSkills;
-    
+
     public event Action OnPlayerDeath;
 
     private bool isDead = false;
@@ -29,7 +29,7 @@ public class PlayerDmg : MonoBehaviour
     {
         // 초기값 설정
         playerHp = Mathf.Clamp(playerHp, 0f, maxHp);
-        playerMp = Mathf.Clamp(playerMp, 0f, maxMp);        
+        playerMp = Mathf.Clamp(playerMp, 0f, maxMp);
     }
 
     void Update()
