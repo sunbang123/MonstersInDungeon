@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3fe75559930947a4d81f087babf770e7, type: 3}
-  m_Name: "Map04(\uC6A9\uC554\uC9C0\uB300)"
+  m_Name: Map03
   m_EditorClassIdentifier: 
-  mapName: "\uC6A9\uC554\uC9C0\uB300"
-  xMaxPos: 8
+  mapName: "\uBB3C\uC758 \uB9C8\uC744"
+  xMaxPos: 7
   yMaxPos: 5
-  playerSpawnPosition: {x: 0, y: 0, z: 0}
+  playerSpawnPosition: {x: 1.51, y: -8.55, z: 0}
