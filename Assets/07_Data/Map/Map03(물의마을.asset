@@ -15,4 +15,4 @@ MonoBehaviour:
   mapName: "\uBB3C\uC758 \uB9C8\uC744"
   xMaxPos: 8
   yMaxPos: 5
-  playerSpawnPosition: {x: 1.58, y: 11.48, z: 0}
+  playerSpawnPosition: {x: 0, y: -11, z: 0}
