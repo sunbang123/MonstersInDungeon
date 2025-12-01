@@ -10,13 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3fe75559930947a4d81f087babf770e7, type: 3}
-<<<<<<<< HEAD:Assets/07_Data/Map/Map01_S(숲공터).asset
-  m_Name: "Map01_S(\uC232\uACF5\uD130)"
-========
-  m_Name: "Map01(\uC232 \uACF5\uD130"
->>>>>>>> main:Assets/07_Data/Map/Map01(숲 공터.asset
+  m_Name: "Map2.5(\uC232 \uACF5\uD130)"
   m_EditorClassIdentifier: 
-  mapName: "\uC232 \uACF5\uD130"
+  mapName: "\uC1A6 \uACF5\uD130"
   xMaxPos: 8
-  yMaxPos: 5
-  playerSpawnPosition: {x: 1.51, y: -8.55, z: 0}
+  yMaxPos: 8
+  playerSpawnPosition: {x: 1.56, y: -9.18, z: 0}
