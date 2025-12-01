@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
 
     public float maxHp = 500f;
 
-    public float playerMp = 100f;
+    public float playerPp = 100f;
 
     public float maxMp = 100f;
 
@@ -29,14 +29,14 @@ public class Player : MonoBehaviour
     {
         // 초기값 설정
         playerHp = Mathf.Clamp(playerHp, 0f, maxHp);
-        playerMp = Mathf.Clamp(playerMp, 0f, maxMp);
+        playerPp = Mathf.Clamp(playerPp, 0f, maxMp);
     }
 
     void Update()
     {
         // HP/MP가 최대값을 초과하지 않도록 제한
         playerHp = Mathf.Clamp(playerHp, 0f, maxHp);
-        playerMp = Mathf.Clamp(playerMp, 0f, maxMp);
+        playerPp = Mathf.Clamp(playerPp, 0f, maxMp);
     }
 
     public void TakeDamage(float damage)

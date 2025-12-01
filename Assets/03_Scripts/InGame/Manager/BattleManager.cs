@@ -62,11 +62,6 @@ public class BattleManager : SingletonBehaviour<BattleManager>
     {
         base.Init();
         player = FindObjectOfType<Player>();
-        enemy = FindObjectOfType<Enemy>();
-        if (enemy != null && player != null)
-        {
-            enemy.SetTarget(player);
-        }
 
         _controll = player.GetComponent<PlayerController>();
 
@@ -127,8 +122,10 @@ public class BattleManager : SingletonBehaviour<BattleManager>
         if (defense_btn != null)
             defense_btn.interactable = interactable;
     }
-    public void StartBattle()
+    public void StartBattle(Enemy e)
     {
+        enemy = e;
+        e.SetTarget(player);
         battle_canvas.SetActive(true);
         nonbattle_canvas.SetActive(false);
         _controll.SetMovementMode(MovementMode.Stop);
@@ -229,6 +226,8 @@ public class BattleManager : SingletonBehaviour<BattleManager>
     }
     IEnumerator AttackRoutine()
     {
+        SetButtonsInteractable(false);
+
         ChangeState(PlayerState.Attack);
         battle_log.text += $"당신은 {PlayerState}을 했다.\n";
         yield return new WaitForSeconds(1f);
