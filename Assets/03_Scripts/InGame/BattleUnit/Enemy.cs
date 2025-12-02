@@ -15,7 +15,7 @@ public class Enemy : MonoBehaviour
         if (other.CompareTag("Player") && !battleStarted)
         {
             battleStarted = true;
-            BattleManager.Instance.StartBattle();
+            BattleManager.Instance.StartBattle(this);
         }
     }
 }

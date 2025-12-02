@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.U2D.Path.GUIFramework;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -52,6 +51,7 @@ public class BattleManager : SingletonBehaviour<BattleManager>
 
     [HideInInspector]
     public PlayerController _controll;
+    private PlayerInteraction _playerInteraction;
 
     private Player player;
     private Enemy enemy;
@@ -62,13 +62,9 @@ public class BattleManager : SingletonBehaviour<BattleManager>
     {
         base.Init();
         player = FindObjectOfType<Player>();
-        enemy = FindObjectOfType<Enemy>();
-        if (enemy != null && player != null)
-        {
-            enemy.SetTarget(player);
-        }
 
         _controll = player.GetComponent<PlayerController>();
+        _playerInteraction = player.GetComponent<PlayerInteraction>();
 
         // Inventory의 자식 버튼들 가져오기
         GetInventoryButtons();
@@ -127,8 +123,10 @@ public class BattleManager : SingletonBehaviour<BattleManager>
         if (defense_btn != null)
             defense_btn.interactable = interactable;
     }
-    public void StartBattle()
+    public void StartBattle(Enemy e)
     {
+        enemy = e;
+        e.SetTarget(player);
         battle_canvas.SetActive(true);
         nonbattle_canvas.SetActive(false);
         _controll.SetMovementMode(MovementMode.Stop);
@@ -229,6 +227,8 @@ public class BattleManager : SingletonBehaviour<BattleManager>
     }
     IEnumerator AttackRoutine()
     {
+        SetButtonsInteractable(false);
+
         ChangeState(PlayerState.Attack);
         battle_log.text += $"당신은 {PlayerState}을 했다.\n";
         yield return new WaitForSeconds(1f);
