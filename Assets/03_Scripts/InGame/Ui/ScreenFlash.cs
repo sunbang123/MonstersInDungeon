@@ -7,7 +7,7 @@ public class ScreenFlash : MonoBehaviour
     [Header("Flash Settings")]
     [SerializeField] private Image flashImage; // 전체 화면을 덮는 UI Image
     [SerializeField] private Color flashColor = new Color(0.5f, 0f, 1f, 0.3f); // 보라색, 알파 0.3
-    [SerializeField] private float flashDuration = 0.2f; // 깜빡임 지속 시간
+    private float flashDuration = 0.2f; // 깜빡임 지속 시간
 
     private Coroutine flashCoroutine;
 
@@ -65,16 +65,18 @@ public class ScreenFlash : MonoBehaviour
         flashCoroutine = null;
     }
     
-    public void FlashWithColor(Color color, float duration = 0.2f) // 투명도
+    public void FlashWithColor(Color color, float? duration = null) // 투명도
     {
         if (flashImage == null) return;
+
+        float actualduration = duration ?? flashDuration;
 
         if (flashCoroutine != null)
         {
             StopCoroutine(flashCoroutine);
         }
 
-        flashCoroutine = StartCoroutine(FlashCoroutineWithColor(color, duration));
+        flashCoroutine = StartCoroutine(FlashCoroutineWithColor(color, actualduration));
     }
 
     private IEnumerator FlashCoroutineWithColor(Color color, float duration)
