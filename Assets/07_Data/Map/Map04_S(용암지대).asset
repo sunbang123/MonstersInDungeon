@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: "Map04_S(\uC6A9\uC554\uC9C0\uB300)"
   m_EditorClassIdentifier: 
   mapName: "\uC6A9\uC554\uC9C0\uB300"
-  xMaxPos: 2
-  yMaxPos: 3
+  xMaxPos: 4
+  yMaxPos: 4
   playerSpawnPosition: {x: 1.56, y: -7.6, z: 0}
