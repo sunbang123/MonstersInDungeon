@@ -58,40 +58,34 @@ public class BattleFlowController : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         stateMachine.ChangeState(BattleState.PlayerTurn);
-
-        // 전투 루프
-        int turnCount = 0;
         while (stateMachine.BattleState != BattleState.Win &&
                stateMachine.BattleState != BattleState.Lose)
         {
-            uiController.SetBattleLog($"전투 상황: {stateMachine.BattleState}\n");
-
             switch (stateMachine.BattleState)
             {
                 case BattleState.PlayerTurn:
+                    uiController.SetBattleLog($"전투 상황: {stateMachine.BattleState}\n");
                     yield return StartCoroutine(turnExecutor.ExecutePlayerTurn());
+
+                    // 사망 체크
+                    if (CheckBattleEnd())
+                        break;
+
+                    // PlayerTurn 완료 후 EnemyTurn으로 전환
+                    stateMachine.ChangeState(BattleState.EnemyTurn);
                     break;
 
                 case BattleState.EnemyTurn:
+                    uiController.SetBattleLog($"전투 상황: {stateMachine.BattleState}\n");
                     yield return StartCoroutine(turnExecutor.ExecuteEnemyTurn());
+
+                    // 사망 체크
+                    if (CheckBattleEnd())
+                        break;
+
+                    // EnemyTurn 완료 후 PlayerTurn으로 전환
+                    stateMachine.ChangeState(BattleState.PlayerTurn);
                     break;
-            }
-
-            turnCount++;
-
-            if (CheckBattleEnd(turnCount))
-                break;
-
-            // 매 턴 종료 시 Player/Enemy 사망 체크
-            if (player.IsDead())
-            {
-                stateMachine.ChangeState(BattleState.Lose);
-                break;
-            }
-            if (enemy.IsDead())
-            {
-                stateMachine.ChangeState(BattleState.Win);
-                break;
             }
         }
 
@@ -106,13 +100,14 @@ public class BattleFlowController : MonoBehaviour
     /// <summary>
     /// 전투 종료 조건 체크
     /// </summary>
-    public bool CheckBattleEnd(int turnCount)
+    public bool CheckBattleEnd()
     {
         if (player.IsDead())
         {
             stateMachine.ChangeState(BattleState.Lose);
             return true;
         }
+
         if (enemy.IsDead())
         {
             stateMachine.ChangeState(BattleState.Win);

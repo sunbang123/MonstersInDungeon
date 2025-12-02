@@ -21,6 +21,11 @@ public class BattleUIController : MonoBehaviour
     public Button specialAtk_btn;
     public Button defense_btn;
 
+    [Header("Player Status")]
+    public GameObject playerStatus;
+    public Transform batTransform;
+    public Transform nonBatTransform;
+
     [Header("Health Sliders")]
     public Slider playerHealthSlider;
     public Slider enemyHealthSlider;
@@ -33,13 +38,16 @@ public class BattleUIController : MonoBehaviour
 
     private void Start()
     {
-        // Inventory의 자식 버튼들 가져오기
         GetInventoryButtons();
-
-        // 버튼 바인드
         BindButtons();
 
-        // 초기에는 버튼 비활성화
+        // Player 찾기
+        Player player = FindObjectOfType<Player>();
+        if (player != null)
+        {
+            player.OnHealthChanged += UpdatePlayerHealthSlider;
+        }
+
         SetButtonsInteractable(false);
     }
 
@@ -105,22 +113,41 @@ public class BattleUIController : MonoBehaviour
             defense_btn.interactable = interactable;
     }
 
-    /// <summary>
-    /// 전투 UI 활성화
-    /// </summary>
-    public void ShowBattleUI()
-    {
-        battle_canvas.SetActive(true);
-        nonbattle_canvas.SetActive(false);
-    }
 
     /// <summary>
-    /// 일반 UI 활성화
+    /// 전투 UI 상태 토글
     /// </summary>
+    private bool isBattleMode = false;
+
+    public void ToggleBattleUI(bool enableBattle)
+    {
+        isBattleMode = enableBattle;
+
+        battle_canvas.SetActive(enableBattle);
+        nonbattle_canvas.SetActive(!enableBattle);
+
+        Transform targetParent = enableBattle ? batTransform : nonBatTransform;
+        bool useWorldSpace = !enableBattle;
+
+        playerStatus.transform.SetParent(null, false);
+        playerStatus.transform.SetParent(targetParent, useWorldSpace);
+
+        // playerStatus의 rectTransform 초기화 (부모 변경 직후)
+        RectTransform rectTransform = playerStatus.GetComponent<RectTransform>();
+        rectTransform.anchoredPosition = Vector2.zero;
+        rectTransform.sizeDelta = Vector2.zero;
+        rectTransform.offsetMin = Vector2.zero;
+        rectTransform.offsetMax = Vector2.zero;
+    }
+
+    public void ShowBattleUI()
+    {
+        ToggleBattleUI(true);
+    }
+
     public void HideBattleUI()
     {
-        battle_canvas.SetActive(false);
-        nonbattle_canvas.SetActive(true);
+        ToggleBattleUI(false);
     }
 
     /// <summary>

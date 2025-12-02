@@ -1,29 +1,25 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PoisonArea : MonoBehaviour
 {
     [Header("Poison Settings")]
+    // 초당 독 데미지
     public float poisonDmg = 10.0f;
-
+    // 데미지 적용 간격
     public float damageInterval = 1.0f;
-
-    [Header("Visual Settings")]
-    public Color poisonColor = new Color(0.5f, 0.0f, 0.5f, 1.0f); // 보라색
-
-    // 현재 중독 상태인 플레이어들
-    private Dictionary<GameObject, Coroutine> poisonedPlayers = new Dictionary<GameObject, Coroutine>();
-
-    // 플레이어의 원래 색상 저장
-    private Dictionary<GameObject, Color> originalColors = new Dictionary<GameObject, Color>();
-
-    public Player player;
 
     [Header("ScreenFlash Settings")]
     public ScreenFlash screenFlash;
-    public Color flashColor = new Color(0.5f, 0f, 1f, 0.3f); // 독 데미지용 깜빡임 색상 (보라색)
-    public float flashDuration = 0.2f; // 깜빡임 지속 시간
+    // 독 데미지용 깜빡임 색상 (보라색)
+    public Color flashColor = new Color(0.5f, 0f, 1f, 0.3f);
+    // 깜빡임 지속 시간
+    public float flashDuration = 0.2f;
+
+    // 현재 독 데미지를 받고 있는 플레이어의 Coroutine
+    private Coroutine damageCoroutine = null;
+    // 현재 독 구역에 들어와 있는 GameObject
+    private GameObject currentPlayer = null;
 
     void Start()
     {
@@ -34,6 +30,7 @@ public class PoisonArea : MonoBehaviour
             Debug.LogWarning($"PoisonArea: {gameObject.name}의 Collider2D가 Trigger로 설정되지 않았습니다.");
         }
 
+        // ScreenFlash가 없으면 씬에서 찾기
         if (screenFlash == null)
         {
             screenFlash = FindObjectOfType<ScreenFlash>();
@@ -42,125 +39,70 @@ public class PoisonArea : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        // "Player" 태그가 아니면 무시
         if (!other.CompareTag("Player"))
             return;
 
-        GameObject player = other.gameObject;
+        // 이미 플레이어가 독 상태이면 무시 (단일 플레이어 가정)
+        if (damageCoroutine != null)
+            return;
 
-        if (!poisonedPlayers.ContainsKey(player))
-        {
-            SaveOriginalColor(player);
-            ChangePlayerColor(player, poisonColor);
+        currentPlayer = other.gameObject;
 
-            Coroutine damageCoroutine = StartCoroutine(ApplyPoisonDamage(player));
-            poisonedPlayers[player] = damageCoroutine;
-        }
+        // 독 데미지 코루틴 시작
+        damageCoroutine = StartCoroutine(ApplyPoisonDamage(currentPlayer));
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
+        // "Player" 태그가 아니면 무시
         if (!other.CompareTag("Player"))
             return;
 
-        GameObject player = other.gameObject;
-
-        // 중독 상태 해제
-        if (poisonedPlayers.ContainsKey(player))
+        // 현재 독 상태인 플레이어가 나가면
+        if (other.gameObject == currentPlayer)
         {
-            // 데미지 코루틴 중지
-            if (poisonedPlayers[player] != null)
+            // 데미지 코루틴 중지 및 초기화
+            if (damageCoroutine != null)
             {
-                StopCoroutine(poisonedPlayers[player]);
+                StopCoroutine(damageCoroutine);
             }
-            poisonedPlayers.Remove(player);
-
-            // 플레이어 색상을 원래대로 복원
-            RestoreOriginalColor(player);
+            damageCoroutine = null;
+            currentPlayer = null;
         }
     }
 
     IEnumerator ApplyPoisonDamage(GameObject player)
     {
+        // 플레이어가 존재하는 동안
         while (player != null)
         {
             // 플레이어에게 데미지 적용
-            ApplyDamageToPlayer(player, poisonDmg);            
+            ApplyDamageToPlayer(player, poisonDmg);
 
-            // 대기 시간
+            // 데미지 간격만큼 대기
             yield return new WaitForSeconds(damageInterval);
         }
+
+        // 플레이어가 파괴되면 Coroutine을 중지하고 정리
+        damageCoroutine = null;
+        currentPlayer = null;
     }
 
     void ApplyDamageToPlayer(GameObject p_go, float damage)
     {
+        // Player 컴포넌트 찾기
         Player player = p_go.GetComponent<Player>();
         if (player != null)
         {
+            // 플레이어에게 데미지 적용
             player.TakeDamage(damage);
 
-            //스크린 플래쉬 적용
-            if(screenFlash != null)
+            // 스크린 플래쉬 적용
+            if (screenFlash != null)
             {
                 screenFlash.FlashWithColor(flashColor, flashDuration);
             }
-
-            return;
         }
-    }
-
-    void SaveOriginalColor(GameObject player)
-    {
-        // SpriteRenderer에서 원래 색상 저장
-        SpriteRenderer spriteRenderer = player.GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            originalColors[player] = spriteRenderer.color;
-            return;
-        }
-
-        // 기본 색상으로 설정 (흰색)
-        originalColors[player] = Color.white;
-    }
-
-    void ChangePlayerColor(GameObject player, Color color)
-    {
-        // SpriteRenderer 색상 변경
-        SpriteRenderer spriteRenderer = player.GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.color = color;
-            return;
-        }
-    }
-
-    void RestoreOriginalColor(GameObject player)
-    {
-        if (!originalColors.ContainsKey(player))
-            return;
-
-        Color originalColor = originalColors[player];
-
-        // SpriteRenderer 색상 복원
-        SpriteRenderer spriteRenderer = player.GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.color = originalColor;
-            originalColors.Remove(player);
-            return;
-        }
-    }
-
-    void OnDestroy()
-    {
-        // 오브젝트가 파괴될 때 모든 플레이어의 색상 복원
-        foreach (var player in new List<GameObject>(poisonedPlayers.Keys))
-        {
-            if (player != null)
-            {
-                RestoreOriginalColor(player);
-            }
-        }
-        poisonedPlayers.Clear();
-        originalColors.Clear();
     }
 }
