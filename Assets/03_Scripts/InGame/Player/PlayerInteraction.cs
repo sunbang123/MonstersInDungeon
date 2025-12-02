@@ -56,8 +56,20 @@ public class PlayerInteraction : MonoBehaviour
         {
             inventoryImage.gameObject.SetActive(false);
         }
-    }
 
+        // player 움직임 이벤트 구독
+        if (_controll != null)
+        {
+            _controll.OnMovementModeChanged += UpdateRunButtonText;
+        }
+    }
+    private void OnDestroy()
+    {
+        if (_controll != null)
+        {
+            _controll.OnMovementModeChanged -= UpdateRunButtonText;
+        }
+    }
     public void Hide()
     {
         SpriteRenderer _sprite = GetComponent<SpriteRenderer>();
@@ -101,12 +113,19 @@ public class PlayerInteraction : MonoBehaviour
         MovementMode newMode = currentMode == MovementMode.Walk ? MovementMode.Run : MovementMode.Walk;
 
         _controll.SetMovementMode(newMode);
-        UpdateRunButtonText(newMode);
+        // UpdateRunButtonText(newMode);
+    }
+
+    public void SetMovementMode(MovementMode mode)
+    {
+        UpdateRunButtonText(mode);
     }
 
     // 버튼 텍스트 업데이트
     private void UpdateRunButtonText(MovementMode mode)
     {
+        if (runButton == null) return;
+
         TMP_Text buttonText = runButton.GetComponentInChildren<TMP_Text>();
         if (buttonText != null)
         {

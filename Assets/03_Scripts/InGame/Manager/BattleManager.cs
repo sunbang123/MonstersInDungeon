@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.U2D.Path.GUIFramework;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -52,6 +51,7 @@ public class BattleManager : SingletonBehaviour<BattleManager>
 
     [HideInInspector]
     public PlayerController _controll;
+    private PlayerInteraction _playerInteraction;
 
     private Player player;
     private Enemy enemy;
@@ -64,6 +64,7 @@ public class BattleManager : SingletonBehaviour<BattleManager>
         player = FindObjectOfType<Player>();
 
         _controll = player.GetComponent<PlayerController>();
+        _playerInteraction = player.GetComponent<PlayerInteraction>();
 
         // Inventory의 자식 버튼들 가져오기
         GetInventoryButtons();
