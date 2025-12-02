@@ -20,6 +20,11 @@ public class PoisonArea : MonoBehaviour
 
     public Player player;
 
+    [Header("ScreenFlash Settings")]
+    public ScreenFlash screenFlash;
+    public Color flashColor = new Color(0.5f, 0f, 1f, 0.3f); // 독 데미지용 깜빡임 색상 (보라색)
+    public float flashDuration = 0.2f; // 깜빡임 지속 시간
+
     void Start()
     {
         // Collider2D가 Trigger로 설정되어 있는지 확인
@@ -27,6 +32,11 @@ public class PoisonArea : MonoBehaviour
         if (col != null && !col.isTrigger)
         {
             Debug.LogWarning($"PoisonArea: {gameObject.name}의 Collider2D가 Trigger로 설정되지 않았습니다.");
+        }
+
+        if (screenFlash == null)
+        {
+            screenFlash = FindObjectOfType<ScreenFlash>();
         }
     }
 
@@ -87,6 +97,13 @@ public class PoisonArea : MonoBehaviour
         if (player != null)
         {
             player.TakeDamage(damage);
+
+            //스크린 플래쉬 적용
+            if(screenFlash != null)
+            {
+                screenFlash.FlashWithColor(flashColor, flashDuration);
+            }
+
             return;
         }
     }
