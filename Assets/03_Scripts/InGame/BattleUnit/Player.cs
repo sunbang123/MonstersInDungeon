@@ -14,6 +14,8 @@ public class Player : MonoBehaviour
 
     public float maxMp = 100f;
 
+    public event Action<float, float> OnHealthChanged;
+
     [Tooltip("다음 레벨까지 필요한 경험치")]
     public float expToNextLevel = 100f;
 
@@ -49,6 +51,8 @@ public class Player : MonoBehaviour
         playerHp = Mathf.Max(0f, playerHp);
 
         Debug.Log($"[데미지 적용 후] {gameObject.name} - HP: {playerHp}/{maxHp} (데미지: {finalDamage})");
+
+        OnHealthChanged?.Invoke(playerHp, maxHp);
 
         // 사망 체크
         if (playerHp <= 0f && !isDead)
