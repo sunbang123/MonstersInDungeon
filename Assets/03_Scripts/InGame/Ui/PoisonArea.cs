@@ -4,105 +4,203 @@ using UnityEngine;
 public class PoisonArea : MonoBehaviour
 {
     [Header("Poison Settings")]
-    // 초당 독 데미지
     public float poisonDmg = 10.0f;
-    // 데미지 적용 간격
     public float damageInterval = 1.0f;
 
     [Header("ScreenFlash Settings")]
     public ScreenFlash screenFlash;
-    // 독 데미지용 깜빡임 색상 (보라색)
     public Color flashColor = new Color(0.5f, 0f, 1f, 0.3f);
-    // 깜빡임 지속 시간
     public float flashDuration = 0.2f;
 
-    // 현재 독 데미지를 받고 있는 플레이어의 Coroutine
+    [Header("Player Color Settings")]
+    public Color poisonColor = new Color(0.7f, 0.2f, 1f, 1f);
+
+    [Header("Recovery Settings")]
+    public float recoveryDuration = 2.0f; // 완전 회복까지 걸리는 시간
+
     private Coroutine damageCoroutine = null;
-    // 현재 독 구역에 들어와 있는 GameObject
+    private Coroutine recoveryCoroutine = null;
     private GameObject currentPlayer = null;
+    private Renderer playerRenderer;
+    private Color originalPlayerColor;
+    private bool isRecovering = false;
 
     void Start()
     {
-        // Collider2D가 Trigger로 설정되어 있는지 확인
+        ValidateTriggerCollider();
+        EnsureScreenFlash();
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!IsValidPlayer(other))
+            return;
+
+        // 회복 중이었다면 회복 중단
+        if (isRecovering)
+        {
+            StopRecovery();
+        }
+
+        // 이미 독 상태가 아니라면 새로 설정
+        if (damageCoroutine == null)
+        {
+            SetupPlayer(other.gameObject);
+        }
+
+        damageCoroutine = StartCoroutine(ApplyPoisonDamage());
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (!IsValidPlayer(other) || other.gameObject != currentPlayer)
+            return;
+
+        // 독 데미지 중지
+        if (damageCoroutine != null)
+        {
+            StopCoroutine(damageCoroutine);
+            damageCoroutine = null;
+        }
+
+        // 회복 시작
+        recoveryCoroutine = StartCoroutine(RecoveryProcess());
+    }
+
+    IEnumerator ApplyPoisonDamage()
+    {
+        while (currentPlayer != null && !isRecovering)
+        {
+            ApplyDamageToPlayer(currentPlayer, poisonDmg, 1.0f);
+            yield return new WaitForSeconds(damageInterval);
+        }
+    }
+
+    IEnumerator RecoveryProcess()
+    {
+        isRecovering = true;
+        float elapsed = 0f;
+
+        while (elapsed < recoveryDuration)
+        {
+            elapsed += damageInterval;
+            float recoveryProgress = elapsed / recoveryDuration; // 0 -> 1
+            float damageMultiplier = 1f - recoveryProgress; // 1 -> 0
+
+            // 회복 진행도에 따라 감소하는 데미지 적용
+            if (damageMultiplier > 0)
+            {
+                ApplyDamageToPlayer(currentPlayer, poisonDmg, damageMultiplier);
+            }
+
+            // 색상도 점진적으로 복구
+            if (playerRenderer != null)
+            {
+                playerRenderer.material.color = Color.Lerp(poisonColor, originalPlayerColor, recoveryProgress);
+            }
+
+            yield return new WaitForSeconds(damageInterval);
+        }
+
+        // 완전 회복
+        RestorePlayerState();
+        CleanupPoisonState();
+    }
+
+    void ApplyDamageToPlayer(GameObject playerObj, float damage, float multiplier)
+    {
+        Player player = playerObj.GetComponent<Player>();
+        if (player != null)
+        {
+            float actualDamage = damage * multiplier;
+            player.TakeDamage(actualDamage);
+            TriggerScreenFlash(multiplier);
+        }
+    }
+
+    // === 헬퍼 함수들 ===
+
+    bool IsValidPlayer(Collider2D collider)
+    {
+        return collider.CompareTag("Player");
+    }
+
+    void SetupPlayer(GameObject player)
+    {
+        currentPlayer = player;
+        playerRenderer = currentPlayer.GetComponent<Renderer>();
+
+        if (playerRenderer != null)
+        {
+            originalPlayerColor = playerRenderer.material.color;
+            playerRenderer.material.color = poisonColor;
+        }
+    }
+
+    void RestorePlayerState()
+    {
+        if (playerRenderer != null)
+        {
+            playerRenderer.material.color = originalPlayerColor;
+        }
+    }
+
+    void CleanupPoisonState()
+    {
+        if (damageCoroutine != null)
+        {
+            StopCoroutine(damageCoroutine);
+        }
+        if (recoveryCoroutine != null)
+        {
+            StopCoroutine(recoveryCoroutine);
+        }
+
+        damageCoroutine = null;
+        recoveryCoroutine = null;
+        currentPlayer = null;
+        playerRenderer = null;
+        isRecovering = false;
+    }
+
+    void StopRecovery()
+    {
+        if (recoveryCoroutine != null)
+        {
+            StopCoroutine(recoveryCoroutine);
+            recoveryCoroutine = null;
+        }
+        isRecovering = false;
+    }
+
+    void ValidateTriggerCollider()
+    {
         Collider2D col = GetComponent<Collider2D>();
         if (col != null && !col.isTrigger)
         {
             Debug.LogWarning($"PoisonArea: {gameObject.name}의 Collider2D가 Trigger로 설정되지 않았습니다.");
         }
+    }
 
-        // ScreenFlash가 없으면 씬에서 찾기
+    void EnsureScreenFlash()
+    {
         if (screenFlash == null)
         {
             screenFlash = FindObjectOfType<ScreenFlash>();
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    void TriggerScreenFlash(float intensity)
     {
-        // "Player" 태그가 아니면 무시
-        if (!other.CompareTag("Player"))
-            return;
-
-        // 이미 플레이어가 독 상태이면 무시 (단일 플레이어 가정)
-        if (damageCoroutine != null)
-            return;
-
-        currentPlayer = other.gameObject;
-
-        // 독 데미지 코루틴 시작
-        damageCoroutine = StartCoroutine(ApplyPoisonDamage(currentPlayer));
-    }
-
-    void OnTriggerExit2D(Collider2D other)
-    {
-        // "Player" 태그가 아니면 무시
-        if (!other.CompareTag("Player"))
-            return;
-
-        // 현재 독 상태인 플레이어가 나가면
-        if (other.gameObject == currentPlayer)
+        if (screenFlash != null)
         {
-            // 데미지 코루틴 중지 및 초기화
-            if (damageCoroutine != null)
-            {
-                StopCoroutine(damageCoroutine);
-            }
-            damageCoroutine = null;
-            currentPlayer = null;
-        }
-    }
-
-    IEnumerator ApplyPoisonDamage(GameObject player)
-    {
-        // 플레이어가 존재하는 동안
-        while (player != null)
-        {
-            // 플레이어에게 데미지 적용
-            ApplyDamageToPlayer(player, poisonDmg);
-
-            // 데미지 간격만큼 대기
-            yield return new WaitForSeconds(damageInterval);
-        }
-
-        // 플레이어가 파괴되면 Coroutine을 중지하고 정리
-        damageCoroutine = null;
-        currentPlayer = null;
-    }
-
-    void ApplyDamageToPlayer(GameObject p_go, float damage)
-    {
-        // Player 컴포넌트 찾기
-        Player player = p_go.GetComponent<Player>();
-        if (player != null)
-        {
-            // 플레이어에게 데미지 적용
-            player.TakeDamage(damage);
-
-            // 스크린 플래쉬 적용
-            if (screenFlash != null)
-            {
-                screenFlash.FlashWithColor(flashColor, flashDuration);
-            }
+            Color adjustedColor = new Color(
+                flashColor.r,
+                flashColor.g,
+                flashColor.b,
+                flashColor.a * intensity
+            );
+            screenFlash.FlashWithColor(adjustedColor, flashDuration);
         }
     }
 }

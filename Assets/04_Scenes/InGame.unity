@@ -34324,6 +34324,8 @@ MonoBehaviour:
   screenFlash: {fileID: 595253056}
   flashColor: {r: 0.5, g: 0, b: 1, a: 0.3}
   flashDuration: 0.2
+  poisonColor: {r: 0.7, g: 0.2, b: 1, a: 1}
+  recoveryDuration: 2
 --- !u!50 &1162834007
 Rigidbody2D:
   serializedVersion: 4
@@ -61334,6 +61336,8 @@ MonoBehaviour:
   screenFlash: {fileID: 595253056}
   flashColor: {r: 0.5, g: 0, b: 1, a: 0.3}
   flashDuration: 0.2
+  poisonColor: {r: 0.7, g: 0.2, b: 1, a: 1}
+  recoveryDuration: 2
 --- !u!19719996 &1426796000
 TilemapCollider2D:
   m_ObjectHideFlags: 0
