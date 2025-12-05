@@ -10,6 +10,11 @@ public class Item : MonoBehaviour
 
     private bool isPlayerNear = false;
 
+    public ItemData GetItemData()
+    {
+        return IData;
+    }
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();

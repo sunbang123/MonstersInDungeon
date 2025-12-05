@@ -88,16 +88,8 @@ public class PlayerInteraction : MonoBehaviour
 
     public void PickUp()
     {
-        Item[] items = FindObjectsOfType<Item>();
+        InventoryManager.Instance.PickUpItem();
 
-        foreach (Item item in items)
-        {
-            if (item.IsPlayerNear())
-            { 
-                item.DestroyItem();
-            }
-        }
-        
         isFunctionExecuted = true;
         if (isFunctionExecuted == true)
         {
