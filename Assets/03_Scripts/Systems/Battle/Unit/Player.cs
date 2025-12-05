@@ -1,17 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using System.Collections;
+using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : Unit
 {
     [Header("Health & Mana")]
     public float playerHp = 500f;
-
     public float maxHp = 500f;
-
     public float playerPp = 100f;
-
     public float maxMp = 100f;
 
     public event Action<float, float> OnHealthChanged;
@@ -24,7 +20,6 @@ public class Player : MonoBehaviour
 
     public event Action OnPlayerDeath;
 
-    private bool isDead = false;
     private Coroutine regenCoroutine;
 
     void Start()
@@ -41,39 +36,13 @@ public class Player : MonoBehaviour
         playerPp = Mathf.Clamp(playerPp, 0f, maxMp);
     }
 
-    public void TakeDamage(float damage)
-    {
-        if (isDead) return;
-
-        float finalDamage = Mathf.Max(1f, damage);
-
-        playerHp -= finalDamage;
-        playerHp = Mathf.Max(0f, playerHp);
-
-        Debug.Log($"[데미지 적용 후] {gameObject.name} - HP: {playerHp}/{maxHp} (데미지: {finalDamage})");
-
-        OnHealthChanged?.Invoke(playerHp, maxHp);
-
-        // 사망 체크
-        if (playerHp <= 0f && !isDead)
-        {
-            Debug.Log($"[사망] {gameObject.name}이(가) 사망했습니다.");
-            Die();
-        }
-    }
-
-    void Die()
-    {
-        if (isDead) return;
-
-        isDead = true;
-        OnPlayerDeath?.Invoke();
-    }
-
-    public bool IsDead()
-    {
-        return isDead;
-    }
+    // Unit 클래스의 추상 메서드 구현
+    protected override float GetCurrentHp() => playerHp;
+    protected override float GetMaxHp() => maxHp;
+    protected override void SetCurrentHp(float value) => playerHp = value;
+    protected override void InvokeHealthChanged(float current, float max)
+        => OnHealthChanged?.Invoke(current, max);
+    protected override void InvokeDeath() => OnPlayerDeath?.Invoke();
 
     void OnDestroy()
     {
