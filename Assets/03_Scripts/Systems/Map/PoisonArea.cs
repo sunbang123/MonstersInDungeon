@@ -16,7 +16,7 @@ public class PoisonArea : MonoBehaviour
     public Color poisonColor = new Color(0.7f, 0.2f, 1f, 1f);
 
     [Header("Recovery Settings")]
-    public float recoveryDuration = 2.0f; // 완전 회복까지 걸리는 시간
+    public float recoveryDuration = 2.0f;
 
     private Coroutine damageCoroutine = null;
     private Coroutine recoveryCoroutine = null;
@@ -24,6 +24,7 @@ public class PoisonArea : MonoBehaviour
     private Renderer playerRenderer;
     private Color originalPlayerColor;
     private bool isRecovering = false;
+    private bool hasOriginalColor = false; // 원본 색상 저장 여부 추적
 
     void Start()
     {
@@ -84,8 +85,8 @@ public class PoisonArea : MonoBehaviour
         while (elapsed < recoveryDuration)
         {
             elapsed += damageInterval;
-            float recoveryProgress = elapsed / recoveryDuration; // 0 -> 1
-            float damageMultiplier = 1f - recoveryProgress; // 1 -> 0
+            float recoveryProgress = elapsed / recoveryDuration;
+            float damageMultiplier = 1f - recoveryProgress;
 
             // 회복 진행도에 따라 감소하는 데미지 적용
             if (damageMultiplier > 0)
@@ -132,7 +133,12 @@ public class PoisonArea : MonoBehaviour
 
         if (playerRenderer != null)
         {
-            originalPlayerColor = playerRenderer.material.color;
+            // 처음 독 상태가 되는 경우에만 원본 색상 저장
+            if (!hasOriginalColor)
+            {
+                originalPlayerColor = playerRenderer.material.color;
+                hasOriginalColor = true;
+            }
             playerRenderer.material.color = poisonColor;
         }
     }
@@ -161,6 +167,7 @@ public class PoisonArea : MonoBehaviour
         currentPlayer = null;
         playerRenderer = null;
         isRecovering = false;
+        hasOriginalColor = false; // 플레이어가 완전히 벗어나면 리셋
     }
 
     void StopRecovery()
