@@ -2,15 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+<<<<<<<< HEAD:Assets/03_Scripts/Core/Enums.cs
 public class Enums : MonoBehaviour
+========
+public class ItemSlot : MonoBehaviour
+>>>>>>>> main:Assets/03_Scripts/Systems/Map/ItemSlot.cs
 {
-    // Start is called before the first frame update
+    public ItemData item;
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         

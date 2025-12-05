@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/03_Scripts/Core/AudioManager.cs.meta
 guid: 1bf1c9053d3015340ab8c54f52635e8a
+========
+guid: 884e4451491f06d4e9305d726f3dc5a3
+>>>>>>>> main:Assets/03_Scripts/Systems/BattleSystem/BattleFlowController.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

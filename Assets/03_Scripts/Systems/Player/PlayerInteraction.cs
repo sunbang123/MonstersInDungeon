@@ -25,7 +25,7 @@ public class PlayerInteraction : MonoBehaviour
 
     [Header("Image")]
     [SerializeField] public Image newItemText;
-    [SerializeField] public Image inventoryImage;
+    [SerializeField] public Canvas inventoryCanvas;
 
     private void Awake()
     {
@@ -52,9 +52,9 @@ public class PlayerInteraction : MonoBehaviour
             newItemText.gameObject.SetActive(false);
         }
         
-        if (inventoryImage != null)
+        if (inventoryCanvas != null)
         {
-            inventoryImage.gameObject.SetActive(false);
+            inventoryCanvas.gameObject.SetActive(false);
         }
 
         // player 움직임 이벤트 구독
@@ -137,16 +137,16 @@ public class PlayerInteraction : MonoBehaviour
     {
         isFunctionExecuted = false;
         
-        if (inventoryImage.gameObject.activeSelf == false)
+        if (inventoryCanvas.gameObject.activeSelf == false)
         {
-            inventoryImage.gameObject.SetActive(true);
+            inventoryCanvas.gameObject.SetActive(true);
             newItemText.gameObject.SetActive(false);
             _controll.enabled = false;
 
         }
         else
         {
-            inventoryImage.gameObject.SetActive(false);
+            inventoryCanvas.gameObject.SetActive(false);
             _controll.enabled = true;
         }
         
