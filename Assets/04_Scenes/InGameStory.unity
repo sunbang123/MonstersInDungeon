@@ -1367,6 +1367,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8028ef827fe9dcd4bb2de0f1b112d4e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextSceneReference:
+    m_AssetGUID: f24d8f4069f7f774cbb49d71b6dc823e
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   dialog: {fileID: 194371111}
   obFade: {fileID: 509225192}
   backgroundImage: {fileID: 888590010}
@@ -1378,7 +1383,6 @@ MonoBehaviour:
   backgroundSprites:
   - {fileID: 21300000, guid: 235183a267731ed4a91a0365c2274ea4, type: 3}
   - {fileID: 21300000, guid: 1b4b1f3ad26aae040ad358cf3c007087, type: 3}
-  nextSceneName: InGame
   itemInfoTxt: {fileID: 168309966}
   selectCursorPrefab:
   - {fileID: 555963310}

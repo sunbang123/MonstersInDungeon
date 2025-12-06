@@ -4,6 +4,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
 
 enum StoryState
 {
@@ -20,6 +23,8 @@ enum SelectState
 
 public class TextManager : MonoBehaviour
 {
+    [SerializeField] private AssetReference nextSceneReference;
+
     [Header("UI References")]
     [SerializeField] private TextMeshProUGUI dialog;
     [SerializeField] private GameObject obFade;
@@ -30,7 +35,6 @@ public class TextManager : MonoBehaviour
     [Header("Story Settings")]
     [SerializeField] private List<string> storyFiles = new List<string> { "story001", "story002" };
     [SerializeField] private List<Sprite> backgroundSprites;
-    [SerializeField] private string nextSceneName;
 
     [Header("Select Settings")]
     [SerializeField] private TextMeshProUGUI itemInfoTxt;
@@ -270,11 +274,18 @@ public class TextManager : MonoBehaviour
         isTransitioning = true;
         yield return StartCoroutine(FadeOut());
 
-        if (!string.IsNullOrEmpty(nextSceneName))
+        // UserPlayerStatusData에 TutorialEnd = true 저장
+        var status = UserDataManager.Instance.Get<UserPlayerStatusData>();
+        status.TutorialEnd = true;
+        UserDataManager.Instance.SaveUserData();
+
+        // Addressables 씬 로드
+        if (nextSceneReference != null)
         {
-            SceneManager.LoadScene(nextSceneName);
+            nextSceneReference.LoadSceneAsync(UnityEngine.SceneManagement.LoadSceneMode.Single);
         }
     }
+
 
     private IEnumerator FadeIn()
     {

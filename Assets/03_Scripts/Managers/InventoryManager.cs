@@ -122,4 +122,23 @@ public class InventoryManager : SingletonBehaviour<InventoryManager>
             b_Slots[i].gameObject.SetActive(!b_Slots[i].IsEmpty());
         }
     }
+
+    public void LoadInventory(List<string> itemNames)
+    {
+        foreach (var name in itemNames)
+        {
+            ItemData data = ItemDatabase.GetItem(name);
+            AddItemToSlot(data);
+        }
+    }
+    public void AddItemToSlot(ItemData data)
+    {
+        ItemSlot empty = FindEmptySlot();
+        if (empty != null)
+            empty.SetItem(data);
+
+        ItemSlot bEmpty = FindEmptyBattleSlot();
+        if (bEmpty != null)
+            bEmpty.SetItem(data);
+    }
 }

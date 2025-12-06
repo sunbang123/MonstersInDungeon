@@ -10,37 +10,31 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Scenes
+  m_Name: Prefabs
   m_EditorClassIdentifier: 
-  m_GroupName: Scenes
+  m_GroupName: Prefabs
   m_Data:
     m_SerializedData: []
-  m_GUID: 4325f2c536a95ac4b955c3f38065676f
+  m_GUID: e8a91a1db51e72b498ad9495fe96ec47
   m_SerializeEntries:
-  - m_GUID: 2cda990e2423bbf4892e6590ba056729
-    m_Address: Lobby.unity
+  - m_GUID: b6c86ad1da796044c9e3be7cbf90c225
+    m_Address: RedCrystal.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Scene
-  - m_GUID: 9752ac4e2dd678741a5524f0769ace01
-    m_Address: InGameStory.unity
+    - Item
+  - m_GUID: c4ebce43adbc0c94aa60227c81658f88
+    m_Address: WarnTrigger.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Scene
     - Tutorial
-  - m_GUID: bf05786968e44dc4fa6e026aebf24023
-    m_Address: Title.unity
+  - m_GUID: 999e31edc912be647bee0e3a7bd331e1
+    m_Address: TutorialBridge.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Scene
-  - m_GUID: f24d8f4069f7f774cbb49d71b6dc823e
-    m_Address: InGame.unity
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Scene
+    - Tutorial
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 54ebaec88757d7249babc70c251f28d2, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: f3521d9715c7bd649a3af32d96ed3dd5, type: 2}
-    - {fileID: 11400000, guid: 3294fed2fda15b944bc4c1390b780d0c, type: 2}
+    - {fileID: 11400000, guid: acbbecf5148372e45b0c05a9c4fc639f, type: 2}
+    - {fileID: 11400000, guid: e56df72b198ae354e9c4a959586f9b30, type: 2}
