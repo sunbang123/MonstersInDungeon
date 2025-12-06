@@ -1,18 +1,44 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ItemSlot : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private Image itemImage;
+    private ItemData currentItem;
+
+    public void Initialize()
     {
-        
+        Image[] images = GetComponentsInChildren<Image>();
+        for (int i = 0; i < images.Length; i++)
+        {
+            if (images[i].gameObject != gameObject)
+            {
+                itemImage = images[i];
+                break;
+            }
+        }
+        Clear();
     }
 
-    // Update is called once per frame
-    void Update()
+    public bool IsEmpty() => currentItem == null;
+
+    public void SetItem(ItemData itemData)
     {
-        
+        currentItem = itemData;
+        if (itemImage != null)
+        {
+            itemImage.sprite = itemData.itemImage;
+            itemImage.enabled = true;
+        }
+    }
+
+    public void Clear()
+    {
+        currentItem = null;
+        if (itemImage != null)
+        {
+            itemImage.sprite = null;
+            itemImage.enabled = false;
+        }
     }
 }

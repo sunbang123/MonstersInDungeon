@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Apple
   itemImage: {fileID: -2003004324, guid: 5edc8cf08e46bda4198daa14b45ba813, type: 3}
+  StatName: Heal
+  StatValue: 10

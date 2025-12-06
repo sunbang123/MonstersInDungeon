@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 3588343456825906904}
   - component: {fileID: 3588343456825906905}
   - component: {fileID: 3588343456825906854}
-  - component: {fileID: 3588343456825906855}
+  - component: {fileID: 851555369923561004}
   m_Layer: 5
   m_Name: ItemSlot
   m_TagString: Untagged
@@ -215,7 +215,7 @@ MonoBehaviour:
   m_EffectColor: {r: 1, g: 1, b: 1, a: 1}
   m_EffectDistance: {x: 2, y: -2}
   m_UseGraphicAlpha: 1
---- !u!114 &3588343456825906855
+--- !u!114 &851555369923561004
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -224,6 +224,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 4095831288940922676}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71006cf387627b047930ffe6c1771a14, type: 3}
+  m_Script: {fileID: 11500000, guid: 96b01af40e2fc514b80615e561333357, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

@@ -10,6 +10,7 @@ public class ItemData : ScriptableObject
 
     public Sprite itemImage;
 
-    public int healAmount;
+    public string StatName;
 
+    public int StatValue;
 }

@@ -1,32 +1,71 @@
-using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class InventoryManager : SingletonBehaviour<InventoryManager>
 {
     [Header("Inventory Settings")]
-    [SerializeField] private Transform itemSlotParent; // ItemSlot들이 배치될 부모 오브젝트
-    [SerializeField] private GameObject itemSlotPrefab; // ItemSlot 프리팹
-    [SerializeField] private int maxSlots = 20; // 최대 슬롯 개수
+    [SerializeField] private Transform itemSlotParent;
+    [SerializeField] private GameObject itemSlotPrefab;
+    [SerializeField] private int maxSlots = 20;
 
-    private List<ItemData> items = new List<ItemData>(); // 인벤토리에 담긴 아이템들
+    [Header("Inventory Data Settings")]
+    [SerializeField] private TextMeshProUGUI ItemName;
+    [SerializeField] private TextMeshProUGUI ItemDescription;
+    [SerializeField] private TextMeshProUGUI StatName;
+    [SerializeField] private TextMeshProUGUI StatValue;
 
-    // 
+    private List<ItemData> items = new List<ItemData>();
+    private List<ItemSlot> slots = new List<ItemSlot>();
+
+    private void Start()
+    {
+        InitializeSlots();
+    }
+
+    private void InitializeSlots()
+    {
+        for (int i = 0; i < maxSlots; i++)
+        {
+            GameObject slotObj = Instantiate(itemSlotPrefab, itemSlotParent);
+            ItemSlot slot = slotObj.AddComponent<ItemSlot>();
+            slot.Initialize();
+            slots.Add(slot);
+        }
+    }
+
     public void PickUpItem()
     {
-        Item[] items = FindObjectsOfType<Item>();
-
-        foreach (Item item in items)
+        Item[] foundItems = FindObjectsOfType<Item>();
+        for (int i = 0; i < foundItems.Length; i++)
         {
-            if (item.IsPlayerNear())
-            { 
-                item.DestroyItem();
-            }
+            TryPickUpItem(foundItems[i]);
+        }
+    }
+
+    private void TryPickUpItem(Item item)
+    {
+        if (item == null || !item.IsPlayerNear() || item.IData == null) return;
+
+        ItemSlot emptySlot = FindEmptySlot();
+        if (emptySlot == null)
+        {
+            Debug.Log("인벤토리가 가득 찼습니다!");
+            return;
         }
 
-        // 아이템을 인벤토리에 추가하는 로직 구현 필요
-        // itemSlotParent 아래에 itemSlotPrefab을 인스턴스화하고,
-        // 해당 슬롯에 아이템 정보를 설정하는 코드를 작성해야 합니다.
+        items.Add(item.IData);
+        emptySlot.SetItem(item.IData);
+        item.DestroyItem();
+    }
+
+    private ItemSlot FindEmptySlot()
+    {
+        for (int i = 0; i < slots.Count; i++)
+        {
+            if (slots[i].IsEmpty()) return slots[i];
+        }
+        return null;
     }
 }
