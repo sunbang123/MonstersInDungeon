@@ -24,6 +24,9 @@ public class Player : Unit
 
     void Start()
     {
+        var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
+        transform.position = data.Position;
+
         // 초기값 설정
         playerHp = Mathf.Clamp(playerHp, 0f, maxHp);
         playerPp = Mathf.Clamp(playerPp, 0f, maxMp);
@@ -39,7 +42,13 @@ public class Player : Unit
     // Unit 클래스의 추상 메서드 구현
     protected override float GetCurrentHp() => playerHp;
     protected override float GetMaxHp() => maxHp;
-    protected override void SetCurrentHp(float value) => playerHp = value;
+    protected override void SetCurrentHp(float value)
+    {
+        playerHp = value;
+        var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
+        data.HP = playerHp;
+    }
+
     protected override void InvokeHealthChanged(float current, float max)
         => OnHealthChanged?.Invoke(current, max);
     protected override void InvokeDeath() => OnPlayerDeath?.Invoke();

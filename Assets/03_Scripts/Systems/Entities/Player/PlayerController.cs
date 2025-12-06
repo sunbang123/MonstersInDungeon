@@ -8,6 +8,7 @@ public enum MovementMode
     Walk,
     Run
 }
+
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private JoyStickController virtualJoystick;

@@ -31,6 +31,11 @@ public class LobbyManager : MonoBehaviour
     public void OnClickNewGame()
     {
         PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
+
+        // UserDataManager의 기본값 다시 로드
+        UserDataManager.Instance.LoadUserData();
+
         Debug.Log("New Game Start");
         // 새 게임 로직 실행
         LoadInGameScene();

@@ -165,6 +165,8 @@ public class BattleUIController : MonoBehaviour
             playerHealthSlider.maxValue = maxHp;
             playerHealthSlider.value = currentHp;
         }
+        var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
+        data.HP = currentHp;
     }
     public void UpdateEnemyHealthSlider(float currentHp, float maxHp)
     {

@@ -10,6 +10,10 @@ public class TutorialCanvas : TutorialBehaviour
 
     private void Start()
     {
+        base.Start();
+
+        if(this == null) return;
+
         // 1)맨 위로 올리기
         transform.SetAsLastSibling();
 

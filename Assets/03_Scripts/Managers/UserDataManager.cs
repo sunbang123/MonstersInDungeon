@@ -13,10 +13,10 @@ public class UserDataManager : SingletonBehaviour<UserDataManager>
         // 기존 데이터
         UserDataList.Add(new UserSettingsData());
         UserDataList.Add(new UserGoodsData());
-
-        // 새로 추가할 데이터
         UserDataList.Add(new UserPlayerStatusData());
         UserDataList.Add(new UserInventoryData());
+
+        LoadUserData();
     }
     public T Get<T>() where T : class, IUserData
     {

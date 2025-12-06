@@ -14,6 +14,11 @@ public class PlayerInteraction : MonoBehaviour
     public Button pickUpButton;
     public Button runButton;
     public Button inventoryButton;
+    public Button questButton;
+
+    [Header("Quest")]
+    public GameObject questCanvas;
+    public GameObject newQuestText;
 
     private PlayerController _controll;
 
@@ -61,6 +66,26 @@ public class PlayerInteraction : MonoBehaviour
         {
             _controll.OnMovementModeChanged += UpdateRunButtonText;
         }
+
+        if (questButton != null)
+        {
+            questButton.onClick.AddListener(ToggleQuestPanel);
+        }
+
+        if (newQuestText != null)
+        {
+            newQuestText.gameObject.SetActive(true);
+        }
+    }
+
+    private void Start()
+    {
+        var status = UserDataManager.Instance.Get<UserPlayerStatusData>();
+
+        if (status != null && status.TutorialEnd)
+        {
+            Destroy(newQuestText);
+        }
     }
     private void OnDestroy()
     {
@@ -105,6 +130,17 @@ public class PlayerInteraction : MonoBehaviour
 
         _controll.SetMovementMode(newMode);
         // UpdateRunButtonText(newMode);
+    }
+    public void ToggleQuestPanel()
+    {
+        if (questCanvas == null) return;
+
+        // 퀘스트 버튼을 처음 클릭한 순간 newQuestText를 끔
+        if (newQuestText != null && newQuestText.activeSelf)
+            newQuestText.SetActive(false);
+
+        bool isActive = questCanvas.activeSelf;
+        questCanvas.SetActive(!isActive);
     }
 
     public void SetMovementMode(MovementMode mode)
