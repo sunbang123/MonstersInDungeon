@@ -16,12 +16,20 @@ public class InventoryManager : SingletonBehaviour<InventoryManager>
     [SerializeField] private TextMeshProUGUI StatName;
     [SerializeField] private TextMeshProUGUI StatValue;
 
+    [Header("Battle Inventory Settings")]
+    [SerializeField] private Transform b_ItemSlotParent;
+    [SerializeField] private GameObject b_ItemSlotPrefab;
+    [SerializeField] private int b_MaxSlots = 20;
+
     private List<ItemData> items = new List<ItemData>();
     private List<ItemSlot> slots = new List<ItemSlot>();
+    private List<ItemSlot> b_Slots = new List<ItemSlot>();
 
     private void Start()
     {
         InitializeSlots();
+        InitializeBattleSlots();
+        UpdateSlotVisibility();
     }
 
     private void InitializeSlots()
@@ -32,6 +40,17 @@ public class InventoryManager : SingletonBehaviour<InventoryManager>
             ItemSlot slot = slotObj.AddComponent<ItemSlot>();
             slot.Initialize();
             slots.Add(slot);
+        }
+    }
+
+    private void InitializeBattleSlots()
+    {
+        for (int i = 0; i < b_MaxSlots; i++)
+        {
+            GameObject slotObj = Instantiate(b_ItemSlotPrefab, b_ItemSlotParent);
+            ItemSlot slot = slotObj.AddComponent<ItemSlot>();
+            slot.Initialize();
+            b_Slots.Add(slot);
         }
     }
 
@@ -57,7 +76,18 @@ public class InventoryManager : SingletonBehaviour<InventoryManager>
 
         items.Add(item.IData);
         emptySlot.SetItem(item.IData);
+
+        // 배틀 인벤토리에도 동기화
+        ItemSlot b_EmptySlot = FindEmptyBattleSlot();
+        if (b_EmptySlot != null)
+        {
+            b_EmptySlot.SetItem(item.IData);
+        }
+
         item.DestroyItem();
+
+        // 슬롯 가시성 업데이트
+        UpdateSlotVisibility();
     }
 
     private ItemSlot FindEmptySlot()
@@ -67,5 +97,29 @@ public class InventoryManager : SingletonBehaviour<InventoryManager>
             if (slots[i].IsEmpty()) return slots[i];
         }
         return null;
+    }
+
+    private ItemSlot FindEmptyBattleSlot()
+    {
+        for (int i = 0; i < b_Slots.Count; i++)
+        {
+            if (b_Slots[i].IsEmpty()) return b_Slots[i];
+        }
+        return null;
+    }
+
+    private void UpdateSlotVisibility()
+    {
+        // 일반 인벤토리 슬롯 가시성 업데이트
+        for (int i = 0; i < slots.Count; i++)
+        {
+            slots[i].gameObject.SetActive(!slots[i].IsEmpty());
+        }
+
+        // 배틀 인벤토리 슬롯 가시성 업데이트
+        for (int i = 0; i < b_Slots.Count; i++)
+        {
+            b_Slots[i].gameObject.SetActive(!b_Slots[i].IsEmpty());
+        }
     }
 }

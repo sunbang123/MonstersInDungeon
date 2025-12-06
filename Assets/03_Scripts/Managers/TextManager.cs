@@ -1,44 +1,306 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+enum StoryState
+{
+    STORY,
+    SELECT
+}
+
+enum SelectState
+{
+    FIRE,
+    WATER,
+    PLANT
+}
+
 public class TextManager : MonoBehaviour
 {
-    public Text dasa;
-    public GameObject obFade;
-    int dasaCount = 0;
-    // Start is called before the first frame update
-    List<Dictionary<string, object>> data ;
+    [Header("UI References")]
+    [SerializeField] private TextMeshProUGUI dialog;
+    [SerializeField] private GameObject obFade;
+    [SerializeField] private Image backgroundImage;
+    [SerializeField] private GameObject selectPanel;
+    [SerializeField] private GameObject dialogPanel;
 
-    public Animator witch;
+    [Header("Story Settings")]
+    [SerializeField] private List<string> storyFiles = new List<string> { "story001", "story002" };
+    [SerializeField] private List<Sprite> backgroundSprites;
+    [SerializeField] private string nextSceneName;
+
+    [Header("Select Settings")]
+    [SerializeField] private TextMeshProUGUI itemInfoTxt;
+    [SerializeField] private List<GameObject> selectCursorPrefab;
+    [SerializeField] private List<string> infoFiles = new List<string> { "info_fire", "info_water", "info_plant" };
+    [SerializeField] private List<string> selectFiles = new List<string> { "story_fire", "story_water", "story_plant" };
+    [SerializeField] private List<Sprite> selectBgSprites;
+
+    private List<Dictionary<string, object>> currentData;
+    private int dialogIndex = 0;
+    private int storyIndex = 0;
+    private bool isTransitioning = false;
+    private StoryState currentState = StoryState.STORY;
+    private bool isPostSelectionStory = false;
+    private int currentSelectionIndex = 0;
 
     void Start()
     {
-        StartCoroutine("FadeAction");
-        data = CSVReader.Read("story");
-        dasa.text = data[dasaCount]["이름"] + " : " + data[dasaCount]["대사"];
-        dasaCount++;
+        StartCoroutine(FadeIn());
+        LoadCurrentStory();
+        selectPanel.SetActive(false);
+        itemInfoTxt.text = "";
+
+        foreach (var cursor in selectCursorPrefab)
+        {
+            if (cursor != null) cursor.SetActive(false);
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !isTransitioning && currentState == StoryState.STORY)
         {
-            if(dasaCount<data.Count)
+            HandleDialogueProgression();
+        }
+    }
+
+    private void HandleDialogueProgression()
+    {
+        if (HasMoreDialogue())
+        {
+            ShowNextDialogue();
+            return;
+        }
+
+        if (!isPostSelectionStory && storyIndex == storyFiles.Count - 1)
+        {
+            ActivateSelection();
+            return;
+        }
+
+        if (!isPostSelectionStory && HasMoreStories())
+        {
+            StartCoroutine(TransitionToNextStory());
+            return;
+        }
+
+        StartCoroutine(EndStory());
+    }
+
+    private bool HasMoreDialogue() => currentData != null && dialogIndex < currentData.Count;
+    private bool HasMoreStories() => storyIndex + 1 < storyFiles.Count;
+
+    private void SetState(StoryState newState)
+    {
+        currentState = newState;
+
+        dialogPanel.SetActive(currentState == StoryState.STORY);
+        selectPanel.SetActive(currentState == StoryState.SELECT);
+
+        if (currentState == StoryState.STORY && itemInfoTxt != null)
+        {
+            itemInfoTxt.text = "";
+            foreach (var cursor in selectCursorPrefab)
             {
-                dasa.text = data[dasaCount]["이름"] + " : " + data[dasaCount]["대사"];
-                witch.SetTrigger("tell");
-                dasaCount++;
+                if (cursor != null) cursor.SetActive(false);
+            }
+        }
+    }
+
+    private void ShowNextDialogue()
+    {
+        var currentLine = currentData[dialogIndex];
+        dialog.text = $"{currentLine["이름"]} : {currentLine["대사"]}";
+        dialogIndex++;
+    }
+
+    private void LoadCurrentStory(string fileName = null, Sprite newBackground = null)
+    {
+        string fileToLoad = fileName ?? storyFiles[storyIndex];
+        dialogIndex = 0;
+        currentData = CSVReader.Read(fileToLoad);
+        UpdateBackground(newBackground);
+
+        if (currentData != null && currentData.Count > 0)
+        {
+            ShowNextDialogue();
+        }
+        SetState(StoryState.STORY);
+    }
+
+    private void UpdateBackground(Sprite newSprite = null)
+    {
+        if (backgroundImage == null) return;
+        if (newSprite != null)
+        {
+            backgroundImage.sprite = newSprite;
+        }
+        else if (backgroundSprites != null && storyIndex < backgroundSprites.Count)
+        {
+            backgroundImage.sprite = backgroundSprites[storyIndex];
+        }
+    }
+
+    private void ActivateSelection()
+    {
+        SetState(StoryState.SELECT);
+        currentSelectionIndex = 0;
+        SetSelectionIndex(currentSelectionIndex);
+    }
+
+    private void UpdateSelectionUI(int index)
+    {
+        if (itemInfoTxt == null || index < 0 || index >= selectCursorPrefab.Count) return;
+
+        for (int i = 0; i < selectCursorPrefab.Count; i++)
+        {
+            if (selectCursorPrefab[i] != null)
+            {
+                selectCursorPrefab[i].SetActive(i == index);
+            }
+        }
+
+        if (index < infoFiles.Count)
+        {
+            string infoFileName = infoFiles[index];
+            List<Dictionary<string, object>> infoData = CSVReader.Read(infoFileName);
+
+            if (infoData != null && infoData.Count > 0)
+            {
+                string infoKey = "설명";
+                string displayText = "";
+
+                foreach (var row in infoData)
+                {
+                    if (row.ContainsKey(infoKey) && row[infoKey] is string content)
+                    {
+                        displayText += content + "\n";
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(displayText))
+                {
+                    itemInfoTxt.text = displayText.TrimEnd('\n');
+                }
+                else
+                {
+                    itemInfoTxt.text = $"[경고] {infoFileName} 파일에서 '{infoKey}' 키의 내용을 찾을 수 없습니다.";
+                }
             }
             else
             {
-                StartCoroutine("FadeAction2");
-                
-            }            
+                itemInfoTxt.text = $"[오류] {infoFileName} 파일을 불러오는 데 실패했습니다.";
+            }
+        }
+        else
+        {
+            itemInfoTxt.text = "원소를 선택하여 정보를 확인하세요.";
+        }
+    }
+
+    private void SetSelectionIndex(int index)
+    {
+        if (currentState != StoryState.SELECT || isTransitioning) return;
+        if (index < 0 || index >= selectFiles.Count) return;
+
+        currentSelectionIndex = index;
+        UpdateSelectionUI(currentSelectionIndex);
+    }
+
+    public void SelectNextElement()
+    {
+        int totalElements = selectFiles.Count;
+        if (totalElements == 0) return;
+
+        int nextIndex = (currentSelectionIndex + 1) % totalElements;
+        SetSelectionIndex(nextIndex);
+    }
+
+    // 최종 선택 확정 함수: 매개변수를 받지 않고 현재 포커스 인덱스를 사용
+    public void OnSelectionMade()
+    {
+        int index = currentSelectionIndex; // 현재 포커스된 인덱스 사용
+
+        if (currentState != StoryState.SELECT || isTransitioning) return;
+        if (index < 0 || index >= selectFiles.Count) return;
+
+        isPostSelectionStory = true;
+
+        string selectedStoryFile = selectFiles[index];
+        Sprite selectedBg = selectBgSprites[index];
+
+        StartCoroutine(TransitionToNewStory(selectedStoryFile, selectedBg));
+    }
+
+    private IEnumerator TransitionToNextStory()
+    {
+        isTransitioning = true;
+        yield return StartCoroutine(FadeOut());
+
+        storyIndex++;
+        LoadCurrentStory();
+
+        yield return new WaitForSeconds(0.3f);
+        yield return StartCoroutine(FadeIn());
+
+        isTransitioning = false;
+    }
+
+    private IEnumerator TransitionToNewStory(string fileName, Sprite newBackground)
+    {
+        isTransitioning = true;
+        SetState(StoryState.STORY);
+
+        yield return StartCoroutine(FadeOut());
+
+        LoadCurrentStory(fileName, newBackground);
+
+        yield return new WaitForSeconds(0.3f);
+        yield return StartCoroutine(FadeIn());
+
+        isTransitioning = false;
+    }
+
+    private IEnumerator EndStory()
+    {
+        isTransitioning = true;
+        yield return StartCoroutine(FadeOut());
+
+        if (!string.IsNullOrEmpty(nextSceneName))
+        {
+            SceneManager.LoadScene(nextSceneName);
+        }
+    }
+
+    private IEnumerator FadeIn()
+    {
+        yield return StartCoroutine(Fade(1f, 0f));
+        obFade.SetActive(false);
+    }
+
+    private IEnumerator FadeOut()
+    {
+        obFade.SetActive(true);
+        yield return StartCoroutine(Fade(0f, 1f));
+    }
+
+    private IEnumerator Fade(float from, float to)
+    {
+        Image fadeImage = obFade.GetComponent<Image>();
+        Color color = fadeImage.color;
+
+        for (float t = 0; t < 1f; t += Time.deltaTime * 2f)
+        {
+            color.a = Mathf.Lerp(from, to, t);
+            fadeImage.color = color;
+            yield return null;
         }
 
+        color.a = to;
+        fadeImage.color = color;
     }
 }
