@@ -12,32 +12,49 @@ public class LobbyManager : MonoBehaviour
 
     private void Start()
     {
-        // PlayerData 존재 여부 확인
-        bool hasPlayerData = PlayerPrefs.HasKey("PlayerStatus");
-
+        // UserDataManager가 초기화되었는지 확인
+        if (UserDataManager.Instance == null)
+        {
+            Debug.LogError("UserDataManager가 초기화되지 않았습니다!");
+            return;
+        }
+        // 저장된 데이터 존재 여부로 Continue 버튼 활성화
+        bool hasPlayerData = UserDataManager.Instance.ExistsSavedData;
         ContinueButton.interactable = hasPlayerData;
         NewGameButton.interactable = true;
         OptionButton.interactable = true;
+
+        Debug.Log($"로비 초기화: 저장된 데이터 존재 = {hasPlayerData}");
     }
 
     public void OnClickContinue()
     {
-        // 이미 TitleManager가 데이터 로드 후 씬을 활성화했으므로
-        // Continue는 그냥 게임 시작
+        if (UserDataManager.Instance == null)
+        {
+            Debug.LogError("UserDataManager를 찾을 수 없습니다!");
+            return;
+        }
+
         Debug.Log("Continue Game");
         LoadInGameScene();
     }
 
     public void OnClickNewGame()
     {
-        PlayerPrefs.DeleteAll();
-        PlayerPrefs.Save();
+        if (UserDataManager.Instance == null)
+        {
+            Debug.LogError("UserDataManager를 찾을 수 없습니다!");
+            return;
+        }
 
-        // UserDataManager의 기본값 다시 로드
-        UserDataManager.Instance.LoadUserData();
+        Debug.Log("NewGame 클릭됨");
 
-        Debug.Log("New Game Start");
-        // 새 게임 로직 실행
+        // StartNewGame 메서드로 데이터 초기화
+        UserDataManager.Instance.StartNewGame();
+
+        Debug.Log("NewGame 이후 TutorialEnd: " +
+            UserDataManager.Instance.Get<UserPlayerStatusData>()?.TutorialEnd);
+
         LoadInGameScene();
     }
 

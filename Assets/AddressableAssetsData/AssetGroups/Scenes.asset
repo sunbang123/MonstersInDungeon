@@ -18,23 +18,23 @@ MonoBehaviour:
   m_GUID: 4325f2c536a95ac4b955c3f38065676f
   m_SerializeEntries:
   - m_GUID: 2cda990e2423bbf4892e6590ba056729
-    m_Address: Lobby.unity
+    m_Address: Lobby
     m_ReadOnly: 0
     m_SerializedLabels:
     - Scene
   - m_GUID: 9752ac4e2dd678741a5524f0769ace01
-    m_Address: InGameStory.unity
+    m_Address: InGameStory
     m_ReadOnly: 0
     m_SerializedLabels:
     - Scene
     - Tutorial
   - m_GUID: bf05786968e44dc4fa6e026aebf24023
-    m_Address: Title.unity
+    m_Address: Title
     m_ReadOnly: 0
     m_SerializedLabels:
     - Scene
   - m_GUID: f24d8f4069f7f774cbb49d71b6dc823e
-    m_Address: InGame.unity
+    m_Address: InGame
     m_ReadOnly: 0
     m_SerializedLabels:
     - Scene

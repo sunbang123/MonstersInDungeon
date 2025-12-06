@@ -5,6 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 1
+    path: Assets/04_Scenes/BootScene.unity
+    guid: 7ce4775dbd0d68e41968edea4521fb0c
   - enabled: 0
     path: Assets/04_Scenes/Title.unity
     guid: bf05786968e44dc4fa6e026aebf24023
@@ -12,10 +15,10 @@ EditorBuildSettings:
     path: Assets/04_Scenes/Lobby.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 0
-    path: Assets/04_Scenes/InGameStory.unity
-    guid: 9752ac4e2dd678741a5524f0769ace01
-  - enabled: 0
     path: Assets/04_Scenes/InGame.unity
     guid: f24d8f4069f7f774cbb49d71b6dc823e
+  - enabled: 0
+    path: Assets/04_Scenes/InGameStory.unity
+    guid: 9752ac4e2dd678741a5524f0769ace01
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: aee8167bc576027438c9dcfa877cbd2e, type: 2}

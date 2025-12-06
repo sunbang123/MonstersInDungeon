@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 enum OptionButton
@@ -13,8 +16,9 @@ enum OptionButton
 public class OptionController : MonoBehaviour
 {
     private List<Button> buttons = new List<Button>();
+
     [Header("Addressable Settings")]
-    public AssetReference LobbySceneReference; // Addressable 씬을 직접 드래그
+    public AssetReference LobbySceneReference;
 
     private void Awake()
     {
@@ -35,28 +39,96 @@ public class OptionController : MonoBehaviour
         {
             case OptionButton.Save:
                 Debug.Log("저장 기능 실행");
-
-                var player = FindObjectOfType<Player>();
-                if (player != null)
-                {
-                    var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
-                    data.Position = player.transform.position;
-                    data.HP = player.playerHp; // HP도 같이 저장하고 싶으면
-                }
-
-                UserDataManager.Instance.SaveUserData();
-                Debug.Log("Saved HP: " + PlayerPrefs.GetFloat("PlayerHP"));
+                SaveGame();
                 break;
 
             case OptionButton.ToLobby:
                 Debug.Log("로비로 이동");
-                Addressables.LoadSceneAsync(LobbySceneReference);
+                LoadLobbyScene();
                 break;
 
             case OptionButton.Quit:
                 Debug.Log("게임 종료");
                 Application.Quit();
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#endif
                 break;
+        }
+    }
+
+    private void SaveGame()
+    {
+        if (UserDataManager.Instance == null)
+        {
+            Debug.LogError("UserDataManager.Instance가 null입니다!");
+            return;
+        }
+
+        var player = FindObjectOfType<Player>();
+        if (player != null)
+        {
+            var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
+            if (data != null)
+            {
+                data.Position = player.transform.position;
+                data.HP = player.playerHp;
+            }
+        }
+
+        UserDataManager.Instance.SaveUserData();
+        Debug.Log("Saved HP: " + PlayerPrefs.GetFloat("PlayerHP"));
+    }
+
+    private void LoadLobbyScene()
+    {
+        // 현재 InGame 씬을 언로드하고, 로비 씬을 로드
+        // 이 방법은 DontDestroyOnLoad 오브젝트를 유지합니다
+        StartCoroutine(LoadLobbySceneCoroutine());
+    }
+
+    private System.Collections.IEnumerator LoadLobbySceneCoroutine()
+    {
+        // 1. 현재 씬 이름 저장
+        var currentScene = SceneManager.GetActiveScene();
+        Debug.Log($"현재 씬 언로드 시작: {currentScene.name}");
+
+        // 2. 로비 씬 로드
+        var loadHandle = Addressables.LoadSceneAsync(
+            LobbySceneReference,
+            LoadSceneMode.Single,
+            activateOnLoad: true
+        );
+
+        yield return loadHandle;
+
+        if (loadHandle.Status == AsyncOperationStatus.Succeeded)
+        {
+            Debug.Log("로비 씬 로드 완료 (Additive)");
+
+            // 3. 새 씬을 활성 씬으로 설정
+            var lobbyScene = loadHandle.Result.Scene;
+            SceneManager.SetActiveScene(lobbyScene);
+
+            // 4. 이전 InGame 씬 언로드
+            var unloadOp = SceneManager.UnloadSceneAsync(currentScene);
+            yield return unloadOp;
+
+            Debug.Log("이전 씬 언로드 완료");
+
+            // 5. UserDataManager 확인
+            if (UserDataManager.Instance != null)
+            {
+                Debug.Log("UserDataManager 정상 유지됨!");
+            }
+            else
+            {
+                Debug.LogError("씬 전환 후에도 UserDataManager가 사라졌습니다!");
+            }
+        }
+        else
+        {
+            Debug.LogError($"로비 씬 로드 실패: {loadHandle.OperationException}");
         }
     }
 }

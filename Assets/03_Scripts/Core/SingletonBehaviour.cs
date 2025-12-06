@@ -15,8 +15,8 @@ public class SingletonBehaviour<T> : MonoBehaviour where T : SingletonBehaviour<
 
     private void Awake()
     {
-        Init();
-    }
+            Init();
+        }
 
     // 가상 함수
     // 이 [SingletonBehaviour]클래스를 상속해서 만드는 클래스들이
