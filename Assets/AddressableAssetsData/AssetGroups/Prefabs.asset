@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Prefabs
+  m_EditorClassIdentifier: 
+  m_GroupName: Prefabs
+  m_Data:
+    m_SerializedData: []
+  m_GUID: e8a91a1db51e72b498ad9495fe96ec47
+  m_SerializeEntries:
+  - m_GUID: b6c86ad1da796044c9e3be7cbf90c225
+    m_Address: RedCrystal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+  - m_GUID: c4ebce43adbc0c94aa60227c81658f88
+    m_Address: WarnTrigger.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tutorial
+  - m_GUID: 999e31edc912be647bee0e3a7bd331e1
+    m_Address: TutorialBridge.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tutorial
+  - m_GUID: 8b35e0f63aa978f4eaedd989d698c19e
+    m_Address: QuestSlot.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Tutorial
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 54ebaec88757d7249babc70c251f28d2, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: acbbecf5148372e45b0c05a9c4fc639f, type: 2}
+    - {fileID: 11400000, guid: e56df72b198ae354e9c4a959586f9b30, type: 2}

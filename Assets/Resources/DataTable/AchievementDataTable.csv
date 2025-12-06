@@ -1,0 +1,5 @@
+﻿achievement_type,achievement_name,achievement_goal,achievement_reward_type,achievement_reward_amount
+CollectGold,"Collect 1,000 Golds",1000,Gem,10
+ClearChapter1,Clear Chapter 1,1,Gold,100
+ClearChapter2,Clear Chapter 2,1,Gold,200
+ClearChapter3,Clear Chapter 3,1,Gold,300
