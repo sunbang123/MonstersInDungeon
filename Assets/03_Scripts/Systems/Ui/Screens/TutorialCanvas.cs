@@ -8,13 +8,16 @@ public class TutorialCanvas : TutorialBehaviour
 
     private CanvasGroup cg;
 
-    private void Start()
+    protected override IEnumerator Start()
     {
-        base.Start();
+        // 부모 Start() 먼저 실행 (TutorialEnd 체크)
+        yield return StartCoroutine(base.Start());
 
-        if(this == null) return;
+        // 부모가 Destroy(gameObject)를 했으면 여기서 종료
+        if (this == null)
+            yield break;
 
-        // 1)맨 위로 올리기
+        // 1) 맨 위로 올리기
         transform.SetAsLastSibling();
 
         // 2) 페이드 인 준비
@@ -23,7 +26,7 @@ public class TutorialCanvas : TutorialBehaviour
         cg.alpha = 0f;
 
         // 3) 페이드 인 시작
-        StartCoroutine(FadeIn());
+        yield return StartCoroutine(FadeIn());
     }
 
     private IEnumerator FadeIn()

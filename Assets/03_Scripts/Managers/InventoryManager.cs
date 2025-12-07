@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryManager : SingletonBehaviour<InventoryManager>
+public class InventoryManager : MonoBehaviour
 {
     [Header("Inventory Settings")]
     [SerializeField] private Transform itemSlotParent;
@@ -24,6 +24,26 @@ public class InventoryManager : SingletonBehaviour<InventoryManager>
     private List<ItemData> items = new List<ItemData>();
     private List<ItemSlot> slots = new List<ItemSlot>();
     private List<ItemSlot> b_Slots = new List<ItemSlot>();
+
+    // 이 클래스와 스태틱 인스턴스 변수
+    protected static InventoryManager m_Instance;
+
+    public static InventoryManager Instance
+    {
+        get { return m_Instance; }
+    }
+
+    protected void Awake()
+    {
+        Init();
+    }
+    protected void Init()
+    {
+        if (m_Instance == null)
+        {
+            m_Instance = (InventoryManager)this;
+        }
+    }
 
     private void Start()
     {

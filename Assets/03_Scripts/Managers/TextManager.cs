@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
+using System;
 
 enum StoryState
 {
@@ -271,20 +272,43 @@ public class TextManager : MonoBehaviour
 
     private IEnumerator EndStory()
     {
+        int index = currentSelectionIndex;
+
         isTransitioning = true;
         yield return StartCoroutine(FadeOut());
 
-        // UserPlayerStatusData에 TutorialEnd = true 저장
+        // UserPlayerStatusData 가져오기
         var status = UserDataManager.Instance.Get<UserPlayerStatusData>();
-        status.TutorialEnd = true;
-        UserDataManager.Instance.SaveUserData();
+        if (status != null)
+        {
+            // 선택한 원소 저장
+            switch (index)
+            {
+                case 0: status.SelectedElement = "FIRE"; break;
+                case 1: status.SelectedElement = "WATER"; break;
+                case 2: status.SelectedElement = "PLANT"; break;
+            }
 
-        // Addressables 씬 로드
+            // 튜토리얼 종료 저장
+            status.TutorialEnd = true;
+
+            // 한 번만 저장
+            UserDataManager.Instance.SaveUserData();
+
+            Debug.Log($"튜토리얼 종료! 선택: {status.SelectedElement}, TutorialEnd: {status.TutorialEnd}");
+        }
+        else
+        {
+            Debug.LogError("UserPlayerStatusData is NULL");
+        }
+
+        // 다음 씬 로드
         if (nextSceneReference != null)
         {
             nextSceneReference.LoadSceneAsync(UnityEngine.SceneManagement.LoadSceneMode.Single);
         }
     }
+
 
 
     private IEnumerator FadeIn()
