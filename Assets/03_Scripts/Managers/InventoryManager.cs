@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryManager : SingletonBehaviour<InventoryManager>
+public class InventoryManager : MonoBehaviour
 {
     [Header("Inventory Settings")]
     [SerializeField] private Transform itemSlotParent;
@@ -24,6 +24,26 @@ public class InventoryManager : SingletonBehaviour<InventoryManager>
     private List<ItemData> items = new List<ItemData>();
     private List<ItemSlot> slots = new List<ItemSlot>();
     private List<ItemSlot> b_Slots = new List<ItemSlot>();
+
+    // ì´ í´ë˜ìŠ¤ì™€ ìŠ¤íƒœí‹± ì¸ìŠ¤í„´ìŠ¤ ë³€ìˆ˜
+    protected static InventoryManager m_Instance;
+
+    public static InventoryManager Instance
+    {
+        get { return m_Instance; }
+    }
+
+    protected void Awake()
+    {
+        Init();
+    }
+    protected void Init()
+    {
+        if (m_Instance == null)
+        {
+            m_Instance = (InventoryManager)this;
+        }
+    }
 
     private void Start()
     {
@@ -70,14 +90,14 @@ public class InventoryManager : SingletonBehaviour<InventoryManager>
         ItemSlot emptySlot = FindEmptySlot();
         if (emptySlot == null)
         {
-            Debug.Log("ÀÎº¥Åä¸®°¡ °¡µæ Ã¡½À´Ï´Ù!");
+            Debug.Log("ï¿½Îºï¿½ï¿½ä¸®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¡ï¿½ï¿½ï¿½Ï´ï¿½!");
             return;
         }
 
         items.Add(item.IData);
         emptySlot.SetItem(item.IData);
 
-        // ¹èÆ² ÀÎº¥Åä¸®¿¡µµ µ¿±âÈ­
+        // ë°°í‹€ ì¸ë²¤í† ë¦¬ì—ë„ ë™ê¸°í™”
         ItemSlot b_EmptySlot = FindEmptyBattleSlot();
         if (b_EmptySlot != null)
         {
@@ -86,7 +106,7 @@ public class InventoryManager : SingletonBehaviour<InventoryManager>
 
         item.DestroyItem();
 
-        // ½½·Ô °¡½Ã¼º ¾÷µ¥ÀÌÆ®
+        // ìŠ¬ë¡¯ ê°€ì‹œì„± ì—…ë°ì´íŠ¸
         UpdateSlotVisibility();
     }
 
@@ -110,13 +130,13 @@ public class InventoryManager : SingletonBehaviour<InventoryManager>
 
     private void UpdateSlotVisibility()
     {
-        // ÀÏ¹İ ÀÎº¥Åä¸® ½½·Ô °¡½Ã¼º ¾÷µ¥ÀÌÆ®
+        // ì¼ë°˜ ì¸ë²¤í† ë¦¬ ìŠ¬ë¡¯ ê°€ì‹œì„± ì—…ë°ì´íŠ¸
         for (int i = 0; i < slots.Count; i++)
         {
             slots[i].gameObject.SetActive(!slots[i].IsEmpty());
         }
 
-        // ¹èÆ² ÀÎº¥Åä¸® ½½·Ô °¡½Ã¼º ¾÷µ¥ÀÌÆ®
+        // ë°°í‹€ ì¸ë²¤í† ë¦¬ ìŠ¬ë¡¯ ê°€ì‹œì„± ì—…ë°ì´íŠ¸
         for (int i = 0; i < b_Slots.Count; i++)
         {
             b_Slots[i].gameObject.SetActive(!b_Slots[i].IsEmpty());

@@ -78417,6 +78417,7 @@ GameObject:
   - component: {fileID: 1714383328}
   - component: {fileID: 1714383327}
   - component: {fileID: 1714383336}
+  - component: {fileID: 1714383337}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -78513,7 +78514,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1714383326}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 5bb1dbeb592f3eb4f8f57681fdd2e482, type: 2}
   m_CullingMode: 0
@@ -78636,6 +78637,21 @@ MonoBehaviour:
   maxMp: 100
   expToNextLevel: 100
   playerSkills: []
+--- !u!114 &1714383337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1714383326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b69185ae1fa4f7445a33ec805b72596a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireSprite: {fileID: 554992257, guid: f0a15b7806cbb1c4b9ef7e56feb1fb6c, type: 3}
+  waterSprite: {fileID: -189280010, guid: 78c2f598175ee944086352d8330735d2, type: 3}
+  plantSprite: {fileID: -565327832, guid: 09b14c20fd40f2948b8200486695235e, type: 3}
 --- !u!1 &1757944091
 GameObject:
   m_ObjectHideFlags: 0

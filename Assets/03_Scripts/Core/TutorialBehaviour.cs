@@ -1,27 +1,32 @@
+using System.Collections;
 using UnityEngine;
 
 public class TutorialBehaviour : MonoBehaviour
 {
-    protected virtual void Start()
+    protected virtual IEnumerator Start()
     {
+        // UserDataManager.Instanceê°€ ì¤€ë¹„ë  ë•Œê¹Œì§€ ê¸°ë‹¤ë¦¼
+        while (UserDataManager.Instance == null)
+            yield return null;
+
         var status = UserDataManager.Instance.Get<UserPlayerStatusData>();
 
         if (status == null)
         {
             Debug.LogError("TutorialBehaviour: UserPlayerStatusData is NULL");
-            return;
+            yield break;
         }
 
         Debug.Log($"TutorialBehaviour Start - TutorialEnd: {status.TutorialEnd}");
 
         if (status.TutorialEnd)
         {
-            Debug.Log("TutorialBehaviour: Æ©Åä¸®¾ó ³¡ »óÅÂ¶ó ¿ÀºêÁ§Æ® ÆÄ±«");
+            Debug.Log("TutorialBehaviour: ????? ?? ???ï¿½ï¿½? ??????? ?ï¿½ï¿½?");
             Destroy(gameObject);
         }
         else
         {
-            Debug.Log("TutorialBehaviour: Æ©Åä¸®¾ó ÁøÇà ÁßÀÌ¶ó ¿ÀºêÁ§Æ® À¯Áö");
+            Debug.Log("TutorialBehaviour: ????? ???? ????? ??????? ????");
         }
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 전투 시스템을 조율하는 메인 매니저
 /// </summary>
-public class BattleManager : SingletonBehaviour<BattleManager>
+public class BattleManager : MonoBehaviour
 {
     [Header("Dependencies")]
     [SerializeField] private BattleUIController uiController;
@@ -18,11 +18,26 @@ public class BattleManager : SingletonBehaviour<BattleManager>
     private PlayerInteraction playerInteraction;
     private Player player;
 
-    protected override void Init()
-    {
-        base.Init();
 
-        // 플레이어 찾기
+    // 이 클래스와 스태틱 인스턴스 변수
+    protected static BattleManager m_Instance;
+
+    public static BattleManager Instance
+    {
+        get { return m_Instance; }
+    }
+
+    protected void Awake()
+    {
+        Init();
+    }
+    protected void Init()
+    { 
+        if (m_Instance == null)
+        {
+            m_Instance = (BattleManager)this;
+        }
+            // 플레이어 찾기
         player = FindObjectOfType<Player>();
         playerController = player.GetComponent<PlayerController>();
         playerInteraction = player.GetComponent<PlayerInteraction>();
@@ -84,10 +99,14 @@ public class BattleManager : SingletonBehaviour<BattleManager>
 
     // ========== 정리 ==========
 
-    protected override void Dispose()
+    protected void OnDestroy()
     {
-        base.Dispose();
+        Dispose();
+    }
 
+    private void Dispose()
+    {
+        m_Instance = null;
         // UI 이벤트 구독 해제
         if (uiController != null)
         {

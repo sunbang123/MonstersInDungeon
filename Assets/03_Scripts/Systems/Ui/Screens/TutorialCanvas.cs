@@ -8,22 +8,25 @@ public class TutorialCanvas : TutorialBehaviour
 
     private CanvasGroup cg;
 
-    private void Start()
+    protected override IEnumerator Start()
     {
-        base.Start();
+        // ë¶€ëª¨ Start() ë¨¼ì € ì‹¤í–‰ (TutorialEnd ì²´í¬)
+        yield return StartCoroutine(base.Start());
 
-        if(this == null) return;
+        // ë¶€ëª¨ê°€ Destroy(gameObject)ë¥¼ í–ˆìœ¼ë©´ ì—¬ê¸°ì„œ ì¢…ë£Œ
+        if (this == null)
+            yield break;
 
-        // 1)¸Ç À§·Î ¿Ã¸®±â
+        // 1) ë§¨ ìœ„ë¡œ ì˜¬ë¦¬ê¸°
         transform.SetAsLastSibling();
 
-        // 2) ÆäÀÌµå ÀÎ ÁØºñ
+        // 2) í˜ì´ë“œ ì¸ ì¤€ë¹„
         cg = GetComponent<CanvasGroup>();
         if (cg == null) cg = gameObject.AddComponent<CanvasGroup>();
         cg.alpha = 0f;
 
-        // 3) ÆäÀÌµå ÀÎ ½ÃÀÛ
-        StartCoroutine(FadeIn());
+        // 3) í˜ì´ë“œ ì¸ ì‹œì‘
+        yield return StartCoroutine(FadeIn());
     }
 
     private IEnumerator FadeIn()

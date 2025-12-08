@@ -5,11 +5,14 @@ public class UserPlayerStatusData : IUserData
     public float HP { get; set; }
     public Vector3 Position { get; set; }
     public bool TutorialEnd { get; set; }
+
+    public string SelectedElement; // "FIRE", "WATER", "PLANT"
     public void SetDefaultData()
     {
         HP = 100f;
         Position = Vector3.zero;
         TutorialEnd = false;
+        SelectedElement = ""; // 기본값
     }
 
     public bool LoadData()
@@ -24,6 +27,7 @@ public class UserPlayerStatusData : IUserData
             Position = new Vector3(x, y, z);
 
             TutorialEnd = PlayerPrefs.GetInt("TutorialEnd", 0) == 1;
+            SelectedElement = PlayerPrefs.GetString("SelectedElement", "");
 
             return true;
         }
@@ -40,6 +44,7 @@ public class UserPlayerStatusData : IUserData
             PlayerPrefs.SetFloat("PlayerPosZ", Position.z);
 
             PlayerPrefs.SetInt("TutorialEnd", TutorialEnd ? 1 : 0);
+            PlayerPrefs.SetString("SelectedElement", SelectedElement);
 
             PlayerPrefs.Save();
             return true;
