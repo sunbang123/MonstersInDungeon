@@ -2,18 +2,19 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.SceneManagement;
 
 public class BootLoader : MonoBehaviour
 {
-    [SerializeField] private AssetReference titleScene;
+    public AssetReference TitleSceneReference;
 
     private IEnumerator Start()
     {
-        // 매니저 Awake() → Init() 실행될 시간 확보
-        yield return null;
+        // Addressables 초기화
+        yield return Addressables.InitializeAsync();
 
-        // TitleScene 로드
-        var handle = titleScene.LoadSceneAsync(UnityEngine.SceneManagement.LoadSceneMode.Single);
+        // 바로 TitleScene 로드
+        var handle = TitleSceneReference.LoadSceneAsync(LoadSceneMode.Single);
         yield return handle;
     }
 }

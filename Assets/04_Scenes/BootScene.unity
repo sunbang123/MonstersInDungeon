@@ -441,7 +441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d368b6daf0f0ad478ac3537165b4603, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  titleScene:
+  TitleSceneReference:
     m_AssetGUID: bf05786968e44dc4fa6e026aebf24023
     m_SubObjectName: 
     m_SubObjectType: 
