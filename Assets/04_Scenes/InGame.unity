@@ -398,7 +398,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8912240}
   m_Layer: 0
-  m_Name: HomeWater
+  m_Name: Map03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -529,6 +529,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiController: {fileID: 911872664}
+  playerReference: {fileID: 1714383336}
 --- !u!4 &34608992
 Transform:
   m_ObjectHideFlags: 0
@@ -7223,11 +7224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d8551d49e667bb43bc9ea8602dfd101, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  map:
-  - {fileID: 1525645677}
-  - {fileID: 8912239}
   mapData: {fileID: 11400000, guid: 959db1e70f4fcb7438132fcbb061ff6a, type: 2}
-  townText: {fileID: 0}
   mapIndex: 3
 --- !u!50 &301666621
 Rigidbody2D:
@@ -27006,7 +27003,7 @@ GameObject:
   m_Component:
   - component: {fileID: 480825039}
   m_Layer: 0
-  m_Name: DangerArea01(G)
+  m_Name: Map01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27552,7 +27549,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &595253056
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33500,7 +33497,7 @@ GameObject:
   - component: {fileID: 969689704}
   - component: {fileID: 969689703}
   m_Layer: 0
-  m_Name: HomeArea
+  m_Name: Map00
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35523,7 +35520,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1183070356}
   m_Layer: 0
-  m_Name: DangerArea02(G)
+  m_Name: Map02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64507,11 +64504,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5988960517108880541, guid: f7cc0bfa6c4a42940b33bf92d92e4d9a, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 181.98486
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5988960517108880541, guid: f7cc0bfa6c4a42940b33bf92d92e4d9a, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 32.449425
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5988960517108880541, guid: f7cc0bfa6c4a42940b33bf92d92e4d9a, type: 3}
       propertyPath: m_LocalScale.x
@@ -64555,11 +64552,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5988960517108880541, guid: f7cc0bfa6c4a42940b33bf92d92e4d9a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 211.08759
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5988960517108880541, guid: f7cc0bfa6c4a42940b33bf92d92e4d9a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 99.00932
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5988960517108880541, guid: f7cc0bfa6c4a42940b33bf92d92e4d9a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -72178,7 +72175,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1481071591
 RectTransform:
   m_ObjectHideFlags: 0
@@ -73806,7 +73803,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1525645678}
   m_Layer: 0
-  m_Name: DangerArea3(F)
+  m_Name: Map04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78490,7 +78487,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 42a4bb2b0d55bcf43a2ae2ce9e45d97b, type: 2}
   - {fileID: 11400000, guid: d85a5b70c5f97c2488426a299a6bf2b5, type: 2}
   - {fileID: 11400000, guid: 74c7576e27124f4419442bbbb37ef43b, type: 2}
-  currentMapIndex: 0
 --- !u!114 &1714383330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78631,9 +78627,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77ecfefdd18745e40b463fe28c023267, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHp: 500
+  _playerHp: 500
   maxHp: 500
-  playerPp: 100
+  _playerPp: 100
   maxMp: 100
   expToNextLevel: 100
   playerSkills: []
@@ -91873,6 +91869,15 @@ MonoBehaviour:
   - {fileID: 1183070355}
   - {fileID: 8912239}
   - {fileID: 1525645677}
+  mapDatas:
+  - {fileID: 11400000, guid: 16714ac937d849b4eb7fae7694e1bf30, type: 2}
+  - {fileID: 11400000, guid: d6e77e57b27029c44a449173b22db5d9, type: 2}
+  - {fileID: 11400000, guid: 99c035ece3711a948a12860d43a98673, type: 2}
+  - {fileID: 11400000, guid: 1e0df0505f90672499a3313381efa914, type: 2}
+  - {fileID: 11400000, guid: 42a4bb2b0d55bcf43a2ae2ce9e45d97b, type: 2}
+  - {fileID: 11400000, guid: d85a5b70c5f97c2488426a299a6bf2b5, type: 2}
+  - {fileID: 11400000, guid: 959db1e70f4fcb7438132fcbb061ff6a, type: 2}
+  - {fileID: 11400000, guid: 74c7576e27124f4419442bbbb37ef43b, type: 2}
 --- !u!4 &1923570113
 Transform:
   m_ObjectHideFlags: 0
@@ -92235,7 +92240,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1967232093}
   - component: {fileID: 1967232094}
-  - component: {fileID: 1967232095}
   m_Layer: 5
   m_Name: StatusGroup
   m_TagString: Untagged
@@ -92259,10 +92263,10 @@ RectTransform:
   m_Father: {fileID: 36377362}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1967232094
 CanvasRenderer:
@@ -92272,36 +92276,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1967232092}
   m_CullTransparentMesh: 1
---- !u!114 &1967232095
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1967232092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1970514520
 GameObject:
   m_ObjectHideFlags: 0

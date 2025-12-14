@@ -11,21 +11,21 @@ public class PlayerAppearance : MonoBehaviour
 
     private IEnumerator Start()
     {
-        // UserDataManager ÁØºñµÉ ¶§±îÁö ´ë±â
+        // UserDataManager ë¡œë”© ëŒ€ê¸°
         while (UserDataManager.Instance == null)
             yield return null;
 
         sr = GetComponent<SpriteRenderer>();
         if (sr == null)
         {
-            Debug.LogError("PlayerAppearance: SpriteRenderer ¾øÀ½!");
+            Debug.LogError("PlayerAppearance: SpriteRenderer ì—†ìŒ!");
             yield break;
         }
 
         var status = UserDataManager.Instance.Get<UserPlayerStatusData>();
         if (status == null)
         {
-            Debug.LogError("PlayerAppearance: UserPlayerStatusData ¾øÀ½!");
+            Debug.LogError("PlayerAppearance: UserPlayerStatusData ì—†ìŒ!");
             yield break;
         }
 
@@ -49,10 +49,11 @@ public class PlayerAppearance : MonoBehaviour
                 break;
 
             default:
-                Debug.LogWarning("PlayerAppearance: ¼±ÅÃµÈ ¿ø¼Ò°¡ ¾øÀ½. ±âº» ½ºÇÁ¶óÀÌÆ® À¯Áö");
+                Debug.LogWarning("PlayerAppearance: ì„ íƒëœ ìš”ì†Œê°€ ì—†ìŒ. ê¸°ë³¸ ìŠ¤í”„ë¼ì´íŠ¸ ì‚¬ìš©");
                 break;
         }
 
-        Debug.Log($"PlayerAppearance Àû¿ëµÊ: {element}");
+        Debug.Log($"PlayerAppearance ì ìš©: {element}");
     }
 }
+

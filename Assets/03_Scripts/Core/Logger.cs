@@ -1,23 +1,64 @@
 using System.Diagnostics;
+using UnityEngine;
 
-// 1. Ãß°¡ÀûÀÎ Á¤º¸ Ç¥Çö(ex.Å¸ÀÓ½ºÅÆÇÁ)
-// 2. Ãâ½Ã¿ë ºôµå¸¦ À§ÇÑ ·Î±× Á¦°Å
-public class Logger
+/// <summary>
+/// ê²Œì„ ë¡œê·¸ ê´€ë¦¬ í´ë˜ìŠ¤
+/// </summary>
+public static class Logger
 {
-    [Conditional("DEV_VER")] // ÄÜµğ¼Å³Î ¼Ó¼ºÀÇ ±â´É : Á¶°ÇºÎ ÄÄÆÄÀÏ ½Éº¼
+    /// <summary>
+    /// ë¡œê·¸ ë ˆë²¨ enum
+    /// </summary>
+    public enum LogLevel
+    {
+        None = 0,
+        Error = 1,
+        Warning = 2,
+        Info = 3,
+        Debug = 4
+    }
+
+    /// <summary>
+    /// í˜„ì¬ ë¡œê·¸ ë ˆë²¨ (DEV_VERê°€ ì •ì˜ë˜ë©´ Debug, ì•„ë‹ˆë©´ Warningë¶€í„° ì¶œë ¥)
+    /// </summary>
+    private static LogLevel CurrentLogLevel
+    {
+        get
+        {
+#if DEV_VER
+            return LogLevel.Debug;
+#else
+            return LogLevel.Warning;
+#endif
+        }
+    }
+
+    /// <summary>
+    /// ì •ë³´ ë¡œê·¸ ì¶œë ¥ (ê°œë°œ ë²„ì „ì—ì„œë§Œ)
+    /// </summary>
     public static void Log(string msg)
     {
-        // ÇöÀç ½Ã°£À» ³¯Â¥¿Í ½Ã°£ÀÇ Çü½ÄÀ¸·Î Ç¥ÇöÇØ {0} ³Ö°í, ·Î±ëÇÏ·Á´Â ¸Ş¼¼Áö¸¦ {1}¿¡ ³Ö´Â´Ù.
-        UnityEngine.Debug.LogFormat("[{0}] {1}", System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), msg);
+        if (CurrentLogLevel >= LogLevel.Info)
+        {
+            UnityEngine.Debug.LogFormat("[{0}] {1}", System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), msg);
+        }
     }
 
-    [Conditional("DEV_VER")]
-    public static void LogWarning(string msg) // ¿ö¹Ö ·Î±× ÇÔ¼ö
+    /// <summary>
+    /// ê²½ê³  ë¡œê·¸ ì¶œë ¥
+    /// </summary>
+    public static void LogWarning(string msg)
     {
-        UnityEngine.Debug.LogWarningFormat("[{0}] {1}", System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), msg);
+        if (CurrentLogLevel >= LogLevel.Warning)
+        {
+            UnityEngine.Debug.LogWarningFormat("[{0}] {1}", System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), msg);
+        }
     }
 
-    public static void LogError(string msg) // ¿ö¹Ö ·Î±× ÇÔ¼ö
+    /// <summary>
+    /// ì—ëŸ¬ ë¡œê·¸ ì¶œë ¥ (í•­ìƒ ì¶œë ¥)
+    /// </summary>
+    public static void LogError(string msg)
     {
         UnityEngine.Debug.LogErrorFormat("[{0}] {1}", System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), msg);
     }

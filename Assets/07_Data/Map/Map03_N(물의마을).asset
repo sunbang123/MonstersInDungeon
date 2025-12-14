@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fe75559930947a4d81f087babf770e7, type: 3}
   m_Name: "Map03_N(\uBB3C\uC758\uB9C8\uC744)"
   m_EditorClassIdentifier: 
+  mapIndex: 3
   mapName: "\uBB3C\uC758 \uB9C8\uC744"
+  gameObjectName: Map03
+  direction: 1
   xMaxPos: 3
   yMaxPos: 6.5
   playerSpawnPosition: {x: -9.5, y: 10, z: 0}

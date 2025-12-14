@@ -1,25 +1,27 @@
 using UnityEngine;
 
 /// <summary>
-/// ÀüÅõ ½Ã½ºÅÛÀ» Á¶À²ÇÏ´Â ¸ŞÀÎ ¸Å´ÏÀú
+/// ë°°í‹€ ì‹œìŠ¤í…œì„ ê´€ë¦¬í•˜ëŠ” ë©”ì¸ ë§¤ë‹ˆì €
 /// </summary>
 public class BattleManager : MonoBehaviour
 {
     [Header("Dependencies")]
     [SerializeField] private BattleUIController uiController;
 
-    // ÄÄÆ÷³ÍÆ®µé
+    // í”Œë ˆì´ì–´ ì°¸ì¡° (ì¸ìŠ¤í™í„°ì—ì„œ ì„¤ì •í•˜ê±°ë‚˜ ìë™ ì°¾ê¸°)
+    [SerializeField] private Player playerReference;
+
+    // ì»´í¬ë„ŒíŠ¸ë“¤
     private BattleStateMachine stateMachine;
     private TurnExecutor turnExecutor;
     private BattleFlowController flowController;
 
-    // ÇÃ·¹ÀÌ¾î ÂüÁ¶
+    // í”Œë ˆì´ì–´ ê´€ë ¨ ì»´í¬ë„ŒíŠ¸ë“¤
     private PlayerController playerController;
     private PlayerInteraction playerInteraction;
     private Player player;
 
-
-    // ÀÌ Å¬·¡½º¿Í ½ºÅÂÆ½ ÀÎ½ºÅÏ½º º¯¼ö
+    // ì‹±ê¸€í†¤ ì¸ìŠ¤í„´ìŠ¤
     protected static BattleManager m_Instance;
 
     public static BattleManager Instance
@@ -32,32 +34,74 @@ public class BattleManager : MonoBehaviour
         Init();
     }
     protected void Init()
-    { 
+    {
         if (m_Instance == null)
         {
             m_Instance = (BattleManager)this;
         }
-            // ÇÃ·¹ÀÌ¾î Ã£±â
-        player = FindObjectOfType<Player>();
-        playerController = player.GetComponent<PlayerController>();
-        playerInteraction = player.GetComponent<PlayerInteraction>();
 
-        // °°Àº GameObjectÀÇ ÄÄÆ÷³ÍÆ®µé °¡Á®¿À±â
+        // í”Œë ˆì´ì–´ ì°¸ì¡° ì„¤ì •
+        SetupPlayerReferences();
+
+        // ê²Œì„ ì˜¤ë¸Œì íŠ¸ì˜ ì»´í¬ë„ŒíŠ¸ë“¤ ê°€ì ¸ì˜¤ê¸°
         stateMachine = GetComponent<BattleStateMachine>();
         turnExecutor = GetComponent<TurnExecutor>();
         flowController = GetComponent<BattleFlowController>();
 
-        // ÀÇÁ¸¼º ÁÖÀÔ
+        // ì»´í¬ë„ŒíŠ¸ ì´ˆê¸°í™”
         turnExecutor.Initialize(stateMachine, uiController);
         flowController.Initialize(stateMachine, uiController, turnExecutor);
         flowController.SetPlayerReferences(player, playerController);
 
-        // UI ÀÌº¥Æ® ±¸µ¶
+        // UI ì´ë²¤íŠ¸ êµ¬ë…
         SubscribeUIEvents();
     }
 
     /// <summary>
-    /// UI ¹öÆ° ÀÌº¥Æ® ±¸µ¶
+    /// í”Œë ˆì´ì–´ ì°¸ì¡° ì„¤ì • (ì¸ìŠ¤í™í„° ìš°ì„ , ì—†ìœ¼ë©´ ìë™ ì°¾ê¸°)
+    /// </summary>
+    private void SetupPlayerReferences()
+    {
+        // 1. ì¸ìŠ¤í™í„°ì—ì„œ ì„¤ì •ëœ ì°¸ì¡° ì‚¬ìš©
+        if (playerReference != null)
+        {
+            player = playerReference;
+        }
+        else
+        {
+            // 2. íƒœê·¸ë¡œ í”Œë ˆì´ì–´ ì°¾ê¸° (ë” íš¨ìœ¨ì )
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                player = playerObj.GetComponent<Player>();
+            }
+            else
+            {
+                // 3. ìµœí›„ì˜ ìˆ˜ë‹¨ìœ¼ë¡œ FindObjectOfType ì‚¬ìš© (ë¹„íš¨ìœ¨ì )
+                Logger.LogWarning("Player reference not set in inspector, using FindObjectOfType");
+                player = FindObjectOfType<Player>();
+            }
+        }
+
+        // í”Œë ˆì´ì–´ ì»´í¬ë„ŒíŠ¸ë“¤ ê°€ì ¸ì˜¤ê¸°
+        if (player != null)
+        {
+            playerController = player.GetComponent<PlayerController>();
+            playerInteraction = player.GetComponent<PlayerInteraction>();
+
+            if (playerController == null)
+                Logger.LogError("PlayerController component not found on Player");
+            if (playerInteraction == null)
+                Logger.LogError("PlayerInteraction component not found on Player");
+        }
+        else
+        {
+            Logger.LogError("Player not found in scene!");
+        }
+    }
+
+    /// <summary>
+    /// UI ï¿½ï¿½Æ° ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     private void SubscribeUIEvents()
     {
@@ -68,14 +112,14 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀüÅõ ½ÃÀÛ (¿ÜºÎ¿¡¼­ È£Ãâ)
+    /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ È£ï¿½ï¿½)
     /// </summary>
     public void StartBattle(Enemy enemy)
     {
         StartCoroutine(flowController.StartBattle(enemy));
     }
 
-    // ========== UI ÀÌº¥Æ® ÇÚµé·¯ ==========
+    // ========== UI ï¿½Ìºï¿½Æ® ï¿½Úµé·¯ ==========
 
     private void OnAttackClicked()
     {
@@ -97,7 +141,7 @@ public class BattleManager : MonoBehaviour
         StartCoroutine(turnExecutor.ExecuteSpecialAttack());
     }
 
-    // ========== Á¤¸® ==========
+    // ========== ï¿½ï¿½ï¿½ï¿½ ==========
 
     protected void OnDestroy()
     {
@@ -107,7 +151,7 @@ public class BattleManager : MonoBehaviour
     private void Dispose()
     {
         m_Instance = null;
-        // UI ÀÌº¥Æ® ±¸µ¶ ÇØÁ¦
+        // UI ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (uiController != null)
         {
             uiController.OnAttackClicked -= OnAttackClicked;
