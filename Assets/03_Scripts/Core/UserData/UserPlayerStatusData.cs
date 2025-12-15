@@ -5,13 +5,15 @@ public class UserPlayerStatusData : IUserData
     public float HP { get; set; }
     public Vector3 Position { get; set; }
     public bool TutorialEnd { get; set; }
+    public int CurrentMapIndex { get; set; }
 
     public string SelectedElement; // "FIRE", "WATER", "PLANT"
     public void SetDefaultData()
     {
-        HP = 100f;
+        HP = 500f;
         Position = Vector3.zero;
         TutorialEnd = false;
+        CurrentMapIndex = 0; // 기본값은 첫 번째 맵
         SelectedElement = ""; // 기본값
     }
 
@@ -19,7 +21,7 @@ public class UserPlayerStatusData : IUserData
     {
         try
         {
-            HP = PlayerPrefs.GetFloat("PlayerHP", 100f);
+            HP = PlayerPrefs.GetFloat("PlayerHP", 500f);
 
             float x = PlayerPrefs.GetFloat("PlayerPosX", 0f);
             float y = PlayerPrefs.GetFloat("PlayerPosY", 0f);
@@ -28,6 +30,7 @@ public class UserPlayerStatusData : IUserData
 
             TutorialEnd = PlayerPrefs.GetInt("TutorialEnd", 0) == 1;
             SelectedElement = PlayerPrefs.GetString("SelectedElement", "");
+            CurrentMapIndex = PlayerPrefs.GetInt("CurrentMapIndex", 0);
 
             return true;
         }
@@ -45,6 +48,7 @@ public class UserPlayerStatusData : IUserData
 
             PlayerPrefs.SetInt("TutorialEnd", TutorialEnd ? 1 : 0);
             PlayerPrefs.SetString("SelectedElement", SelectedElement);
+            PlayerPrefs.SetInt("CurrentMapIndex", CurrentMapIndex);
 
             PlayerPrefs.Save();
             return true;

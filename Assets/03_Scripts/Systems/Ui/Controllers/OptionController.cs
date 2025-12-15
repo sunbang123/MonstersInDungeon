@@ -22,13 +22,13 @@ public class OptionController : MonoBehaviour
 
     private void Awake()
     {
-        // ÀÚ½Ä ¿ÀºêÁ§Æ®¿¡¼­ Button ÀÚµ¿ ¼öÁı
+        // ï¿½Ú½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ Button ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½
         buttons.AddRange(GetComponentsInChildren<Button>(true));
 
-        // enum ¼ø¼­´ë·Î ±â´É ¿¬°á
+        // enum ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         for (int i = 0; i < buttons.Count; i++)
         {
-            int index = i; // Å¬·ÎÀú ¹®Á¦ ¹æÁö
+            int index = i; // Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             buttons[i].onClick.AddListener(() => HandleButton((OptionButton)index));
         }
     }
@@ -38,17 +38,17 @@ public class OptionController : MonoBehaviour
         switch (type)
         {
             case OptionButton.Save:
-                Debug.Log("ÀúÀå ±â´É ½ÇÇà");
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
                 SaveGame();
                 break;
 
             case OptionButton.ToLobby:
-                Debug.Log("·Îºñ·Î ÀÌµ¿");
+                Debug.Log("ï¿½Îºï¿½ï¿½ ï¿½Ìµï¿½");
                 LoadLobbyScene();
                 break;
 
             case OptionButton.Quit:
-                Debug.Log("°ÔÀÓ Á¾·á");
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
                 Application.Quit();
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
@@ -61,7 +61,7 @@ public class OptionController : MonoBehaviour
     {
         if (UserDataManager.Instance == null)
         {
-            Debug.LogError("UserDataManager.Instance°¡ nullÀÔ´Ï´Ù!");
+            Debug.LogError("UserDataManager.Instanceï¿½ï¿½ nullï¿½Ô´Ï´ï¿½!");
             return;
         }
 
@@ -76,24 +76,36 @@ public class OptionController : MonoBehaviour
             }
         }
 
+        // í˜„ì¬ ë§µ ì¸ë±ìŠ¤ ì €ì¥
+        var mapManager = FindObjectOfType<MapManager>();
+        if (mapManager != null)
+        {
+            var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
+            if (data != null)
+            {
+                data.CurrentMapIndex = mapManager.GetCurrentMapIndex();
+                Debug.Log($"Saved current map index: {data.CurrentMapIndex}");
+            }
+        }
+
         UserDataManager.Instance.SaveUserData();
         Debug.Log("Saved HP: " + PlayerPrefs.GetFloat("PlayerHP"));
     }
 
     private void LoadLobbyScene()
     {
-        // ÇöÀç InGame ¾ÀÀ» ¾ğ·ÎµåÇÏ°í, ·Îºñ ¾ÀÀ» ·Îµå
-        // ÀÌ ¹æ¹ıÀº DontDestroyOnLoad ¿ÀºêÁ§Æ®¸¦ À¯ÁöÇÕ´Ï´Ù
+        // ï¿½ï¿½ï¿½ï¿½ InGame ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Îµï¿½ï¿½Ï°ï¿½, ï¿½Îºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½
+        // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ DontDestroyOnLoad ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½
         StartCoroutine(LoadLobbySceneCoroutine());
     }
 
     private System.Collections.IEnumerator LoadLobbySceneCoroutine()
     {
-        // 1. ÇöÀç ¾À ÀÌ¸§ ÀúÀå
+        // 1. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
         var currentScene = SceneManager.GetActiveScene();
-        Debug.Log($"ÇöÀç ¾À ¾ğ·Îµå ½ÃÀÛ: {currentScene.name}");
+        Debug.Log($"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½: {currentScene.name}");
 
-        // 2. ·Îºñ ¾À ·Îµå
+        // 2. ï¿½Îºï¿½ ï¿½ï¿½ ï¿½Îµï¿½
         var loadHandle = Addressables.LoadSceneAsync(
             LobbySceneReference,
             LoadSceneMode.Single,
@@ -104,31 +116,31 @@ public class OptionController : MonoBehaviour
 
         if (loadHandle.Status == AsyncOperationStatus.Succeeded)
         {
-            Debug.Log("·Îºñ ¾À ·Îµå ¿Ï·á (Additive)");
+            Debug.Log("ï¿½Îºï¿½ ï¿½ï¿½ ï¿½Îµï¿½ ï¿½Ï·ï¿½ (Additive)");
 
-            // 3. »õ ¾ÀÀ» È°¼º ¾ÀÀ¸·Î ¼³Á¤
+            // 3. ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             var lobbyScene = loadHandle.Result.Scene;
             SceneManager.SetActiveScene(lobbyScene);
 
-            // 4. ÀÌÀü InGame ¾À ¾ğ·Îµå
+            // 4. ï¿½ï¿½ï¿½ï¿½ InGame ï¿½ï¿½ ï¿½ï¿½Îµï¿½
             var unloadOp = SceneManager.UnloadSceneAsync(currentScene);
             yield return unloadOp;
 
-            Debug.Log("ÀÌÀü ¾À ¾ğ·Îµå ¿Ï·á");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Îµï¿½ ï¿½Ï·ï¿½");
 
-            // 5. UserDataManager È®ÀÎ
+            // 5. UserDataManager È®ï¿½ï¿½
             if (UserDataManager.Instance != null)
             {
-                Debug.Log("UserDataManager Á¤»ó À¯ÁöµÊ!");
+                Debug.Log("UserDataManager ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!");
             }
             else
             {
-                Debug.LogError("¾À ÀüÈ¯ ÈÄ¿¡µµ UserDataManager°¡ »ç¶óÁ³½À´Ï´Ù!");
+                Debug.LogError("ï¿½ï¿½ ï¿½ï¿½È¯ ï¿½Ä¿ï¿½ï¿½ï¿½ UserDataManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½!");
             }
         }
         else
         {
-            Debug.LogError($"·Îºñ ¾À ·Îµå ½ÇÆĞ: {loadHandle.OperationException}");
+            Debug.LogError($"ï¿½Îºï¿½ ï¿½ï¿½ ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½: {loadHandle.OperationException}");
         }
     }
 }

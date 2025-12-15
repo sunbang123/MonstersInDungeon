@@ -5,14 +5,32 @@ using UnityEngine;
 public class Player : Unit
 {
     [Header("Health & Mana")]
-    public float playerHp = 500f;
+    [SerializeField] private float _playerHp = 500f;
     public float maxHp = 500f;
-    public float playerPp = 100f;
+    [SerializeField] private float _playerPp = 100f;
     public float maxMp = 100f;
+
+    // ì†ì„±ì„ ì‚¬ìš©í•´ì„œ ê°’ ê²€ì¦
+    public float playerHp
+    {
+        get => _playerHp;
+        set
+        {
+            _playerHp = Mathf.Clamp(value, 0f, maxHp);
+            var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
+            data.HP = _playerHp;
+        }
+    }
+
+    public float playerPp
+    {
+        get => _playerPp;
+        set => _playerPp = Mathf.Clamp(value, 0f, maxMp);
+    }
 
     public event Action<float, float> OnHealthChanged;
 
-    [Tooltip("´ÙÀ½ ·¹º§±îÁö ÇÊ¿äÇÑ °æÇèÄ¡")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡")]
     public float expToNextLevel = 100f;
 
     [Header("Skills")]
@@ -27,19 +45,18 @@ public class Player : Unit
         var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
         transform.position = data.Position;
 
-        // ÃÊ±â°ª ¼³Á¤
-        playerHp = Mathf.Clamp(playerHp, 0f, maxHp);
-        playerPp = Mathf.Clamp(playerPp, 0f, maxMp);
+        // ì´ˆê¸°í™” ì‹œ ë°ì´í„°ì—ì„œ ê°’ ë¶ˆëŸ¬ì˜¤ê¸°
+        _playerHp = Mathf.Clamp(data.HP, 0f, maxHp);
+        _playerPp = Mathf.Clamp(_playerPp, 0f, maxMp);
+
+        // ì´ˆê¸° HP ì„¤ì • (ì†ì„± ì‚¬ìš©ìœ¼ë¡œ ë°ì´í„° ì €ìž¥ ìžë™ ì²˜ë¦¬)
+        playerHp = _playerHp;
     }
 
-    void Update()
-    {
-        // HP/MP°¡ ÃÖ´ë°ªÀ» ÃÊ°úÇÏÁö ¾Êµµ·Ï Á¦ÇÑ
-        playerHp = Mathf.Clamp(playerHp, 0f, maxHp);
-        playerPp = Mathf.Clamp(playerPp, 0f, maxMp);
-    }
+    // Update ë©”ì†Œë“œ ì œê±° - ë” ì´ìƒ í•„ìš” ì—†ìŒ
+    // ê°’ ê²€ì¦ì€ ì†ì„±ì—ì„œ ìžë™ìœ¼ë¡œ ì²˜ë¦¬ë¨
 
-    // Unit Å¬·¡½ºÀÇ Ãß»ó ¸Þ¼­µå ±¸Çö
+    // Unit Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     protected override float GetCurrentHp() => playerHp;
     protected override float GetMaxHp() => maxHp;
     protected override void SetCurrentHp(float value)
@@ -55,7 +72,7 @@ public class Player : Unit
 
     void OnDestroy()
     {
-        // ÄÚ·çÆ¾ Á¤¸®
+        // ï¿½Ú·ï¿½Æ¾ ï¿½ï¿½ï¿½ï¿½
         if (regenCoroutine != null)
         {
             StopCoroutine(regenCoroutine);

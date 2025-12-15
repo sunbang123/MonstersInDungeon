@@ -5,19 +5,29 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Map", menuName = "Game Data/Map Data")]
 public class MapData : ScriptableObject
 {
-    // ¸ÊÀÇ ÀÌ¸§
+    // ë§µ ì •ë³´
     [Header("Map Information")]
-    [Tooltip("¸ÊÀÇ ½Äº° °¡´ÉÇÑ ÀÌ¸§ÀÔ´Ï´Ù.")]
-    public string mapName = "Default Map"; // ±âº»°ª ¼³Á¤
+    [Tooltip("ë§µì˜ ê³ ìœ  ì¸ë±ìŠ¤ìž…ë‹ˆë‹¤. ê°™ì€ ë²ˆí˜¸ì˜ ë¶ìª½/ë‚¨ìª½ ë§µì€ ê°™ì€ ì¸ë±ìŠ¤ë¥¼ ê°€ì§‘ë‹ˆë‹¤.")]
+    public int mapIndex = 0; // ë§µ ì¸ë±ìŠ¤ (Map00=0, Map01_N/S=1, Map02_N/S=2 ë“±)
+    
+    [Tooltip("ë§µì˜ í‘œì‹œ ì´ë¦„ìž…ë‹ˆë‹¤.")]
+    public string mapName = "Default Map"; // ê¸°ë³¸ê°’ ë§µ
+    
+    [Tooltip("ë§¤ì¹­í•  GameObject ì´ë¦„ (ì˜ˆ: Map01_N, Map01_S). ë¹„ì–´ìžˆìœ¼ë©´ mapNameìœ¼ë¡œ ë§¤ì¹­í•©ë‹ˆë‹¤.")]
+    public string gameObjectName = ""; // GameObject ì´ë¦„
+    
+    public enum MapDirection { None, North, South }
+    [Tooltip("ë§µì˜ ë°©í–¥ (None: ë°©í–¥ ì—†ìŒ, North: ë¶ìª½, South: ë‚¨ìª½)")]
+    public MapDirection direction = MapDirection.None;
 
-    // ¸ÊÀÇ °æ°è¸¦ ³ªÅ¸³»´Â ÃÖ´ë X, Y ÁÂÇ¥ (floatÀ» »ç¿ëÇß½À´Ï´Ù)
-    [Tooltip("¸ÊÀÇ ÃÖ´ë X °æ°è ÁÂÇ¥ÀÔ´Ï´Ù.")]
-    public float xMaxPos; // ±âº»°ª ¼³Á¤
+    // ë§µ í¬ê¸°ë¥¼ ë‚˜íƒ€ë‚´ëŠ” ìµœëŒ€ X, Y ì¢Œí‘œ (floatë¡œ ì €ìž¥ë©ë‹ˆë‹¤)
+    [Tooltip("ë§µì˜ ìµœëŒ€ X ì¶• ì¢Œí‘œìž…ë‹ˆë‹¤.")]
+    public float xMaxPos; // ê¸°ë³¸ê°’ ì—†ìŒ
 
-    [Tooltip("¸ÊÀÇ ÃÖ´ë Y °æ°è ÁÂÇ¥ÀÔ´Ï´Ù.")]
-    public float yMaxPos; // ±âº»°ª ¼³Á¤
+    [Tooltip("ë§µì˜ ìµœëŒ€ Y ì¶• ì¢Œí‘œìž…ë‹ˆë‹¤.")]
+    public float yMaxPos; // ê¸°ë³¸ê°’ ì—†ìŒ
 
     [Header("Spawn Points")]
-    [Tooltip("ÇÃ·¹ÀÌ¾î ½ºÆù À§Ä¡ÀÔ´Ï´Ù.")]
-    public Vector3 playerSpawnPosition; // ´ÜÀÏ À§Ä¡·Î º¯°æ (playerSpawnPositions -> playerSpawnPosition)
+    [Tooltip("í”Œë ˆì´ì–´ ìŠ¤í° ìœ„ì¹˜ìž…ë‹ˆë‹¤.")]
+    public Vector3 playerSpawnPosition; // ìŠ¤í° ìœ„ì¹˜ë¥¼ ì €ìž¥ (playerSpawnPositions -> playerSpawnPosition)
 }
