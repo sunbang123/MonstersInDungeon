@@ -6,7 +6,7 @@ using TMPro;
 
 public class TownUIManager : MonoBehaviour
 {
-
+    public TMP_Text mapText;
     public TMP_Text townText;
     private float fadeDuration = 1f; //페이드 인아웃 시간
     private float showDuration = 1.5f; //유지 시간
@@ -24,7 +24,7 @@ public class TownUIManager : MonoBehaviour
 
     public void SetTownName(string townName)
     {
-
+        mapText.text = townName;
         townText.text = townName;
 
         if (fadeRoutine != null)

@@ -7438,7 +7438,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: "\uBC29\uC5B4"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 45c0cfa4f7261ab48acb55ba8c16c550, type: 2}
   m_sharedMaterial: {fileID: -3180020203624462729, guid: 45c0cfa4f7261ab48acb55ba8c16c550, type: 2}
@@ -27549,7 +27549,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &595253056
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32066,7 +32066,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: "\uD2B9\uC218 \uACF5\uACA9"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 45c0cfa4f7261ab48acb55ba8c16c550, type: 2}
   m_sharedMaterial: {fileID: -3180020203624462729, guid: 45c0cfa4f7261ab48acb55ba8c16c550, type: 2}
@@ -48401,7 +48401,7 @@ GameObject:
   - component: {fileID: 1224319949}
   - component: {fileID: 1224319948}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: MapText (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -72175,7 +72175,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1481071591
 RectTransform:
   m_ObjectHideFlags: 0
@@ -78232,7 +78232,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: "\uC77C\uBC18 \uACF5\uACA9"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 45c0cfa4f7261ab48acb55ba8c16c550, type: 2}
   m_sharedMaterial: {fileID: -3180020203624462729, guid: 45c0cfa4f7261ab48acb55ba8c16c550, type: 2}
