@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// ÀüÅõ UI¸¦ °ü¸®ÇÏ´Â Å¬·¡½º
+/// ï¿½ï¿½ï¿½ï¿½ UIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class BattleUIController : MonoBehaviour
 {
@@ -30,7 +30,19 @@ public class BattleUIController : MonoBehaviour
     public Slider playerHealthSlider;
     public Slider enemyHealthSlider;
 
-    // ¹öÆ° Å¬¸¯ ÀÌº¥Æ®
+    [Header("PP Sliders")]
+    public Slider playerPPSlider;
+    public Slider enemyPPSlider;
+
+    [Header("Portraits")]
+    public Image playerPortrait;
+    public Image enemyPortrait;
+
+    [Header("Level Text")]
+    public TextMeshProUGUI playerLevelText;
+    public TextMeshProUGUI enemyLevelText;
+
+    // ï¿½ï¿½Æ° Å¬ï¿½ï¿½ ï¿½Ìºï¿½Æ®
     public event Action OnAttackClicked;
     public event Action<int> OnItemUseClicked;
     public event Action OnSpecialAttackClicked;
@@ -41,18 +53,19 @@ public class BattleUIController : MonoBehaviour
         GetInventoryButtons();
         BindButtons();
 
-        // Player Ã£±â
+        // Player Ã£ï¿½ï¿½
         Player player = FindObjectOfType<Player>();
         if (player != null)
         {
             player.OnHealthChanged += UpdatePlayerHealthSlider;
+            player.OnPortraitChanged += UpdatePlayerPortrait;
         }
 
         SetButtonsInteractable(false);
     }
 
     /// <summary>
-    /// InventoryÀÇ ÀÚ½Ä ¿ä¼Ò¿¡¼­ Button ÄÄÆ÷³ÍÆ®¸¦ °¡Áø °ÍµéÀ» Ã£¾Æ ¸®½ºÆ®¿¡ Ãß°¡
+    /// Inventoryï¿½ï¿½ ï¿½Ú½ï¿½ ï¿½ï¿½Ò¿ï¿½ï¿½ï¿½ Button ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Íµï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ß°ï¿½
     /// </summary>
     private void GetInventoryButtons()
     {
@@ -66,7 +79,7 @@ public class BattleUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ¹öÆ°¿¡ ÀÌº¥Æ® ¸®½º³Ê µî·Ï
+    /// ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     /// </summary>
     private void BindButtons()
     {
@@ -77,7 +90,7 @@ public class BattleUIController : MonoBehaviour
         {
             for (int i = 0; i < item_btn.Count; i++)
             {
-                int index = i; // Å¬·ÎÀú ¹®Á¦ ¹æÁö
+                int index = i; // Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 item_btn[i].onClick.AddListener(() => OnItemUseClicked?.Invoke(index));
             }
         }
@@ -90,7 +103,7 @@ public class BattleUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸ðµç ¹öÆ°ÀÇ »óÈ£ÀÛ¿ë °¡´É ¿©ºÎ ¼³Á¤
+    /// ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public void SetButtonsInteractable(bool interactable)
     {
@@ -115,7 +128,7 @@ public class BattleUIController : MonoBehaviour
 
 
     /// <summary>
-    /// ÀüÅõ UI »óÅÂ Åä±Û
+    /// ï¿½ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     /// </summary>
     private bool isBattleMode = false;
 
@@ -132,7 +145,7 @@ public class BattleUIController : MonoBehaviour
         playerStatus.transform.SetParent(null, false);
         playerStatus.transform.SetParent(targetParent, useWorldSpace);
 
-        // playerStatusÀÇ rectTransform ÃÊ±âÈ­ (ºÎ¸ð º¯°æ Á÷ÈÄ)
+        // playerStatusï¿½ï¿½ rectTransform ï¿½Ê±ï¿½È­ (ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         RectTransform rectTransform = playerStatus.GetComponent<RectTransform>();
         rectTransform.anchoredPosition = Vector2.zero;
         rectTransform.sizeDelta = Vector2.zero;
@@ -151,7 +164,7 @@ public class BattleUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ¹èÆ² ·Î±× ÅØ½ºÆ® ¼³Á¤
+    /// ï¿½ï¿½Æ² ï¿½Î±ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public void SetBattleLog(string text)
     {
@@ -177,8 +190,58 @@ public class BattleUIController : MonoBehaviour
         }
     }
 
+    public void UpdatePlayerPPSlider(float currentPp, float maxPp)
+    {
+        if (playerPPSlider != null)
+        {
+            playerPPSlider.maxValue = maxPp;
+            playerPPSlider.value = currentPp;
+        }
+    }
+
+    public void UpdateEnemyPPSlider(float currentPp, float maxPp)
+    {
+        if (enemyPPSlider != null)
+        {
+            enemyPPSlider.maxValue = maxPp;
+            enemyPPSlider.value = currentPp;
+        }
+    }
+
+    public void UpdatePlayerPortrait(Sprite portrait)
+    {
+        if (playerPortrait != null && portrait != null)
+        {
+            playerPortrait.sprite = portrait;
+        }
+    }
+
+    public void UpdateEnemyPortrait(Sprite portrait)
+    {
+        if (enemyPortrait != null && portrait != null)
+        {
+            enemyPortrait.sprite = portrait;
+        }
+    }
+
+    public void UpdatePlayerLevel(int level)
+    {
+        if (playerLevelText != null)
+        {
+            playerLevelText.text = $"Lv.{level}";
+        }
+    }
+
+    public void UpdateEnemyLevel(int level)
+    {
+        if (enemyLevelText != null)
+        {
+            enemyLevelText.text = $"Lv.{level}";
+        }
+    }
+
     /// <summary>
-    /// ¹èÆ² ·Î±×¿¡ ÅØ½ºÆ® Ãß°¡
+    /// ï¿½ï¿½Æ² ï¿½Î±×¿ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ß°ï¿½
     /// </summary>
     public void AppendBattleLog(string text)
     {
@@ -188,7 +251,7 @@ public class BattleUIController : MonoBehaviour
 
     private void OnDestroy()
     {
-        // ÀÌº¥Æ® ¸®½º³Ê ÇØÁ¦
+        // ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (Atk_btn != null)
             Atk_btn.onClick.RemoveAllListeners();
 

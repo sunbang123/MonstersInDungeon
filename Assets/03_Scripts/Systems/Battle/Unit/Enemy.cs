@@ -7,13 +7,36 @@ public class Enemy : Unit
     public float enemyHp = 300f;
     public float maxHp = 300f;
 
+    [Header("Mana")]
+    [SerializeField] private float _enemyPp = 50f;
+    public float maxPp = 50f;
+
+    [Header("Level & Experience")]
+    public int level = 1;
+    [Tooltip("ì´ ì ì„ ë¬¼ë¦¬ì¹˜ë©´ ì–»ëŠ” ê²½í—˜ì¹˜")]
+    public float expReward = 50f;
+
+    [Header("Portrait")]
+    public Sprite portrait;
+
+    public float enemyPp
+    {
+        get => _enemyPp;
+        set
+        {
+            _enemyPp = Mathf.Clamp(value, 0f, maxPp);
+            OnPPChanged?.Invoke(_enemyPp, maxPp);
+        }
+    }
+
     public event Action<float, float> OnHealthChanged;
+    public event Action<float, float> OnPPChanged;
     public event Action OnEnemyDeath;
 
     [Header("Item Drop")]
-    [Tooltip("ÀûÀÌ Á×¾úÀ» ¶§ µå¶øÇÒ ¾ÆÀÌÅÛ ÇÁ¸®ÆÕ")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½ ï¿½×¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public GameObject dropItemPrefab;
-    [Tooltip("¾ÆÀÌÅÛ µå¶ø È®·ü (0 ~ 1)")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ È®ï¿½ï¿½ (0 ~ 1)")]
     [Range(0f, 1f)]
     public float dropChance = 1f;
 
@@ -26,14 +49,14 @@ public class Enemy : Unit
     }
 
     /// <summary>
-    /// ÀûÀÇ »ç¸Á »óÅÂ¸¦ ¹ÝÈ¯ÇÏ´Â ¸Þ¼­µå
+    /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½ï¿½È¯ï¿½Ï´ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½
     /// </summary>
     public new bool IsDead()
     {
         return isDead;
     }
 
-    // Unit Å¬·¡½ºÀÇ Ãß»ó ¸Þ¼­µå ±¸Çö
+    // Unit Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     protected override float GetCurrentHp() => enemyHp;
     protected override float GetMaxHp() => maxHp;
     protected override void SetCurrentHp(float value) => enemyHp = value;
@@ -45,32 +68,32 @@ public class Enemy : Unit
     {
         base.Die();
 
-        // ¾ÆÀÌÅÛ µå¶ø
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         DropItem();
     }
 
     /// <summary>
-    /// ¾ÆÀÌÅÛ µå¶ø Ã³¸®
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
     /// </summary>
     private void DropItem()
     {
         if (dropItemPrefab == null) return;
 
-        // µå¶ø È®·ü Ã¼Å©
+        // ï¿½ï¿½ï¿½ È®ï¿½ï¿½ Ã¼Å©
         float randomValue = UnityEngine.Random.Range(0f, 1f);
         if (randomValue <= dropChance)
         {
-            // ÀûÀÌ ÀÖ´ø À§Ä¡¿¡ ¾ÆÀÌÅÛ »ý¼º
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             GameObject droppedItem = Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
-            Debug.Log($"[¾ÆÀÌÅÛ µå¶ø] {gameObject.name}ÀÌ(°¡) {dropItemPrefab.name}À»(¸¦) µå¶øÇß½À´Ï´Ù.");
+            Debug.Log($"[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½] {gameObject.name}ï¿½ï¿½(ï¿½ï¿½) {dropItemPrefab.name}ï¿½ï¿½(ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.");
         }
         else
         {
-            Debug.Log($"[¾ÆÀÌÅÛ µå¶ø ½ÇÆÐ] {gameObject.name} - È®·ü: {dropChance * 100}%");
+            Debug.Log($"[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½] {gameObject.name} - È®ï¿½ï¿½: {dropChance * 100}%");
         }
     }
 
-    // ÇÃ·¹ÀÌ¾î¿Í Ãæµ¹ ½Ã ÀüÅõ ½ÃÀÛ
+    // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ ï¿½æµ¹ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player") && !battleStarted)

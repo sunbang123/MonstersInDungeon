@@ -3,7 +3,7 @@ using UnityEngine;
 using System;
 
 /// <summary>
-/// ÀüÅõ Èå¸§À» Á¦¾îÇÏ´Â Å¬·¡½º
+/// ì „íˆ¬ íë¦„ì„ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
 /// </summary>
 public class BattleFlowController : MonoBehaviour
 {
@@ -29,7 +29,7 @@ public class BattleFlowController : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀüÅõ ½ÃÀÛ
+    /// ì „íˆ¬ ì‹œì‘
     /// </summary>
     public IEnumerator StartBattle(Enemy e)
     {
@@ -41,19 +41,31 @@ public class BattleFlowController : MonoBehaviour
         uiController.ShowBattleUI();
         playerController.SetMovementMode(MovementMode.Stop);
 
+        // Player ì´ë²¤íŠ¸ êµ¬ë…
         player.OnHealthChanged += uiController.UpdatePlayerHealthSlider;
-        uiController.UpdatePlayerHealthSlider(player.playerHp, player.maxHp); // ÃÊ±â HP ¼³Á¤
+        player.OnPPChanged += uiController.UpdatePlayerPPSlider;
+        player.OnLevelChanged += uiController.UpdatePlayerLevel;
+        player.OnPortraitChanged += uiController.UpdatePlayerPortrait;
+        uiController.UpdatePlayerHealthSlider(player.playerHp, player.maxHp);
+        uiController.UpdatePlayerPPSlider(player.playerPp, player.maxMp);
+        uiController.UpdatePlayerLevel(player.level);
+        uiController.UpdatePlayerPortrait(player.portrait);
 
         player.OnPlayerDeath += () => stateMachine.ChangeState(BattleState.Lose);
 
+        // Enemy ì´ë²¤íŠ¸ êµ¬ë…
         enemy.OnHealthChanged += uiController.UpdateEnemyHealthSlider;
+        enemy.OnPPChanged += uiController.UpdateEnemyPPSlider;
         uiController.UpdateEnemyHealthSlider(enemy.enemyHp, enemy.maxHp);
+        uiController.UpdateEnemyPPSlider(enemy.enemyPp, enemy.maxPp);
+        uiController.UpdateEnemyLevel(enemy.level);
+        uiController.UpdateEnemyPortrait(enemy.portrait);
 
-        enemy.OnEnemyDeath += () => stateMachine.ChangeState(BattleState.Win);
+        enemy.OnEnemyDeath += OnEnemyDefeated;
 
         stateMachine.ChangeState(BattleState.Start);
 
-        // ÀüÅõ ½ÃÀÛ ¸Ş½ÃÁö
+        // ì „íˆ¬ ì‹œì‘ ë©”ì‹œì§€
         uiController.SetBattleLog("Battle Start!");
         yield return new WaitForSeconds(1f);
 
@@ -64,32 +76,32 @@ public class BattleFlowController : MonoBehaviour
             switch (stateMachine.BattleState)
             {
                 case BattleState.PlayerTurn:
-                    uiController.SetBattleLog($"ÀüÅõ »óÈ²: {stateMachine.BattleState}\n");
+                    uiController.SetBattleLog($"ì „íˆ¬ ìƒíƒœ: {stateMachine.BattleState}\n");
                     yield return StartCoroutine(turnExecutor.ExecutePlayerTurn());
 
-                    // »ç¸Á Ã¼Å©
+                    // ìŠ¹ë¶€ í™•ì¸
                     if (CheckBattleEnd())
                         break;
 
-                    // PlayerTurn ¿Ï·á ÈÄ EnemyTurnÀ¸·Î ÀüÈ¯
+                    // PlayerTurn ì™„ë£Œ í›„ EnemyTurnìœ¼ë¡œ ì „í™˜
                     stateMachine.ChangeState(BattleState.EnemyTurn);
                     break;
 
                 case BattleState.EnemyTurn:
-                    uiController.SetBattleLog($"ÀüÅõ »óÈ²: {stateMachine.BattleState}\n");
+                    uiController.SetBattleLog($"ì „íˆ¬ ìƒíƒœ: {stateMachine.BattleState}\n");
                     yield return StartCoroutine(turnExecutor.ExecuteEnemyTurn());
 
-                    // »ç¸Á Ã¼Å©
+                    // ìŠ¹ë¶€ í™•ì¸
                     if (CheckBattleEnd())
                         break;
 
-                    // EnemyTurn ¿Ï·á ÈÄ PlayerTurnÀ¸·Î ÀüÈ¯
+                    // EnemyTurn ì™„ë£Œ í›„ PlayerTurnìœ¼ë¡œ ì „í™˜
                     stateMachine.ChangeState(BattleState.PlayerTurn);
                     break;
             }
         }
 
-        // ÀüÅõ Á¾·á
+        // ì „íˆ¬ ì¢…ë£Œ
         yield return new WaitForSeconds(1f);
         uiController.SetBattleLog($"Battle End: {stateMachine.BattleState}");
         yield return new WaitForSeconds(1f);
@@ -98,7 +110,7 @@ public class BattleFlowController : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀüÅõ Á¾·á Á¶°Ç Ã¼Å©
+    /// ì „íˆ¬ ì¢…ë£Œ ì¡°ê±´ í™•ì¸
     /// </summary>
     public bool CheckBattleEnd()
     {
@@ -110,6 +122,12 @@ public class BattleFlowController : MonoBehaviour
 
         if (enemy.IsDead())
         {
+            // ì ì„ ë¬¼ë¦¬ì³¤ì„ ë•Œ ê²½í—˜ì¹˜ íšë“
+            if (player != null && enemy != null)
+            {
+                player.GainExperience(enemy.expReward);
+                uiController.SetBattleLog($"ê²½í—˜ì¹˜ {enemy.expReward} íšë“!");
+            }
             stateMachine.ChangeState(BattleState.Win);
             return true;
         }
@@ -118,15 +136,29 @@ public class BattleFlowController : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀüÅõ Á¾·á Ã³¸®
+    /// ì ì´ íŒ¨ë°°í–ˆì„ ë•Œ í˜¸ì¶œ
+    /// </summary>
+    private void OnEnemyDefeated()
+    {
+        stateMachine.ChangeState(BattleState.Win);
+    }
+
+    /// <summary>
+    /// ì „íˆ¬ ì¢…ë£Œ ì²˜ë¦¬
     /// </summary>
     private void EndBattle()
     {
+        // Player ì´ë²¤íŠ¸ êµ¬ë… í•´ì œ
         player.OnHealthChanged -= uiController.UpdatePlayerHealthSlider;
-        enemy.OnHealthChanged -= uiController.UpdateEnemyHealthSlider;
-
+        player.OnPPChanged -= uiController.UpdatePlayerPPSlider;
+        player.OnLevelChanged -= uiController.UpdatePlayerLevel;
+        player.OnPortraitChanged -= uiController.UpdatePlayerPortrait;
         player.OnPlayerDeath -= () => stateMachine.ChangeState(BattleState.Lose);
-        enemy.OnEnemyDeath -= () => stateMachine.ChangeState(BattleState.Win);
+
+        // Enemy ì´ë²¤íŠ¸ êµ¬ë… í•´ì œ
+        enemy.OnHealthChanged -= uiController.UpdateEnemyHealthSlider;
+        enemy.OnPPChanged -= uiController.UpdateEnemyPPSlider;
+        enemy.OnEnemyDeath -= OnEnemyDefeated;
 
         uiController.HideBattleUI();
         playerController.SetMovementMode(MovementMode.Walk);

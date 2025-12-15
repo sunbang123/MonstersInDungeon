@@ -12,26 +12,26 @@ public class LobbyManager : MonoBehaviour
 
     private void Start()
     {
-        // UserDataManager°¡ ÃÊ±âÈ­µÇ¾ú´ÂÁö È®ÀÎ
+        // UserDataManagerï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
         if (UserDataManager.Instance == null)
         {
-            Debug.LogError("UserDataManager°¡ ÃÊ±âÈ­µÇÁö ¾Ê¾Ò½À´Ï´Ù!");
+            Debug.LogError("UserDataManagerï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½!");
             return;
         }
-        // ÀúÀåµÈ µ¥ÀÌÅÍ Á¸Àç ¿©ºÎ·Î Continue ¹öÆ° È°¼ºÈ­
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î·ï¿½ Continue ï¿½ï¿½Æ° È°ï¿½ï¿½È­
         bool hasPlayerData = UserDataManager.Instance.ExistsSavedData;
         ContinueButton.interactable = hasPlayerData;
         NewGameButton.interactable = true;
         OptionButton.interactable = true;
 
-        Debug.Log($"·Îºñ ÃÊ±âÈ­: ÀúÀåµÈ µ¥ÀÌÅÍ Á¸Àç = {hasPlayerData}");
+        Debug.Log($"ï¿½Îºï¿½ ï¿½Ê±ï¿½È­: ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ = {hasPlayerData}");
     }
 
     public void OnClickContinue()
     {
         if (UserDataManager.Instance == null)
         {
-            Debug.LogError("UserDataManager¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
+            Debug.LogError("UserDataManagerï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½!");
             return;
         }
 
@@ -43,16 +43,25 @@ public class LobbyManager : MonoBehaviour
     {
         if (UserDataManager.Instance == null)
         {
-            Debug.LogError("UserDataManager¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
+            Debug.LogError("UserDataManagerï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½!");
             return;
         }
 
-        Debug.Log("NewGame Å¬¸¯µÊ");
+        Debug.Log("NewGame Å¬ï¿½ï¿½ï¿½ï¿½");
 
-        // StartNewGame ¸Þ¼­µå·Î µ¥ÀÌÅÍ ÃÊ±âÈ­
+        // StartNewGame ï¿½Þ¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
         UserDataManager.Instance.StartNewGame();
 
-        Debug.Log("NewGame ÀÌÈÄ TutorialEnd: " +
+        // ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(SelectedElement)ï¿½ï¿½ ï¿½Ê±ï¿½È­ ï¿½Ï¿ï¿½ ï¿½Þ¸ï¿½ï¿½Îµï¿½ ï¿½Úµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½ï¿½ ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½
+        var status = UserDataManager.Instance.Get<UserPlayerStatusData>();
+        if (status != null)
+        {
+            status.SelectedElement = "";
+            PlayerPrefs.SetString("SelectedElement", "");
+            PlayerPrefs.Save();
+        }
+
+        Debug.Log("NewGame ï¿½ï¿½ï¿½ï¿½ TutorialEnd: " +
             UserDataManager.Instance.Get<UserPlayerStatusData>()?.TutorialEnd);
 
         LoadInGameScene();
@@ -64,7 +73,7 @@ public class LobbyManager : MonoBehaviour
     }
     private void LoadInGameScene()
     {
-        // Addressables ¹æ½ÄÀ¸·Î ¾À ·Îµå
+        // Addressables ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Îµï¿½
         InGameSceneReference.LoadSceneAsync(UnityEngine.SceneManagement.LoadSceneMode.Single);
     }
 }
