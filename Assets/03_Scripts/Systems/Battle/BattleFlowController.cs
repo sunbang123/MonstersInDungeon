@@ -79,7 +79,11 @@ public class BattleFlowController : MonoBehaviour
                         break;
 
                     // PlayerTurn 완료 후 EnemyTurn으로 전환
-                    stateMachine.ChangeState(BattleState.EnemyTurn);
+                    // 단, 이미 EnemyTurn으로 변경되었으면 (아이템 사용, 공격 등) 변경하지 않음
+                    if (stateMachine.BattleState == BattleState.PlayerTurn)
+                    {
+                        stateMachine.ChangeState(BattleState.EnemyTurn);
+                    }
                     break;
 
                 case BattleState.EnemyTurn:

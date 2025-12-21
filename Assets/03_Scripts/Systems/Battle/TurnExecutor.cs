@@ -30,8 +30,14 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     /// </summary>
     public IEnumerator ExecutePlayerTurn()
     {
-        // 버튼 활성화
-        uiController.SetButtonsInteractable(true);
+        // 아이템 사용 중이 아니고, BattleState가 PlayerTurn일 때만 버튼 활성화
+        if (stateMachine.BattleState == BattleState.PlayerTurn && 
+            stateMachine.PlayerState != PlayerState.ItemUse &&
+            stateMachine.PlayerState != PlayerState.Attack &&
+            stateMachine.PlayerState != PlayerState.Defense)
+        {
+            uiController.SetButtonsInteractable(true);
+        }
 
         // 플레이어의 입력을 기다림 (상태가 변경될 때까지)
         yield return new WaitUntil(() => stateMachine.BattleState != BattleState.PlayerTurn);
@@ -63,6 +69,8 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
 
         yield return new WaitForSeconds(1f);
 
+        // PlayerState 리셋 후 BattleState 변경
+        stateMachine.ChangeState(PlayerState.None);
         stateMachine.ChangeState(BattleState.PlayerTurn);
     }
 
@@ -89,6 +97,8 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
 
         yield return new WaitForSeconds(1f);
 
+        // PlayerState 리셋 후 BattleState 변경
+        stateMachine.ChangeState(PlayerState.None);
         stateMachine.ChangeState(BattleState.EnemyTurn);
     }
 
@@ -97,7 +107,11 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     /// </summary>
     public IEnumerator ExecuteItemUse(int itemIndex)
     {
-        uiController.SetButtonsInteractable(false);
+        // 이미 아이템 사용 중이면 무시
+        if (stateMachine.PlayerState == PlayerState.ItemUse)
+        {
+            yield break;
+        }
 
         // 인벤토리에서 아이템 데이터 가져오기
         ItemData itemData = InventoryManager.Instance?.GetBattleSlotItem(itemIndex);
@@ -105,12 +119,16 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
         if (itemData == null)
         {
             BattleUIController.OnBattleLogAppended?.Invoke($"아이템을 찾을 수 없습니다.\n");
+            stateMachine.ChangeState(PlayerState.None);
             stateMachine.ChangeState(BattleState.PlayerTurn);
             uiController.SetButtonsInteractable(true);
             yield break;
         }
 
+        // 버튼은 이미 BattleManager에서 비활성화됨 (중복 클릭 방지)
+        // PlayerState.ItemUse를 설정하여 ExecutePlayerTurn에서 버튼이 다시 활성화되지 않도록 함
         stateMachine.ChangeState(PlayerState.ItemUse);
+        
         BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 {itemData.itemName}을(를) 사용했다.\n");
 
         yield return new WaitForSeconds(1f);
@@ -126,6 +144,9 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
 
         yield return new WaitForSeconds(1f);
 
+        // 아이템 사용 완료 - PlayerState 리셋 후 BattleState 변경
+        stateMachine.ChangeState(PlayerState.None);
+        // BattleState를 EnemyTurn으로 변경하여 ExecutePlayerTurn의 WaitUntil이 깨지도록 함
         stateMachine.ChangeState(BattleState.EnemyTurn);
     }
 
@@ -175,6 +196,8 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
 
         yield return new WaitForSeconds(1f);
 
+        // PlayerState 리셋 후 BattleState 변경
+        stateMachine.ChangeState(PlayerState.None);
         stateMachine.ChangeState(BattleState.EnemyTurn);
     }
 
@@ -201,6 +224,8 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
 
         yield return new WaitForSeconds(1f);
 
+        // PlayerState 리셋 후 BattleState 변경
+        stateMachine.ChangeState(PlayerState.None);
         stateMachine.ChangeState(BattleState.EnemyTurn);
     }
 }

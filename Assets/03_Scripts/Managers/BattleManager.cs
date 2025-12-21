@@ -128,6 +128,9 @@ public class BattleManager : MonoBehaviour
 
     private void OnItemUseClicked(int itemIndex)
     {
+        // 아이템 사용 시작 시 즉시 모든 버튼 비활성화 (중복 클릭 방지)
+        uiController.SetButtonsInteractable(false);
+        
         StartCoroutine(turnExecutor.ExecuteItemUse(itemIndex));
     }
 
