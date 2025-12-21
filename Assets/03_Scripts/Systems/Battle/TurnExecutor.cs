@@ -216,11 +216,15 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
         if (enemy != null)
         {
             float specialAttackDamage = 50f; // 임시 데미지
+            
+            stateMachine.ChangeState(EnemyState.Damaged);
+            BattleUIController.OnBattleLogAppended?.Invoke($"적에게 큰 데미지!\n");
+            
+            // 데미지 메시지가 먼저 표시된 후 데미지 적용
+            yield return null;
+            
             enemy.TakeDamage(specialAttackDamage);
         }
-
-        stateMachine.ChangeState(EnemyState.Damaged);
-        BattleUIController.OnBattleLogAppended?.Invoke($"적에게 큰 데미지!\n");
 
         yield return new WaitForSeconds(1f);
 

@@ -30,14 +30,22 @@ public abstract class Unit : MonoBehaviour
 
         InvokeHealthChanged(currentHp, maxHp);
 
-        // 공격받는 이펙트 생성
+        // 공격받는 이펙트 생성 (1초 후 자동 제거)
         StartCoroutine(LoadAndSpawnBattleEffect());
 
         // 쓰러짐 확인
         if (currentHp <= 0f && !isDead)
         {
             Debug.Log($"[쓰러짐] {gameObject.name}이(가) 쓰러졌습니다.");
-            Die();
+            // 적인 경우 코루틴으로 지연 처리
+            if (this is Enemy)
+            {
+                StartCoroutine(DelayedEnemyDeath());
+            }
+            else
+            {
+                Die();
+            }
         }
     }
 
@@ -87,7 +95,38 @@ public abstract class Unit : MonoBehaviour
             effectInstance.transform.localRotation = Quaternion.identity;
 
             Debug.Log($"[이펙트 생성] {gameObject.name}에 battleEffect 이펙트가 생성되었습니다.");
+            
+            // 1초 후 이펙트 제거
+            StartCoroutine(DestroyEffectAfterDelay(effectInstance, 1f));
         }
+    }
+
+    /// <summary>
+    /// 일정 시간 후 이펙트를 제거하는 코루틴
+    /// </summary>
+    private IEnumerator DestroyEffectAfterDelay(GameObject effect, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (effect != null)
+        {
+            Destroy(effect);
+        }
+    }
+
+    /// <summary>
+    /// 적의 죽음을 지연시키는 코루틴 (메시지 표시 후 죽음 처리)
+    /// </summary>
+    private IEnumerator DelayedEnemyDeath()
+    {
+        // "적에게 큰 데미지!" 같은 데미지 메시지가 먼저 표시되도록 약간의 지연
+        yield return new WaitForSeconds(1f);
+        
+        // "적이 쓰러졌습니다" 메시지 표시 (줄바꿈 후 추가)
+        BattleUIController.OnBattleLogAppended?.Invoke($"적이 쓰러졌습니다.\n");
+        yield return new WaitForSeconds(1f);
+        
+        // 그 다음 죽음 처리
+        Die();
     }
 
     /// <summary>

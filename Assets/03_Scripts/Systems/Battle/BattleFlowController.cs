@@ -119,15 +119,14 @@ public class BattleFlowController : MonoBehaviour
             return true;
         }
 
-        if (enemy.IsDead())
+        // 적의 HP가 0 이하이거나 이미 죽은 경우
+        if (enemy != null && (enemy.enemyHp <= 0f || enemy.IsDead()))
         {
-            // 적을 물리쳤을 때 경험치 획득
-            if (player != null && enemy != null)
+            // 아직 Win 상태가 아니면 Win 상태로 변경 (중복 방지)
+            if (stateMachine.BattleState != BattleState.Win)
             {
-                player.GainExperience(enemy.expReward);
-                BattleUIController.OnBattleLogChanged?.Invoke($"경험치 {enemy.expReward} 획득!");
+                stateMachine.ChangeState(BattleState.Win);
             }
-            stateMachine.ChangeState(BattleState.Win);
             return true;
         }
 
@@ -135,11 +134,30 @@ public class BattleFlowController : MonoBehaviour
     }
 
     /// <summary>
-    /// 적이 패배했을 때 호출
+    /// 적이 패배했을 때 호출 (코루틴으로 메시지 표시 후 전투 종료)
     /// </summary>
     private void OnEnemyDefeated()
     {
-        stateMachine.ChangeState(BattleState.Win);
+        StartCoroutine(HandleEnemyDefeat());
+    }
+
+    /// <summary>
+    /// 적 패배 처리 코루틴 (경험치 처리만 담당)
+    /// </summary>
+    private IEnumerator HandleEnemyDefeat()
+    {
+        // 이미 "적이 쓰러졌습니다" 메시지가 표시되었으므로
+        // 잠시 대기 후 경험치 표시
+        yield return new WaitForSeconds(1f);
+        
+        // 경험치 획득
+        if (player != null && enemy != null)
+        {
+            player.GainExperience(enemy.expReward);
+            BattleUIController.OnBattleLogChanged?.Invoke($"경험치 {enemy.expReward} 획득!");
+        }
+        
+        // Win 상태는 CheckBattleEnd()에서 이미 변경됨
     }
 
     /// <summary>
