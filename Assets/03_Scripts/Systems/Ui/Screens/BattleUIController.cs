@@ -78,6 +78,13 @@ public class BattleUIController : MonoBehaviour
             UpdatePlayerPortrait(player.portrait);
         }
 
+        // InventoryManager 이벤트 구독
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.OnBattleSlotVisibilityChanged += OnBattleSlotVisibilityChanged;
+            InventoryManager.Instance.OnInventoryChanged += OnInventoryChanged;
+        }
+
         // 전투 로그 이벤트 구독
         OnBattleLogChanged += SetBattleLog;
         OnBattleLogAppended += AppendBattleLog;
@@ -107,6 +114,20 @@ public class BattleUIController : MonoBehaviour
         if (Atk_btn != null)
             Atk_btn.onClick.AddListener(() => OnAttackClicked?.Invoke());
 
+        BindItemButtons();
+
+        if (specialAtk_btn != null)
+            specialAtk_btn.onClick.AddListener(() => OnSpecialAttackClicked?.Invoke());
+
+        if (defense_btn != null)
+            defense_btn.onClick.AddListener(() => OnDefenseClicked?.Invoke());
+    }
+
+    /// <summary>
+    /// 아이템 버튼만 바인딩하는 메서드
+    /// </summary>
+    private void BindItemButtons()
+    {
         if (item_btn != null && item_btn.Count > 0)
         {
             for (int i = 0; i < item_btn.Count; i++)
@@ -115,12 +136,6 @@ public class BattleUIController : MonoBehaviour
                 item_btn[i].onClick.AddListener(() => OnItemUseClicked?.Invoke(index));
             }
         }
-
-        if (specialAtk_btn != null)
-            specialAtk_btn.onClick.AddListener(() => OnSpecialAttackClicked?.Invoke());
-
-        if (defense_btn != null)
-            defense_btn.onClick.AddListener(() => OnDefenseClicked?.Invoke());
     }
 
     /// <summary>
@@ -145,6 +160,40 @@ public class BattleUIController : MonoBehaviour
 
         if (defense_btn != null)
             defense_btn.interactable = interactable;
+    }
+
+    /// <summary>
+    /// 배틀 인벤토리 슬롯 가시성 변경 이벤트 핸들러
+    /// </summary>
+    private void OnBattleSlotVisibilityChanged(int slotIndex, bool isVisible)
+    {
+        if (item_btn != null && slotIndex >= 0 && slotIndex < item_btn.Count)
+        {
+            if (item_btn[slotIndex] != null)
+            {
+                item_btn[slotIndex].interactable = isVisible;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 인벤토리 변경 이벤트 핸들러 - 버튼을 다시 가져와서 바인딩
+    /// </summary>
+    private void OnInventoryChanged()
+    {
+        // 기존 아이템 버튼 리스너 제거
+        if (item_btn != null)
+        {
+            foreach (var btn in item_btn)
+            {
+                if (btn != null)
+                    btn.onClick.RemoveAllListeners();
+            }
+        }
+
+        // 버튼 다시 가져오기 및 아이템 버튼만 바인딩
+        GetInventoryButtons();
+        BindItemButtons();
     }
 
 
@@ -292,6 +341,13 @@ public class BattleUIController : MonoBehaviour
             player.OnLevelChanged -= UpdatePlayerLevel;
             player.OnExpChanged -= UpdatePlayerExpSlider;
             player.OnPortraitChanged -= UpdatePlayerPortrait;
+        }
+
+        // InventoryManager 이벤트 구독 해제
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.OnBattleSlotVisibilityChanged -= OnBattleSlotVisibilityChanged;
+            InventoryManager.Instance.OnInventoryChanged -= OnInventoryChanged;
         }
 
         // 전투 로그 이벤트 구독 해제

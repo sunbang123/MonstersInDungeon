@@ -244,4 +244,115 @@ public class InventoryManager : MonoBehaviour
         // 인벤토리 변경 이벤트 발행
         OnInventoryChanged?.Invoke();
     }
+
+    /// <summary>
+    /// 전투 인벤토리의 특정 슬롯에서 아이템 데이터를 가져옵니다.
+    /// </summary>
+    /// <param name="slotIndex">슬롯 인덱스 (버튼 인덱스)</param>
+    /// <returns>아이템 데이터, 없으면 null</returns>
+    public ItemData GetBattleSlotItem(int slotIndex)
+    {
+        // 버튼 인덱스를 기반으로 실제 아이템이 있는 슬롯을 찾습니다.
+        // 재정렬 후에는 버튼 인덱스와 슬롯 인덱스가 일치해야 하지만,
+        // 안전을 위해 실제 아이템이 있는 슬롯을 찾습니다.
+        if (slotIndex >= 0 && slotIndex < b_Slots.Count)
+        {
+            ItemSlot slot = b_Slots[slotIndex];
+            if (slot != null && !slot.IsEmpty())
+            {
+                return slot.GetItemData();
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 전투 인벤토리의 특정 슬롯에서 아이템을 제거합니다.
+    /// </summary>
+    /// <param name="slotIndex">슬롯 인덱스</param>
+    /// <returns>제거 성공 여부</returns>
+    public bool RemoveBattleSlotItem(int slotIndex)
+    {
+        if (slotIndex >= 0 && slotIndex < b_Slots.Count)
+        {
+            ItemSlot slot = b_Slots[slotIndex];
+            if (slot != null && !slot.IsEmpty())
+            {
+                ItemData itemData = slot.GetItemData();
+                
+                // 전투 슬롯에서 제거
+                slot.Clear();
+                
+                // 일반 인벤토리에서도 같은 아이템 제거 (동기화)
+                RemoveItemFromInventory(itemData);
+                
+                // 슬롯 재정렬 (뒤의 아이템들을 앞으로 당김)
+                ReorganizeBattleSlots();
+                
+                // 슬롯 가시성 업데이트
+                UpdateSlotVisibility();
+                
+                // 인벤토리 변경 이벤트 발행
+                OnInventoryChanged?.Invoke();
+                
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// 전투 슬롯을 재정렬합니다. 빈 슬롯을 뒤로 밀고 아이템이 있는 슬롯을 앞으로 당깁니다.
+    /// </summary>
+    private void ReorganizeBattleSlots()
+    {
+        // 모든 아이템을 임시 리스트에 저장
+        List<ItemData> itemList = new List<ItemData>();
+        for (int i = 0; i < b_Slots.Count; i++)
+        {
+            if (b_Slots[i] != null && !b_Slots[i].IsEmpty())
+            {
+                itemList.Add(b_Slots[i].GetItemData());
+                b_Slots[i].Clear();
+            }
+        }
+
+        // 앞에서부터 아이템을 다시 배치
+        for (int i = 0; i < itemList.Count && i < b_Slots.Count; i++)
+        {
+            if (b_Slots[i] != null)
+            {
+                b_Slots[i].SetItem(itemList[i]);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 일반 인벤토리에서 특정 아이템을 제거합니다.
+    /// </summary>
+    /// <param name="itemData">제거할 아이템 데이터</param>
+    private void RemoveItemFromInventory(ItemData itemData)
+    {
+        if (itemData == null) return;
+
+        // 일반 인벤토리에서 같은 아이템 찾아서 제거
+        for (int i = 0; i < slots.Count; i++)
+        {
+            ItemSlot slot = slots[i];
+            if (slot != null && !slot.IsEmpty())
+            {
+                ItemData slotItem = slot.GetItemData();
+                if (slotItem != null && slotItem.itemName == itemData.itemName)
+                {
+                    slot.Clear();
+                    // 첫 번째 일치하는 아이템만 제거하고 종료
+                    break;
+                }
+            }
+        }
+
+        // items 리스트에서도 제거
+        items.RemoveAll(item => item != null && item.itemName == itemData.itemName);
+    }
+
 }
