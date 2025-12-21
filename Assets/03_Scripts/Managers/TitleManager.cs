@@ -18,7 +18,7 @@ public class AddressableGroup
 
 public class TitleManager : MonoBehaviour
 {
-    // ·Î°í
+    // ë¡œê³ 
     public Animator LogoAnimator;
     public TextMeshProUGUI LogoTxt;
 
@@ -27,12 +27,12 @@ public class TitleManager : MonoBehaviour
     public float LogoAnimationDuration = 0.7f;
 
     [Header("Addressable Settings")]
-    public AssetReference LobbySceneReference; // Addressable ¾ÀÀ» Á÷Á¢ µå·¡±×
+    public AssetReference LobbySceneReference; // Addressable ì‹œìŠ¤í…œ ì‚¬ìš© ê¶Œì¥
 
     [Header("Addressable Groups to Load")]
     public List<AddressableGroup> GroupsToLoad = new List<AddressableGroup>();
 
-    // Å¸ÀÌÆ²
+    // íƒ€ì´í‹€
     public GameObject Title;
     public Slider LoadingSlider;
     public TextMeshProUGUI LoadingProgressTxt;
@@ -54,18 +54,18 @@ public class TitleManager : MonoBehaviour
 
     private IEnumerator LoadGameCo()
     {
-        // 1) ·Î°í ¾Ö´Ï¸ŞÀÌ¼Ç
+        // 1) ë¡œê³  ì• ë‹ˆë©”ì´ì…˜
         LogoAnimator.Play(LogoAnimationStateName);
         yield return new WaitForSeconds(LogoAnimationDuration);
 
         LogoAnimator.gameObject.SetActive(false);
         Title.SetActive(true);
 
-        // 2) ÇÁ¸®·Îµå
+        // 2) ì—ì…‹í”„ë¦¬ë¡œë“œ
         LoadingItemsTxt.text = "Loading Assets...";
         yield return StartCoroutine(PreloadAssetGroups());
 
-        // 3) ·Îºñ ¾À ·Îµù
+        // 3) ë¡œë¹„ ì”¬ ë¡œë“œ
         LoadingItemsTxt.text = "Loading Scene...";
         var handle = LobbySceneReference.LoadSceneAsync(LoadSceneMode.Single, false);
 
@@ -76,10 +76,10 @@ public class TitleManager : MonoBehaviour
             yield return null;
         }
 
-        // 4) ¾À È°¼ºÈ­
+        // 4) ì”¬ í™œì„±í™”
         yield return handle.Result.ActivateAsync();
 
-        // 5) À¯Àú µ¥ÀÌÅÍ Àû¿ë
+        // 5) ì €ì¥ ë°ì´í„° ë¡œë“œ
         UserDataManager.Instance.LoadUserData();
         ApplyLoadedUserData();
     }
@@ -111,12 +111,12 @@ public class TitleManager : MonoBehaviour
 
             LoadingItemsTxt.text = $"Loading {group.GroupName}...";
 
-            // BuiltInData + Prefab ¸ğµÎ ·Îµå
+            // BuiltInData + Prefab ëª¨ë‘ ë¡œë“œ
             var handle = Addressables.LoadAssetsAsync<object>(
                 group.LabelReference.labelString,
                 loadedAsset =>
                 {
-                    // Prefab¸¸ Ç®¿¡ µî·Ï
+                    // Prefabì„ ë“±ë¡í•˜ëŠ” ë¡œì§
                     if (loadedAsset is GameObject go)
                     {
                         GameManager.Instance.RegisterPrefab(group.GroupName, go);
@@ -137,7 +137,7 @@ public class TitleManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        // ÇÁ¸®·ÎµåµÈ ¿¡¼Â ÇØÁ¦
+        // ì—ì…‹í”„ë¦¬ë¡œë“œ í•´ì œ ì²˜ë¦¬
         foreach (var handle in m_PreloadHandles)
         {
             if (handle.IsValid())
@@ -147,7 +147,7 @@ public class TitleManager : MonoBehaviour
         }
         m_PreloadHandles.Clear();
 
-        // ¾À ¾ğ·Îµå
+        // ì”¬ ì–¸ë¡œë“œ
         if (m_SceneLoadHandle.IsValid())
         {
             Addressables.UnloadSceneAsync(m_SceneLoadHandle);

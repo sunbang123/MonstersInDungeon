@@ -1,9 +1,9 @@
 public interface IUserData
 {
-    // ±âº»°ªÀ¸·Î µ¥ÀÌÅÍ ÃÊ±âÈ­
+    // ê¸°ë³¸ë°ì´í„°ë¡œ ë°ì´í„°ë¥¼ ì´ˆê¸°í™”
     void SetDefaultData();
-    // µ¥ÀÌÅÍ ·Îµå
+    // ë°ì´í„°ë¥¼ ë¡œë“œ
     bool LoadData();
-    // µ¥ÀÌÅÍ ÀúÀå
+    // ë°ì´í„°ë¥¼ ì €ì¥
     bool SaveData();
 }

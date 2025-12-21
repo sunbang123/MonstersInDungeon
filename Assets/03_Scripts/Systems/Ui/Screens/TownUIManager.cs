@@ -8,8 +8,8 @@ public class TownUIManager : MonoBehaviour
 {
     public TMP_Text mapText;
     public TMP_Text townText;
-    private float fadeDuration = 1f; //ÆäÀÌµå ÀÎ¾Æ¿ô ½Ã°£
-    private float showDuration = 1.5f; //À¯Áö ½Ã°£
+    private float fadeDuration = 1f; //í˜ì´ë“œ ì¸/ì•„ì›ƒ ì‹œê°„
+    private float showDuration = 1.5f; //í‘œì‹œ ì‹œê°„
 
 
     private Coroutine fadeRoutine;
@@ -49,7 +49,7 @@ public class TownUIManager : MonoBehaviour
         c.a = 1f;
         townText.color = c;
 
-        // À¯Áö ½Ã°£
+        // í‘œì‹œ ì‹œê°„
         yield return new WaitForSeconds(showDuration);
 
         // Fade Out

@@ -10,22 +10,22 @@ public class TutorialCanvas : TutorialBehaviour
 
     protected override IEnumerator Start()
     {
-        // ºÎ¸ğ Start() ¸ÕÀú ½ÇÇà (TutorialEnd Ã¼Å©)
+        // ë¶€ëª¨ Start() ë¨¼ì € ì‹¤í–‰ (TutorialEnd ì²´í¬)
         yield return StartCoroutine(base.Start());
 
-        // ºÎ¸ğ°¡ Destroy(gameObject)¸¦ ÇßÀ¸¸é ¿©±â¼­ Á¾·á
+        // ë¶€ëª¨ Destroy(gameObject)ë¥¼ í–ˆìœ¼ë©´ ì—¬ê¸°ì„œ ì¢…ë£Œ
         if (this == null)
             yield break;
 
-        // 1) ¸Ç À§·Î ¿Ã¸®±â
+        // 1) ìº”ë²„ìŠ¤ë¥¼ ìµœìƒìœ„ë¡œ ì˜¬ë¦¬ê¸°
         transform.SetAsLastSibling();
 
-        // 2) ÆäÀÌµå ÀÎ ÁØºñ
+        // 2) í˜ì´ë“œì¸ ì¤€ë¹„
         cg = GetComponent<CanvasGroup>();
         if (cg == null) cg = gameObject.AddComponent<CanvasGroup>();
         cg.alpha = 0f;
 
-        // 3) ÆäÀÌµå ÀÎ ½ÃÀÛ
+        // 3) í˜ì´ë“œì¸ ì‹œì‘
         yield return StartCoroutine(FadeIn());
     }
 

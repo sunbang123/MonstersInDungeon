@@ -8,14 +8,14 @@ public class Quest : TutorialBehaviour
 
     protected override IEnumerator Start()
     {
-        // ºÎ¸ğ Start() ¸ÕÀú ½ÇÇà (Æ©Åä¸®¾ó ³¡³µÀ¸¸é ¿©±â¼­ DestroyµÊ)
+        // ë¶€ëª¨ Start() ë¨¼ì € ì‹¤í–‰ (íŠœí† ë¦¬ì–¼ ì‹œìŠ¤í…œì—ì„œ ì¡°ê±´ ì²´í¬ í›„ Destroyë¥¼)
         yield return StartCoroutine(base.Start());
 
-        // ºÎ¸ğ°¡ Destroy(gameObject) Çß´Ù¸é ¿©±â¼­ Á¾·á
+        // ë¶€ëª¨ Destroy(gameObject) í–ˆë‹¤ë©´ ì—¬ê¸°ì„œ ì¢…ë£Œ
         if (this == null)
             yield break;
 
-        // ¹öÆ° ÀÌº¥Æ® µî·Ï
+        // ë²„íŠ¼ ì´ë²¤íŠ¸ ì—°ê²°
         var btn = GetComponent<Button>();
         if (btn != null)
             btn.onClick.AddListener(Toggle);

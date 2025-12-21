@@ -3,24 +3,24 @@ using UnityEngine;
 
 public class GameManager : SingletonBehaviour<GameManager>
 {
-    // Ä«Å×°í¸®º°·Î ÇÁ¸®ÆÕÀ» ÀúÀåÇÏ´Â µñ¼Å³Ê¸®
+    // ì¹´í…Œê³ ë¦¬ë³„ë¡œ í”„ë¦¬íŒ¹ì„ ì €ì¥í•˜ëŠ” ë”•ì…”ë„ˆë¦¬
     private Dictionary<string, List<GameObject>> prefabPool = new Dictionary<string, List<GameObject>>();
 
-    // ÇÁ¸®ÆÕ ÀÌ¸§À¸·Î ºü¸£°Ô Ã£±â À§ÇÑ µñ¼Å³Ê¸®
+    // í”„ë¦¬íŒ¹ ì´ë¦„ìœ¼ë¡œ í”„ë¦¬íŒ¹ì„ ì°¾ê¸° ìœ„í•œ ë”•ì…”ë„ˆë¦¬
     private Dictionary<string, GameObject> prefabByName = new Dictionary<string, GameObject>();
 
     protected override void Init()
     {
         base.Init();
 
-        // GameManager´Â ¾À ÀüÈ¯ ½Ã¿¡µµ À¯Áö
+        // GameManagerëŠ” ì”¬ ì „í™˜ ì‹œì—ë„ ìœ ì§€
         DontDestroyOnLoad(gameObject);
 
         Logger.Log("GameManager initialized");
     }
 
     /// <summary>
-    /// Addressable¿¡¼­ ·ÎµåÇÑ ÇÁ¸®ÆÕÀ» Ç®¿¡ µî·Ï
+    /// Addressableì—ì„œ ë¡œë“œí•œ í”„ë¦¬íŒ¹ì„ ë“±ë¡í•˜ëŠ” í•¨ìˆ˜
     /// </summary>
     public void RegisterPrefab(string category, GameObject prefab)
     {
@@ -30,20 +30,20 @@ public class GameManager : SingletonBehaviour<GameManager>
             return;
         }
 
-        // Ä«Å×°í¸®º° ¸®½ºÆ® ÃÊ±âÈ­
+        // ì¹´í…Œê³ ë¦¬ë³„ ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™”
         if (!prefabPool.ContainsKey(category))
         {
             prefabPool[category] = new List<GameObject>();
         }
 
-        // Áßº¹ Ã¼Å©
+        // ì¤‘ë³µ í™•ì¸
         if (prefabPool[category].Contains(prefab))
         {
             Logger.LogWarning($"Prefab {prefab.name} already registered in {category}");
             return;
         }
 
-        // Ç®¿¡ Ãß°¡
+        // í”„ë¦¬íŒ¹ ì¶”ê°€
         prefabPool[category].Add(prefab);
         prefabByName[prefab.name] = prefab;
 
@@ -51,7 +51,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     /// <summary>
-    /// Ä«Å×°í¸®·Î ÇÁ¸®ÆÕ ¸®½ºÆ® °¡Á®¿À±â
+    /// ì¹´í…Œê³ ë¦¬ë³„ë¡œ í”„ë¦¬íŒ¹ ë¦¬ìŠ¤íŠ¸ë¥¼ ë°˜í™˜
     /// </summary>
     public List<GameObject> GetPrefabsByCategory(string category)
     {
@@ -65,7 +65,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     /// <summary>
-    /// ÇÁ¸®ÆÕ ÀÌ¸§À¸·Î °¡Á®¿À±â
+    /// í”„ë¦¬íŒ¹ ì´ë¦„ìœ¼ë¡œ í”„ë¦¬íŒ¹ì„ ë°˜í™˜
     /// </summary>
     public GameObject GetPrefabByName(string prefabName)
     {
@@ -79,7 +79,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     /// <summary>
-    /// ÇÁ¸®ÆÕ ÀÎ½ºÅÏ½º »ı¼º
+    /// í”„ë¦¬íŒ¹ ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
     /// </summary>
     public GameObject InstantiatePrefab(string prefabName, Vector3 position, Quaternion rotation)
     {
@@ -95,7 +95,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     /// <summary>
-    /// ÇÁ¸®ÆÕ ÀÎ½ºÅÏ½º »ı¼º (À§Ä¡¸¸)
+    /// í”„ë¦¬íŒ¹ ì¸ìŠ¤í„´ìŠ¤ ìƒì„± (ìœ„ì¹˜ë§Œ)
     /// </summary>
     public GameObject InstantiatePrefab(string prefabName, Vector3 position)
     {
@@ -103,7 +103,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     /// <summary>
-    /// ÇÁ¸®ÆÕ ÀÎ½ºÅÏ½º »ı¼º (±âº» À§Ä¡)
+    /// í”„ë¦¬íŒ¹ ì¸ìŠ¤í„´ìŠ¤ ìƒì„± (ê¸°ë³¸ ìœ„ì¹˜)
     /// </summary>
     public GameObject InstantiatePrefab(string prefabName)
     {
@@ -111,7 +111,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     /// <summary>
-    /// Ä«Å×°í¸®ÀÇ ·£´ı ÇÁ¸®ÆÕ °¡Á®¿À±â
+    /// ì¹´í…Œê³ ë¦¬ì—ì„œ ëœë¤ í”„ë¦¬íŒ¹ì„ ë°˜í™˜
     /// </summary>
     public GameObject GetRandomPrefabFromCategory(string category)
     {
@@ -127,7 +127,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     /// <summary>
-    /// Ä«Å×°í¸®ÀÇ ·£´ı ÇÁ¸®ÆÕ ÀÎ½ºÅÏ½º »ı¼º
+    /// ì¹´í…Œê³ ë¦¬ì—ì„œ ëœë¤ í”„ë¦¬íŒ¹ ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
     /// </summary>
     public GameObject InstantiateRandomFromCategory(string category, Vector3 position, Quaternion rotation)
     {
@@ -142,7 +142,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     /// <summary>
-    /// ·ÎµåµÈ ¸ğµç ÇÁ¸®ÆÕ Á¤º¸ Ãâ·Â (µğ¹ö±×¿ë)
+    /// ë¡œë“œëœ ëª¨ë“  í”„ë¦¬íŒ¹ ëª©ë¡ ì¶œë ¥ (ë””ë²„ê¹…ìš©)
     /// </summary>
     public void PrintLoadedPrefabs()
     {
@@ -160,7 +160,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     /// <summary>
-    /// Æ¯Á¤ Ä«Å×°í¸®°¡ ·ÎµåµÇ¾ú´ÂÁö È®ÀÎ
+    /// íŠ¹ì • ì¹´í…Œê³ ë¦¬ê°€ ë¡œë“œë˜ì—ˆëŠ”ì§€ í™•ì¸
     /// </summary>
     public bool IsCategoryLoaded(string category)
     {
@@ -168,7 +168,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     /// <summary>
-    /// Æ¯Á¤ ÇÁ¸®ÆÕÀÌ ·ÎµåµÇ¾ú´ÂÁö È®ÀÎ
+    /// íŠ¹ì • í”„ë¦¬íŒ¹ì´ ë¡œë“œë˜ì—ˆëŠ”ì§€ í™•ì¸
     /// </summary>
     public bool IsPrefabLoaded(string prefabName)
     {
@@ -176,7 +176,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     /// <summary>
-    /// Ç® ÃÊ±âÈ­
+    /// í’€ ì´ˆê¸°í™”
     /// </summary>
     public void ClearPool()
     {

@@ -1,15 +1,15 @@
 using UnityEngine;
 
-// IUserData ÀáÀçÀû ¼öÁ¤»çÇ×À» Ç¥½ÃÇØ¼­ ÀÎÅÍÆäÀÌ½º ±¸ÇöÀ» ¼±ÅÃ
-// ÀÚµ¿À¸·Î ÇÔ¼ö ¸¸µé¾îÁü
+// IUserData ì¸í„°í˜ì´ìŠ¤ë¥¼ êµ¬í˜„í•˜ì—¬ ë°ì´í„° ì €ì¥/ë¡œë“œ ê¸°ëŠ¥ ì œê³µ
+// ì½”ë“œì¤‘ë³µì„ í•¨ìˆ˜ë¡œ ì¶”ìƒí™”
 public class UserSettingsData : IUserData
 {
-    // »ç¿îµå on / off ¿©ºÎ
+    // ì‚¬ìš´ë“œ on / off ì„¤ì •
     public bool Sound { get; set; }
 
     public void SetDefaultData()
     {
-        // GetType()À» È£ÃâÇØ Å¬·¡½º¸í Ãâ·ÂÇÏ°í ÇÔ¼ö¸íÀ» ±×´ë·Î Ãâ·Â
+        // GetType()ì„ í˜¸ì¶œí•´ í´ë˜ìŠ¤ ì´ë¦„ì„ ì¶œë ¥í•˜ê³  í•¨ìˆ˜ëª…ë„ ê°™ì´ ì¶œë ¥
         Logger.Log($"{GetType()}::SetDefaultData");
 
         Sound = true;
@@ -20,17 +20,17 @@ public class UserSettingsData : IUserData
         Logger.Log($"{GetType()}::LoadData");
 
         bool result = false;
-        // (Æ®¶óÀÌ Ä³Ä¡¹®À» ÀÛ¼ºÇÒ¶§ tryÄ¡°í ÅÇÀ» µÎ¹ø ÇÏ¸é ÀÚµ¿À¸·Î Áö¹®ÀÌ ÀÛ¼ºµÊ.)
+        // (íŠ¸ëœì­ì…˜ì²˜ëŸ¼ ì²˜ë¦¬í•  ì‘ì„±í•  ë•Œ tryë¸”ë¡ìœ¼ë¡œ ê°ì‹¸ë©´ ì½”ë“œì¤‘ë³µì„ ì¤„ì¼ ìˆ˜ ìˆë‹¤.)
         try
         {
-            // ÇÃ·¹ÀÌ¾î ÇÁ¸®ÆÕ½º°¡ ºÒ¸®¾ğ °ªÀº Á¦°øÇÏÁö ¾Ê±â ¶§¹®¿¡ Á¤¼ö°ª ºñ±³ÇØ¼­ bool·Î º¯°æ
-            // ÇÃ·¹ÀÌ¾î ÇÁ¸®ÆÕ½º´Â Á¤¼ö, ½ºÆ®¸µ, ÇÃ·ÎÆ® °ª¸¸ ÀúÀå °¡´É.
+            // í”Œë ˆì´ì–´ ì„¤ì •ë°ì´í„°ë¥¼ ë¶ˆëŸ¬ì™€ì„œ ê¸°ë³¸ ë°ì´í„°ë¡œ ì´ˆê¸°í™”í•  í•„ìš”ê°€ ìˆì„ ë•Œ boolë¡œ ë°˜í™˜
+            // í”Œë ˆì´ì–´ ì„¤ì •ë°ì´í„°ë¥¼ ë¶ˆëŸ¬ì™€, ì‚¬ìš´ë“œ, ë³¼ë¥¨, í¬ì¸íŠ¸ ë“± ì„¤ì • ë¶ˆëŸ¬ì˜¤ê¸°.
             Sound = PlayerPrefs.GetInt("Sound") == 1 ? true : false;
             result = true;
 
             Logger.Log($"Sound:{Sound}");
         }
-        // µ¥ÀÌÅÍ¸¦ ·ÎµåÇÏ°Å³ª ¿¡·¯°¡ ³µÀ» °æ¿ì ¿¡·¯ ¸Ş¼¼Áö Ãâ·Â
+        // ë°ì´í„°ë¥¼ ë¡œë“œí•˜ê±°ë‚˜ ì €ì¥í•  ë•Œ ì˜¤ë¥˜ê°€ ë°œìƒí•˜ë©´ ì—ëŸ¬ ë©”ì‹œì§€ ì¶œë ¥
         catch (System.Exception e)
         {
             Logger.Log("Load failed (" + e.Message + ")");
@@ -47,7 +47,7 @@ public class UserSettingsData : IUserData
 
         try
         {
-            PlayerPrefs.SetInt("Sound", Sound ? 1 : 0); // »ç¿îµå°¡ true¸é 1, false¸é 0
+            PlayerPrefs.SetInt("Sound", Sound ? 1 : 0); // trueê°€ trueë©´ 1, falseë©´ 0
             PlayerPrefs.Save();
 
             result = true;

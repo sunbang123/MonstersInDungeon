@@ -9,28 +9,28 @@ public enum ConfirmType
 }
 public class ConfirmUIData : BaseUIData
 {
-    public ConfirmType ConfirmType; // ÆË¾÷À¯Çü
-    public string TitleText; // È­¸éÁ¦¸ñ
-    public string DescTxt; // È­¸éÁß¾Ó
-    public string OKBtnTxt; // È®ÀÎ ¹öÆ°
-    public Action OnClickOKBtn; // È®ÀÎ¹öÆ°¿¡ ´©¸¦½Ã Ã³¸®
-    public string CancelBtnTxt; // Ãë¼Ò ¹öÆ°¿¡ º¸¿©Áú ÅØ½ºÆ®
-    public Action OnClickCancelBtn;// Ãë¼Ò¹öÆ° ´©·²¤¶À»½Ã
+    public ConfirmType ConfirmType; // í™•ì¸íƒ€ì…
+    public string TitleText; // í™”ë©´ì œëª©
+    public string DescTxt; // í™”ë©´ë‚´ìš©
+    public string OKBtnTxt; // í™•ì¸ ë²„íŠ¼
+    public Action OnClickOKBtn; // í™•ì¸ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ ì²˜ë¦¬
+    public string CancelBtnTxt; // ì·¨ì†Œ ë²„íŠ¼ì— ë“¤ì–´ê°ˆ í…ìŠ¤íŠ¸
+    public Action OnClickCancelBtn;// ì·¨ì†Œë²„íŠ¼ì„ ëˆŒë €ì„ë•Œ
 }
 public class ConfirmUI : BaseUI
 {
-    public TextMeshProUGUI TitleTxt = null; // È­¸é Á¦¸ñ ÅØ½ºÆ®
-    public TextMeshProUGUI DescTxt = null; // È­¸é Áß¾Ó¿¡ ¼³Ä¡
-    public Button OKBtn = null; // È®ÀÎ¹öÆ°¼±¾ğ
-    public Button CancelBtn = null; // Ãë¼Ò ¹öÆ° ¼±¾ğ
-    public TextMeshProUGUI OKBtnTxt = null; // È®ÀÎ¹öÆ°ÅØ½ºÆ®
-    public TextMeshProUGUI CancelBtnTxt = null; // Ãë¼Ò¹öÆ°
+    public TextMeshProUGUI TitleTxt = null; // í™”ë©´ ì œëª© í…ìŠ¤íŠ¸
+    public TextMeshProUGUI DescTxt = null; // í™”ë©´ ì¤‘ì•™ì— ìœ„ì¹˜
+    public Button OKBtn = null; // í™•ì¸ë²„íŠ¼
+    public Button CancelBtn = null; // ì·¨ì†Œ ë²„íŠ¼
+    public TextMeshProUGUI OKBtnTxt = null; // í™•ì¸ë²„íŠ¼í…ìŠ¤íŠ¸
+    public TextMeshProUGUI CancelBtnTxt = null; // ì·¨ì†Œë²„íŠ¼
 
-    // È­¸é¿­¶§ ¸Å°³º¯¼ö·Î ¹ŞÀº UIDaa¸¦ ÀúÀåÇÒ º¯¼ö¼±¾ğ
+    // í™”ë©´ë‚´ì—ì„œ ë§¤ê°œë³€ìˆ˜ë¡œ ë°›ì€ UIDaaë¥¼ ì €ì¥í•˜ê³  ìˆëŠ” ë³€ìˆ˜
     private ConfirmUIData m_ConfirmUIData = null;
-    // È®ÀÎ ¹öÆ°À» ´­·¶À»½Ã ¾×¼Ç¼±¾ğ
+    // í™•ì¸ ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ ì²˜ë¦¬í•  ì•¡ì…˜
     private Action m_OnClickOKBtn = null;
-    // Ãë¼Ò¹öÆ°À» ´­·¶À»½Ã ¾×¼Ç¼±¾ğ
+    // ì·¨ì†Œë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ ì²˜ë¦¬í•  ì•¡ì…˜
     private Action m_OnClickCancelBtn = null;
 
     public override void SetInfo(BaseUIData uiData)

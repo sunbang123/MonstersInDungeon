@@ -101,7 +101,7 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// UI ��ư �̺�Ʈ ����
+    /// UI 버튼 이벤트 구독
     /// </summary>
     private void SubscribeUIEvents()
     {
@@ -112,14 +112,14 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ���� ���� (�ܺο��� ȣ��)
+    /// 전투 시작 (외부에서 호출)
     /// </summary>
     public void StartBattle(Enemy enemy)
     {
         StartCoroutine(flowController.StartBattle(enemy));
     }
 
-    // ========== UI �̺�Ʈ �ڵ鷯 ==========
+    // ========== UI 이벤트 핸들러 ==========
 
     private void OnAttackClicked()
     {
@@ -141,7 +141,7 @@ public class BattleManager : MonoBehaviour
         StartCoroutine(turnExecutor.ExecuteSpecialAttack());
     }
 
-    // ========== ���� ==========
+    // ========== 정리 ==========
 
     protected void OnDestroy()
     {
@@ -151,7 +151,7 @@ public class BattleManager : MonoBehaviour
     private void Dispose()
     {
         m_Instance = null;
-        // UI �̺�Ʈ ���� ����
+        // UI 이벤트 구독 해제
         if (uiController != null)
         {
             uiController.OnAttackClicked -= OnAttackClicked;

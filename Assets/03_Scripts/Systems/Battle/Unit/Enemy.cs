@@ -34,9 +34,9 @@ public class Enemy : Unit
     public event Action OnEnemyDeath;
 
     [Header("Item Drop")]
-    [Tooltip("���� �׾��� �� ����� ������ ������")]
+    [Tooltip("이 적이 죽었을 때 드롭될 아이템의 프리팹")]
     public GameObject dropItemPrefab;
-    [Tooltip("������ ��� Ȯ�� (0 ~ 1)")]
+    [Tooltip("아이템 드롭 확률 (0 ~ 1)")]
     [Range(0f, 1f)]
     public float dropChance = 1f;
 
@@ -49,14 +49,14 @@ public class Enemy : Unit
     }
 
     /// <summary>
-    /// ���� ��� ���¸� ��ȯ�ϴ� �޼���
+    /// 적의 죽음 상태를 반환하는 메서드
     /// </summary>
     public new bool IsDead()
     {
         return isDead;
     }
 
-    // Unit Ŭ������ �߻� �޼��� ����
+    // Unit 클래스의 추상 메서드 구현
     protected override float GetCurrentHp() => enemyHp;
     protected override float GetMaxHp() => maxHp;
     protected override void SetCurrentHp(float value) => enemyHp = value;
@@ -68,32 +68,32 @@ public class Enemy : Unit
     {
         base.Die();
 
-        // ������ ���
+        // 아이템 드롭
         DropItem();
     }
 
     /// <summary>
-    /// ������ ��� ó��
+    /// 아이템 드롭 처리
     /// </summary>
     private void DropItem()
     {
         if (dropItemPrefab == null) return;
 
-        // ��� Ȯ�� üũ
+        // 드롭 확률 확인
         float randomValue = UnityEngine.Random.Range(0f, 1f);
         if (randomValue <= dropChance)
         {
-            // ���� �ִ� ��ġ�� ������ ����
+            // 현재 위치에 아이템 생성
             GameObject droppedItem = Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
-            Debug.Log($"[������ ���] {gameObject.name}��(��) {dropItemPrefab.name}��(��) ����߽��ϴ�.");
+            Debug.Log($"[아이템 드롭] {gameObject.name}이(가) {dropItemPrefab.name}을(를) 드롭했습니다.");
         }
         else
         {
-            Debug.Log($"[������ ��� ����] {gameObject.name} - Ȯ��: {dropChance * 100}%");
+            Debug.Log($"[아이템 드롭 실패] {gameObject.name} - 확률: {dropChance * 100}%");
         }
     }
 
-    // �÷��̾�� �浹 �� ���� ����
+    // 플레이어와 충돌 시 전투 시작
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player") && !battleStarted)

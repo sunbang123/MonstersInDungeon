@@ -9,16 +9,16 @@ public class UserDataManager : SingletonBehaviour<UserDataManager>
     protected override void Init()
     {
         base.Init();
-        Logger.Log("UserDataManager Init ½ÃÀÛ");
+        Logger.Log("UserDataManager Init ì‹œì‘");
 
-        // ±âÁ¸ µ¥ÀÌÅÍ
+        // ë°ì´í„° ë“±ë¡
         UserDataList.Add(new UserSettingsData());
         UserDataList.Add(new UserGoodsData());
         UserDataList.Add(new UserPlayerStatusData());
         UserDataList.Add(new UserInventoryData());
         LoadUserData();
 
-        Logger.Log("UserDataManager Init ¿Ï·á");
+        Logger.Log("UserDataManager Init ì™„ë£Œ");
     }
 
     public T Get<T>() where T : class, IUserData
@@ -49,29 +49,29 @@ public class UserDataManager : SingletonBehaviour<UserDataManager>
         }
         else
         {
-            // ÀúÀåµÈ µ¥ÀÌÅÍ°¡ ¾øÀ¸¸é ±âº»°ª ¼³Á¤
+            // ì €ì¥ëœ ë°ì´í„°ê°€ ì—†ìœ¼ë©´ ê¸°ë³¸ê°’ìœ¼ë¡œ ì´ˆê¸°í™”
             SetDefaultUserData();
         }
     }
 
     /// <summary>
-    /// »õ °ÔÀÓ ½ÃÀÛ: ¸ğµç µ¥ÀÌÅÍ ÃÊ±âÈ­ ¹× ±âº»°ª ¼³Á¤
+    /// ìƒˆ ê²Œì„ ì‹œì‘: ëª¨ë“  ë°ì´í„°ë¥¼ ì´ˆê¸°í™” í•˜ê³  ê¸°ë³¸ê°’ìœ¼ë¡œ ì„¤ì •
     /// </summary>
     public void StartNewGame()
     {
-        Logger.Log("StartNewGame È£ÃâµÊ");
+        Logger.Log("StartNewGame í˜¸ì¶œ");
 
-        // 1. PlayerPrefs ÃÊ±âÈ­
+        // 1. PlayerPrefs ì´ˆê¸°í™”
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save();
 
-        // 2. ¸Ş¸ğ¸®ÀÇ ¸ğµç µ¥ÀÌÅÍ¸¦ ±âº»°ªÀ¸·Î ¼³Á¤
+        // 2. ë©”ëª¨ë¦¬ìƒ ëª¨ë“  ë°ì´í„°ë¥¼ ê¸°ë³¸ê°’ìœ¼ë¡œ ì´ˆê¸°í™”
         SetDefaultUserData();
 
-        // 3. ÇÃ·¡±× ÃÊ±âÈ­
+        // 3. ì €ì¥ í”Œë˜ê·¸ ì´ˆê¸°í™”
         ExistsSavedData = false;
 
-        Logger.Log("»õ °ÔÀÓ µ¥ÀÌÅÍ ÃÊ±âÈ­ ¿Ï·á. TutorialEnd: " +
+        Logger.Log("ìƒˆ ê²Œì„ ë°ì´í„°ë¥¼ ì´ˆê¸°í™” ì™„ë£Œ. TutorialEnd: " +
             Get<UserPlayerStatusData>()?.TutorialEnd);
     }
 
@@ -89,7 +89,7 @@ public class UserDataManager : SingletonBehaviour<UserDataManager>
             ExistsSavedData = true;
             PlayerPrefs.SetInt("ExistsSavedData", 1);
             PlayerPrefs.Save();
-            Logger.Log("SaveUserData ¿Ï·á");
+            Logger.Log("SaveUserData ì™„ë£Œ");
         }
     }
 }

@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class SingletonBehaviour<T> : MonoBehaviour where T : SingletonBehaviour<T>
 {
-    // ¾À ÀüÈ¯ ½Ã »èÁ¦ÇÒÁö ¿©ºÎ
+    // ì”¬ ì „í™˜ ì‹œ íŒŒê´´í• ì§€ ì—¬ë¶€
     protected bool m_IsDestroyOnLoad = false;
 
-    // ÀÌ Å¬·¡½º¿Í ½ºÅÂÆ½ ÀÎ½ºÅÏ½º º¯¼ö
+    // ì‹±ê¸€í†¤ íŒ¨í„´ ì¸ìŠ¤í„´ìŠ¤ ë³€ìˆ˜
     protected static T m_Instance;
 
     public static T Instance
@@ -18,9 +18,9 @@ public class SingletonBehaviour<T> : MonoBehaviour where T : SingletonBehaviour<
             Init();
         }
 
-    // °¡»ó ÇÔ¼ö
-    // ÀÌ [SingletonBehaviour]Å¬·¡½º¸¦ »ó¼ÓÇØ¼­ ¸¸µå´Â Å¬·¡½ºµéÀÌ
-    // ÀÌ ÇÔ¼ö¸¦ È®ÀåÇØ¼­ ¿©·¯°¡Áö ´Ù¸¥ Ã³¸®µé±îÁö Ãß°¡ÇÒ ¼ö ÀÖ°Ô ÇØÁÖ·Á´Â ÀÇµµ
+    // ì´ˆê¸°í™” í•¨ìˆ˜
+    // ì´ [SingletonBehaviour]í´ë˜ìŠ¤ë¥¼ ìƒì†ë°›ì•„ì„œ ë§Œë“  í´ë˜ìŠ¤ì—ì„œ
+    // ì´ í•¨ìˆ˜ë¥¼ ì˜¤ë²„ë¼ì´ë“œí•´ì„œ ê°ê° ë‹¤ë¥¸ ì²˜ë¦¬ë¥¼ ì¶”ê°€í•  ìˆ˜ ìˆë„ë¡ í•˜ê¸° ìœ„í•´ì„œ
     protected virtual void Init()
     {
         if (m_Instance == null)
@@ -34,20 +34,21 @@ public class SingletonBehaviour<T> : MonoBehaviour where T : SingletonBehaviour<
         }
         else
         {
-            // nullÀÌ ¾Æ´Ñµ¥ init ÇÔ¼ö¸¦ È£ÃâÇÏ°Ô µÈ´Ù¸é
-            // ÀÌ¹Ì ÀÎ½ºÅÏ½º°¡ ÀÖ´Âµ¥ ´Ù¸¥ ÀÎ½ºÅÏ½º¸¦ ¶Ç ¸¸µé¾î ÁÖ·Á´Â ÀÇµµ¶ó°í
-            // ÆÇ´ÜÇØ¼­ ±×·¸°Ô ÇÏ·Á´Â ÀÌ ÀÎ½ºÅÏ½º ÀÚÃ¼¸¦ »èÁ¦ÇØ ÁÖµµ·Ï...
+            // nullì´ ì•„ë‹Œë° init í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•˜ê³  ìˆë‹¤ë©´
+            // ì´ë¯¸ ì¸ìŠ¤í„´ìŠ¤ê°€ ìˆëŠ”ë° ë‹¤ë¥¸ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ë§Œë“¤ë ¤ê³  í•˜ëŠ” ê²ƒ
+            // ê·¸ëŸ¬ë¯€ë¡œ ì´ë ‡ê²Œ ë§Œë“¤ë ¤ê³  í•˜ëŠ” ì¸ìŠ¤í„´ìŠ¤ ì˜¤ë¸Œì íŠ¸ë¥¼ íŒŒê´´í•´ì•¼...
+            // ê·¸ëŸ¬ë¯€ë¡œ ì´ë ‡ê²Œ ë§Œë“¤ë ¤ê³  í•˜ëŠ” ì¸ìŠ¤í„´ìŠ¤ ì˜¤ë¸Œì íŠ¸ë¥¼ íŒŒê´´í•´ì•¼...
             Destroy(gameObject);
         }
     }
 
-    // »èÁ¦ ½Ã ½ÇÇàµÇ´Â ÇÔ¼ö
+    // íŒŒê´´ ì‹œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
     protected virtual void OnDestroy()
     {
         Dispose();
     }
 
-    // »èÁ¦ ½Ã Ãß°¡·Î Ã³¸®ÇØ ÁÖ¾î¾ßÇÒ ÀÛ¾÷À» ¿©±â¼­ Ã³¸®
+    // íŒŒê´´ ì‹œ ì¶”ê°€ë¡œ ì²˜ë¦¬í•´ì•¼ í•  ì‘ì—…ì„ ì—¬ê¸°ì„œ ì²˜ë¦¬
     protected virtual void Dispose()
     {
         m_Instance = null;

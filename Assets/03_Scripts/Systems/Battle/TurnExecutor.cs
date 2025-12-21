@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// ÅÏ ½ÇÇà ·ÎÁ÷À» ´ã´çÇÏ´Â Å¬·¡½º
+/// ê° í„´ì˜ ì‹¤í–‰ì„ ë‹´ë‹¹í•˜ëŠ” í´ë˜ìŠ¤
 /// </summary>
 public class TurnExecutor : MonoBehaviour, ITurnExecutor
 {
@@ -17,7 +17,7 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     }
 
     /// <summary>
-    /// ÀüÅõ Âü¿©ÀÚ ¼³Á¤ (ITurnExecutor ±¸Çö)
+    /// ì „íˆ¬ ì°¸ê°€ì ì„¤ì • (ITurnExecutor êµ¬í˜„)
     /// </summary>
     public void SetCombatants(Player p, Enemy e)
     {
@@ -26,40 +26,40 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     }
 
     /// <summary>
-    /// ÇÃ·¹ÀÌ¾î ÅÏ ½ÇÇà
+    /// í”Œë ˆì´ì–´ í„´ ì‹¤í–‰
     /// </summary>
     public IEnumerator ExecutePlayerTurn()
     {
-        // ¹öÆ° È°¼ºÈ­
+        // ë²„íŠ¼ í™œì„±í™”
         uiController.SetButtonsInteractable(true);
 
-        // ÇÃ·¹ÀÌ¾îÀÇ ÀÔ·ÂÀ» ±â´Ù¸² (»óÅÂ°¡ º¯°æµÉ ¶§±îÁö)
+        // í”Œë ˆì´ì–´ì˜ ì…ë ¥ì„ ê¸°ë‹¤ë¦¼ (ìƒíƒœê°€ ë³€ê²½ë  ë•Œê¹Œì§€)
         yield return new WaitUntil(() => stateMachine.BattleState != BattleState.PlayerTurn);
     }
 
     /// <summary>
-    /// Àû ÅÏ ½ÇÇà
+    /// ì  í„´ ì‹¤í–‰
     /// </summary>
     public IEnumerator ExecuteEnemyTurn()
     {
-        // ¹öÆ° ºñÈ°¼ºÈ­
+        // ë²„íŠ¼ ë¹„í™œì„±í™”
         uiController.SetButtonsInteractable(false);
 
         yield return new WaitForSeconds(1f);
 
         stateMachine.ChangeState(EnemyState.Attack);
-        uiController.AppendBattleLog($"ÀûÀº {stateMachine.EnemyState}Çß´Ù!\n");
+        uiController.AppendBattleLog($"ì ì´ {stateMachine.EnemyState}í–ˆë‹¤!\n");
 
         yield return new WaitForSeconds(1f);
 
         if (player != null)
         {
-            float enemyAttackDamage = 20f; // ÀÓ½Ã µ¥¹ÌÁö
+            float enemyAttackDamage = 20f; // ì„ì‹œ ë°ë¯¸ì§€
             player.TakeDamage(enemyAttackDamage);
         }
 
         stateMachine.ChangeState(PlayerState.Damaged);
-        uiController.AppendBattleLog($"´ç½ÅÀº {stateMachine.PlayerState} µÇ¾ú´Ù.\n");
+        uiController.AppendBattleLog($"í”Œë ˆì´ì–´ê°€ {stateMachine.PlayerState} ë˜ì—ˆë‹¤.\n");
 
         yield return new WaitForSeconds(1f);
 
@@ -67,14 +67,14 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     }
 
     /// <summary>
-    /// °ø°İ ½ÇÇà
+    /// ê³µê²© ì‹¤í–‰
     /// </summary>
     public IEnumerator ExecuteAttack()
     {
         uiController.SetButtonsInteractable(false);
 
         stateMachine.ChangeState(PlayerState.Attack);
-        uiController.AppendBattleLog($"´ç½ÅÀº {stateMachine.PlayerState}À» Çß´Ù.\n");
+        uiController.AppendBattleLog($"í”Œë ˆì´ì–´ê°€ {stateMachine.PlayerState}ë¥¼ í–ˆë‹¤.\n");
 
         yield return new WaitForSeconds(1f);
 
@@ -85,7 +85,7 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
         }
 
         stateMachine.ChangeState(EnemyState.Damaged);
-        uiController.AppendBattleLog($"Àû {stateMachine.EnemyState}!\n");
+        uiController.AppendBattleLog($"ì  {stateMachine.EnemyState}!\n");
 
         yield return new WaitForSeconds(1f);
 
@@ -93,27 +93,27 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     }
 
     /// <summary>
-    /// ¾ÆÀÌÅÛ »ç¿ë ½ÇÇà
+    /// ì•„ì´í…œ ì‚¬ìš© ì‹¤í–‰
     /// </summary>
     public IEnumerator ExecuteItemUse(int itemIndex)
     {
         uiController.SetButtonsInteractable(false);
 
         stateMachine.ChangeState(PlayerState.ItemUse);
-        uiController.AppendBattleLog($"´ç½ÅÀº ¾ÆÀÌÅÛ {itemIndex + 1}À» »ç¿ëÇß´Ù.\n");
+        uiController.AppendBattleLog($"í”Œë ˆì´ì–´ê°€ ì•„ì´í…œ {itemIndex + 1}ë²ˆ ì‚¬ìš©í–ˆë‹¤.\n");
 
         yield return new WaitForSeconds(1f);
 
-        if (itemIndex == 0 && player != null) // ¿¹: Ã¹ ¹øÂ° ¾ÆÀÌÅÛÀÌ È¸º¹ ¾ÆÀÌÅÛÀÏ °æ¿ì
+        if (itemIndex == 0 && player != null) // ì˜ˆ: ì²« ë²ˆì§¸ ì•„ì´í…œì´ íšŒë³µ ì•„ì´í…œì¸ ê²½ìš°
         {
-            // player.Heal(50f); // ½ÇÁ¦ Èú ·ÎÁ÷
-            uiController.AppendBattleLog($"ÇÃ·¹ÀÌ¾î Ã¼·ÂÀ» 50 È¸º¹Çß½À´Ï´Ù.\n");
+            // player.Heal(50f); // ì‹¤ì œ êµ¬í˜„ í•„ìš”
+            uiController.AppendBattleLog($"í”Œë ˆì´ì–´ ì²´ë ¥ì´ 50 íšŒë³µë˜ì—ˆìŠµë‹ˆë‹¤.\n");
         }
-        else if (itemIndex == 1 && enemy != null) // ¿¹: µÎ ¹øÂ° ¾ÆÀÌÅÛÀÌ °ø°İ ¾ÆÀÌÅÛÀÏ °æ¿ì
+        else if (itemIndex == 1 && enemy != null) // ì˜ˆ: ë‘ ë²ˆì§¸ ì•„ì´í…œì´ ê³µê²© ì•„ì´í…œì¸ ê²½ìš°
         {
             float itemDamage = 25f;
-            enemy.TakeDamage(itemDamage); // Àû¿¡°Ô µ¥¹ÌÁö
-            uiController.AppendBattleLog($"¾ÆÀÌÅÛÀ¸·Î Àû¿¡°Ô {itemDamage}ÀÇ ÇÇÇØ¸¦ ÀÔÇû½À´Ï´Ù.\n");
+            enemy.TakeDamage(itemDamage); // ì ì—ê²Œ ë°ë¯¸ì§€
+            uiController.AppendBattleLog($"ì•„ì´í…œìœ¼ë¡œ ì ì—ê²Œ {itemDamage}ì˜ ë°ë¯¸ì§€ë¥¼ ì£¼ì—ˆìŠµë‹ˆë‹¤.\n");
         }
         yield return new WaitForSeconds(1f);
 
@@ -121,14 +121,14 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     }
 
     /// <summary>
-    /// ¹æ¾î ½ÇÇà
+    /// ë°©ì–´ ì‹¤í–‰
     /// </summary>
     public IEnumerator ExecuteDefense()
     {
         uiController.SetButtonsInteractable(false);
 
         stateMachine.ChangeState(PlayerState.Defense);
-        uiController.AppendBattleLog($"´ç½ÅÀº ¹æ¾î ÀÚ¼¼¸¦ ÃëÇß´Ù.\n");
+        uiController.AppendBattleLog($"í”Œë ˆì´ì–´ê°€ ë°©ì–´ ìì„¸ë¥¼ ì·¨í–ˆë‹¤.\n");
 
         yield return new WaitForSeconds(1f);
 
@@ -136,25 +136,25 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     }
 
     /// <summary>
-    /// Æ¯¼ö °ø°İ ½ÇÇà
+    /// íŠ¹ìˆ˜ ê³µê²© ì‹¤í–‰
     /// </summary>
     public IEnumerator ExecuteSpecialAttack()
     {
         uiController.SetButtonsInteractable(false);
 
         stateMachine.ChangeState(PlayerState.Attack);
-        uiController.AppendBattleLog($"´ç½ÅÀº Æ¯¼ö °ø°İÀ» Çß´Ù!\n");
+        uiController.AppendBattleLog($"í”Œë ˆì´ì–´ê°€ íŠ¹ìˆ˜ ê³µê²©ì„ í–ˆë‹¤!\n");
 
         yield return new WaitForSeconds(1f);
 
         if (enemy != null)
         {
-            float specialAttackDamage = 50f; // ÀÓ½Ã µ¥¹ÌÁö
+            float specialAttackDamage = 50f; // ì„ì‹œ ë°ë¯¸ì§€
             enemy.TakeDamage(specialAttackDamage);
         }
 
         stateMachine.ChangeState(EnemyState.Damaged);
-        uiController.AppendBattleLog($"Àû¿¡°Ô Å« ÇÇÇØ!\n");
+        uiController.AppendBattleLog($"ì ì—ê²Œ í° ë°ë¯¸ì§€!\n");
 
         yield return new WaitForSeconds(1f);
 

@@ -5,15 +5,15 @@ using UnityEngine.UI;
 public class ScreenFlash : MonoBehaviour
 {
     [Header("Flash Settings")]
-    [SerializeField] private Image flashImage; // ÀüÃ¼ È­¸éÀ» µ¤´Â UI Image
-    [SerializeField] private Color flashColor = new Color(0.5f, 0f, 1f, 0.3f); // º¸¶ó»ö, ¾ËÆÄ 0.3
-    private float flashDuration = 0.2f; // ±ôºıÀÓ Áö¼Ó ½Ã°£
+    [SerializeField] private Image flashImage; // ì „ì²´ í™”ë©´ì„ ë®ëŠ” UI Image
+    [SerializeField] private Color flashColor = new Color(0.5f, 0f, 1f, 0.3f); // ë³´ë¼ìƒ‰, ì•ŒíŒŒ 0.3
+    private float flashDuration = 0.2f; // í”Œë˜ì‹œ ì§€ì† ì‹œê°„
 
     private Coroutine flashCoroutine;
 
     void Start()
     {
-        // ÃÊ±â »óÅÂ: Åõ¸íÇÏ°Ô ¼³Á¤
+        // ì´ˆê¸° ìƒíƒœ: íˆ¬ëª…í•˜ê²Œ ì„¤ì •
         if (flashImage != null)
         {
             flashImage.color = new Color(flashColor.r, flashColor.g, flashColor.b, 0f);
@@ -28,7 +28,7 @@ public class ScreenFlash : MonoBehaviour
         rectTransform.sizeDelta = Vector2.zero;
         rectTransform.anchoredPosition = Vector2.zero;
 
-        // ´Ù¸¥ UI ¿ä¼Ò À§¿¡ Ç¥½ÃµÇµµ·Ï ¼³Á¤
+        // ë‹¤ë¥¸ UI ìš”ì†Œ í´ë¦­ ë°©ì§€
         flashImage.raycastTarget = false;
     }
     
@@ -36,7 +36,7 @@ public class ScreenFlash : MonoBehaviour
     {
         if (flashImage == null) return;
 
-        // ÀÌ¹Ì ½ÇÇà ÁßÀÎ ±ôºıÀÓÀÌ ÀÖÀ¸¸é ÁßÁö
+        // ì´ë¯¸ í”Œë˜ì‹œ ì¤‘ì´ë©´ ê¸°ì¡´ ì½”ë£¨í‹´ ì¤‘ì§€
         if (flashCoroutine != null)
         {
             StopCoroutine(flashCoroutine);
@@ -47,10 +47,10 @@ public class ScreenFlash : MonoBehaviour
 
     private IEnumerator FlashCoroutine()
     {
-        // Áï½Ã »ö»ó Àû¿ë
+        // í”Œë˜ì‹œ ì‹œì‘ ì„¤ì •
         flashImage.color = flashColor;
 
-        // Á¡ÁøÀûÀ¸·Î ÆäÀÌµå ¾Æ¿ô
+        // ì ì§„ì ìœ¼ë¡œ í˜ì´ë“œ ì•„ì›ƒ
         float elapsed = 0f;
         while (elapsed < flashDuration)
         {
@@ -60,12 +60,12 @@ public class ScreenFlash : MonoBehaviour
             yield return null;
         }
 
-        // ¿ÏÀüÈ÷ Åõ¸íÇÏ°Ô ¼³Á¤
+        // ë§ˆì§€ë§‰ìœ¼ë¡œ íˆ¬ëª…í•˜ê²Œ ì„¤ì •
         flashImage.color = new Color(flashColor.r, flashColor.g, flashColor.b, 0f);
         flashCoroutine = null;
     }
     
-    public void FlashWithColor(Color color, float? duration = null) // Åõ¸íµµ
+    public void FlashWithColor(Color color, float? duration = null) // ì˜¤ë²„ë¡œë“œ
     {
         if (flashImage == null) return;
 
@@ -96,4 +96,3 @@ public class ScreenFlash : MonoBehaviour
         flashCoroutine = null;
     }
 }
-

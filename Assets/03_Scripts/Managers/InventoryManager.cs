@@ -25,7 +25,7 @@ public class InventoryManager : MonoBehaviour
     private List<ItemSlot> slots = new List<ItemSlot>();
     private List<ItemSlot> b_Slots = new List<ItemSlot>();
 
-    // ÀÌ Å¬·¡½º¿Í ½ºÅÂÆ½ ÀÎ½ºÅÏ½º º¯¼ö
+    // ì‹±ê¸€í†¤ íŒ¨í„´ ì¸ìŠ¤í„´ìŠ¤ ë³€ìˆ˜
     protected static InventoryManager m_Instance;
 
     public static InventoryManager Instance
@@ -90,14 +90,14 @@ public class InventoryManager : MonoBehaviour
         ItemSlot emptySlot = FindEmptySlot();
         if (emptySlot == null)
         {
-            Debug.Log("ÀÎº¥Åä¸®°¡ °¡µæ Ã¡½À´Ï´Ù!");
+            Debug.Log("ì¸ë²¤í† ë¦¬ê°€ ê°€ë“ ì°¼ìŠµë‹ˆë‹¤!");
             return;
         }
 
         items.Add(item.IData);
         emptySlot.SetItem(item.IData);
 
-        // ¹èÆ² ÀÎº¥Åä¸®¿¡µµ µ¿±âÈ­
+        // ì „íˆ¬ ì¸ë²¤í† ë¦¬ì—ë„ ë™ê¸°í™”
         ItemSlot b_EmptySlot = FindEmptyBattleSlot();
         if (b_EmptySlot != null)
         {
@@ -106,7 +106,7 @@ public class InventoryManager : MonoBehaviour
 
         item.DestroyItem();
 
-        // ½½·Ô °¡½Ã¼º ¾÷µ¥ÀÌÆ®
+        // ìŠ¬ë¡¯ ê°€ì‹œì„± ì—…ë°ì´íŠ¸
         UpdateSlotVisibility();
     }
 
@@ -130,13 +130,13 @@ public class InventoryManager : MonoBehaviour
 
     private void UpdateSlotVisibility()
     {
-        // ÀÏ¹İ ÀÎº¥Åä¸® ½½·Ô °¡½Ã¼º ¾÷µ¥ÀÌÆ®
+        // ì¼ë°˜ ì¸ë²¤í† ë¦¬ ìŠ¬ë¡¯ ê°€ì‹œì„± ì—…ë°ì´íŠ¸
         for (int i = 0; i < slots.Count; i++)
         {
             slots[i].gameObject.SetActive(!slots[i].IsEmpty());
         }
 
-        // ¹èÆ² ÀÎº¥Åä¸® ½½·Ô °¡½Ã¼º ¾÷µ¥ÀÌÆ®
+        // ì „íˆ¬ ì¸ë²¤í† ë¦¬ ìŠ¬ë¡¯ ê°€ì‹œì„± ì—…ë°ì´íŠ¸
         for (int i = 0; i < b_Slots.Count; i++)
         {
             b_Slots[i].gameObject.SetActive(!b_Slots[i].IsEmpty());

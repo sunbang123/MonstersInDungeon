@@ -24,7 +24,7 @@ public class PoisonArea : MonoBehaviour
     private Renderer playerRenderer;
     private Color originalPlayerColor;
     private bool isRecovering = false;
-    private bool hasOriginalColor = false; // ¿øº» »ö»ó ÀúÀå ¿©ºÎ ÃßÀû
+    private bool hasOriginalColor = false; // í”Œë ˆì´ì–´ ì›ë³¸ ìƒ‰ìƒ ì €ì¥ ì—¬ë¶€
 
     void Start()
     {
@@ -37,13 +37,13 @@ public class PoisonArea : MonoBehaviour
         if (!IsValidPlayer(other))
             return;
 
-        // È¸º¹ ÁßÀÌ¾ú´Ù¸é È¸º¹ Áß´Ü
+        // íšŒë³µ ì¤‘ì´ì—ˆë‹¤ë©´ íšŒë³µ ì¤‘ì§€
         if (isRecovering)
         {
             StopRecovery();
         }
 
-        // ÀÌ¹Ì µ¶ »óÅÂ°¡ ¾Æ´Ï¶ó¸é »õ·Î ¼³Á¤
+        // ì´ë¯¸ ë°ë¯¸ì§€ ì¤‘ì´ ì•„ë‹Œ ê²½ìš°ì—ë§Œ ì„¤ì •
         if (damageCoroutine == null)
         {
             SetupPlayer(other.gameObject);
@@ -57,14 +57,14 @@ public class PoisonArea : MonoBehaviour
         if (!IsValidPlayer(other) || other.gameObject != currentPlayer)
             return;
 
-        // µ¶ µ¥¹ÌÁö ÁßÁö
+        // ë°ë¯¸ì§€ ì½”ë£¨í‹´ ì¤‘ì§€
         if (damageCoroutine != null)
         {
             StopCoroutine(damageCoroutine);
             damageCoroutine = null;
         }
 
-        // È¸º¹ ½ÃÀÛ
+        // íšŒë³µ ì‹œì‘
         recoveryCoroutine = StartCoroutine(RecoveryProcess());
     }
 
@@ -88,13 +88,13 @@ public class PoisonArea : MonoBehaviour
             float recoveryProgress = elapsed / recoveryDuration;
             float damageMultiplier = 1f - recoveryProgress;
 
-            // È¸º¹ ÁøÇàµµ¿¡ µû¶ó °¨¼ÒÇÏ´Â µ¥¹ÌÁö Àû¿ë
+            // íšŒë³µ ì§„í–‰ë„ì— ë”°ë¼ ë°ë¯¸ì§€ ë¹„ìœ¨ì„ ì¤„ì—¬ë‚˜ê°€ëŠ” ë°ë¯¸ì§€ ì ìš©
             if (damageMultiplier > 0)
             {
                 ApplyDamageToPlayer(currentPlayer, poisonDmg, damageMultiplier);
             }
 
-            // »ö»óµµ Á¡ÁøÀûÀ¸·Î º¹±¸
+            // í”Œë ˆì´ì–´ ìƒ‰ìƒì„ ì ì§„ì ìœ¼ë¡œ ë³µì›
             if (playerRenderer != null)
             {
                 playerRenderer.material.color = Color.Lerp(poisonColor, originalPlayerColor, recoveryProgress);
@@ -103,7 +103,7 @@ public class PoisonArea : MonoBehaviour
             yield return new WaitForSeconds(damageInterval);
         }
 
-        // ¿ÏÀü È¸º¹
+        // ìƒíƒœ ë³µì›
         RestorePlayerState();
         CleanupPoisonState();
     }
@@ -119,7 +119,7 @@ public class PoisonArea : MonoBehaviour
         }
     }
 
-    // === ÇïÆÛ ÇÔ¼öµé ===
+    // === ìœ í‹¸ë¦¬í‹° í•¨ìˆ˜ë“¤ ===
 
     bool IsValidPlayer(Collider2D collider)
     {
@@ -133,7 +133,7 @@ public class PoisonArea : MonoBehaviour
 
         if (playerRenderer != null)
         {
-            // Ã³À½ µ¶ »óÅÂ°¡ µÇ´Â °æ¿ì¿¡¸¸ ¿øº» »ö»ó ÀúÀå
+            // ì²˜ìŒ ì§„ì…í–ˆê±°ë‚˜ ìƒ‰ìƒì´ ì €ì¥ë˜ì§€ ì•Šì€ ê²½ìš°ì—ë§Œ ì €ì¥
             if (!hasOriginalColor)
             {
                 originalPlayerColor = playerRenderer.material.color;
@@ -167,7 +167,7 @@ public class PoisonArea : MonoBehaviour
         currentPlayer = null;
         playerRenderer = null;
         isRecovering = false;
-        hasOriginalColor = false; // ÇÃ·¹ÀÌ¾î°¡ ¿ÏÀüÈ÷ ¹ş¾î³ª¸é ¸®¼Â
+        hasOriginalColor = false; // í”Œë ˆì´ì–´ê°€ ë‚˜ê°€ë©´ ë‹¤ì‹œ ì €ì¥í•˜ë„ë¡ ì´ˆê¸°í™”
     }
 
     void StopRecovery()
@@ -185,7 +185,7 @@ public class PoisonArea : MonoBehaviour
         Collider2D col = GetComponent<Collider2D>();
         if (col != null && !col.isTrigger)
         {
-            Debug.LogWarning($"PoisonArea: {gameObject.name}ÀÇ Collider2D°¡ Trigger·Î ¼³Á¤µÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning($"PoisonArea: {gameObject.name}ì˜ Collider2Dê°€ Triggerë¡œ ì„¤ì •ë˜ì–´ ìˆì§€ ì•ŠìŠµë‹ˆë‹¤.");
         }
     }
 

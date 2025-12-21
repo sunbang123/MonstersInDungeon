@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// ���� UI�� �����ϴ� Ŭ����
+/// 전투 UI를 관리하는 클래스
 /// </summary>
 public class BattleUIController : MonoBehaviour
 {
@@ -42,7 +42,7 @@ public class BattleUIController : MonoBehaviour
     public TextMeshProUGUI playerLevelText;
     public TextMeshProUGUI enemyLevelText;
 
-    // ��ư Ŭ�� �̺�Ʈ
+    // 버튼 클릭 이벤트
     public event Action OnAttackClicked;
     public event Action<int> OnItemUseClicked;
     public event Action OnSpecialAttackClicked;
@@ -53,7 +53,7 @@ public class BattleUIController : MonoBehaviour
         GetInventoryButtons();
         BindButtons();
 
-        // Player ã��
+        // Player 찾기
         Player player = FindObjectOfType<Player>();
         if (player != null)
         {
@@ -65,7 +65,7 @@ public class BattleUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// Inventory�� �ڽ� ��ҿ��� Button ������Ʈ�� ���� �͵��� ã�� ����Ʈ�� �߰�
+    /// Inventory의 자식 오브젝트에서 Button 컴포넌트를 가져와서 리스트에 추가
     /// </summary>
     private void GetInventoryButtons()
     {
@@ -79,7 +79,7 @@ public class BattleUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ��ư�� �̺�Ʈ ������ ���
+    /// 버튼의 이벤트 바인딩 처리
     /// </summary>
     private void BindButtons()
     {
@@ -90,7 +90,7 @@ public class BattleUIController : MonoBehaviour
         {
             for (int i = 0; i < item_btn.Count; i++)
             {
-                int index = i; // Ŭ���� ���� ����
+                int index = i; // 클로저 문제 해결
                 item_btn[i].onClick.AddListener(() => OnItemUseClicked?.Invoke(index));
             }
         }
@@ -103,7 +103,7 @@ public class BattleUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ��� ��ư�� ��ȣ�ۿ� ���� ���� ����
+    /// 모든 버튼의 활성화 상태를 설정하는 메서드
     /// </summary>
     public void SetButtonsInteractable(bool interactable)
     {
@@ -128,7 +128,7 @@ public class BattleUIController : MonoBehaviour
 
 
     /// <summary>
-    /// ���� UI ���� ���
+    /// 전투 UI 전환 처리
     /// </summary>
     private bool isBattleMode = false;
 
@@ -145,7 +145,7 @@ public class BattleUIController : MonoBehaviour
         playerStatus.transform.SetParent(null, false);
         playerStatus.transform.SetParent(targetParent, useWorldSpace);
 
-        // playerStatus�� rectTransform �ʱ�ȭ (�θ� ���� ����)
+        // playerStatus의 rectTransform 초기화 (부모 변경 후 초기화)
         RectTransform rectTransform = playerStatus.GetComponent<RectTransform>();
         rectTransform.anchoredPosition = Vector2.zero;
         rectTransform.sizeDelta = Vector2.zero;
@@ -164,7 +164,7 @@ public class BattleUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ��Ʋ �α� �ؽ�Ʈ ����
+    /// 전투 로그 텍스트 설정
     /// </summary>
     public void SetBattleLog(string text)
     {
@@ -241,7 +241,7 @@ public class BattleUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ��Ʋ �α׿� �ؽ�Ʈ �߰�
+    /// 전투 로그에 텍스트 추가
     /// </summary>
     public void AppendBattleLog(string text)
     {
@@ -251,7 +251,7 @@ public class BattleUIController : MonoBehaviour
 
     private void OnDestroy()
     {
-        // �̺�Ʈ ������ ����
+        // 이벤트 리스너 정리
         if (Atk_btn != null)
             Atk_btn.onClick.RemoveAllListeners();
 

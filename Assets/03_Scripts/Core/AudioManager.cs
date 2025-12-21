@@ -17,17 +17,17 @@ public enum SFX
 
 public class AudioManager : SingletonBehaviour<AudioManager>
 {
-    //µÎ ¿ÀºêÁ§Æ®¿¡ º¯µ¿ÇÒ º¯¼ö
+    //ì˜¤ë””ì˜¤ ì˜¤ë¸Œì íŠ¸ë¥¼ ë‹´ì„ íŠ¸ëœìŠ¤í¼ ë³€ìˆ˜
     public Transform BGMTrs;
     public Transform SFXTrs;
-    //¿Àµğ¿À ÆÄÀÏÀ» ·ÎµåÇÒ °æ·Î
+    //ì˜¤ë””ì˜¤ íŒŒì¼ì˜ ë¡œë“œ ê²½ë¡œ ì„¤ì •
     private const string AUDIO_PATH = "Audio";
 
-    //¸ğµç BGM ¿Àµğ¿À ¸®¼Ò½º¸¦ ÀúÀåÇÒ ÄÁÅ×ÀÌ³Ê
+    //ëª¨ë“  BGM ì˜¤ë””ì˜¤ í”Œë ˆì´ì–´ë¥¼ ë‹´ì„ ë”•ì…”ë„ˆë¦¬ ë³€ìˆ˜ ì„ ì–¸
     private Dictionary<BGM, AudioSource> m_BGMPlayer = new Dictionary<BGM, AudioSource>();
-    //BGM°ü·ÃÇØ¼­ ÇöÀç Àç»ıÇÏ°í ÀÖ´Â ¿Àµğ¿À¼Ò½º ÄÄÆ÷³ÍÆ®
+    //BGMì˜¤ë””ì˜¤ë¡œ ì¬ìƒ ì¤‘ì¸ ì˜¤ë””ì˜¤ ì†ŒìŠ¤ ì˜¤ë¸Œì íŠ¸ ë³€ìˆ˜
     private AudioSource m_CurrBGMSource;
-    //¸ğµç SFX ¿Àµğ¿À ¸®¼Ò½º¸¦ ÀúÀåÇÒ ÄÁÅ×ÀÌ³Ê
+    //ëª¨ë“  SFX ì˜¤ë””ì˜¤ í”Œë ˆì´ì–´ë¥¼ ë‹´ì„ ë”•ì…”ë„ˆë¦¬ ë³€ìˆ˜ ì„ ì–¸
     private Dictionary<SFX, AudioSource> m_SFXPlayer = new Dictionary<SFX, AudioSource>();
 
     protected override void Init()
@@ -38,8 +38,8 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         LoadSFXPlayer();
     }
 
-    //Á¸ÀçÇÏ´Â ¸ğµç BGMÆÄÀÏ ¸ñ·ÏÀ» ¼øÈ¸ÇÏ¸é¼­ Àü¿ë °ÔÀÓ¿ÀºêÁ§Æ®¸¦ ¸¸µé°í
-    //±× ¿ÀºêÁ§Æ®¿¡ ¿Àµğ¿À ¼Ò½º ÄÄÆ÷³ÍÆ®¸¦ ºÙ¿©ÁÖ°í ÇØ´ç À½¿øÀ» ¿¬µ¿
+    //ë“±ë¡ëœ ëª¨ë“  BGMì˜¤ë””ì˜¤ë¥¼ ìˆœíšŒí•˜ë©´ì„œ ì¬ìƒ ì˜¤ë””ì˜¤ì†ŒìŠ¤ì˜¤ë¸Œì íŠ¸ë¥¼ ìƒì„±
+    //ì˜¤ íŠ¸ëœìŠ¤í¼ì— ìƒì„± ì˜¤ë””ì˜¤ ì˜¤ë¸Œì íŠ¸ë¥¼ ë„£ê³  í•´ë‹¹ ì˜¤ë””ì˜¤ë¥¼ ì„¤ì •
     private void LoadBGMPlayer()
     {
         for (int i = 0; i < (int)BGM.COUNT; i++)
@@ -59,11 +59,11 @@ public class AudioManager : SingletonBehaviour<AudioManager>
             newAudioSource.loop = true;
             newAudioSource.playOnAwake = false;
             newGO.transform.parent = BGMTrs;
-            //µğ¼Ç³Ê¸®¿¡ Çà´ç ÀÌ³ÑÅ°°ªÀ¸·Î »ı¼ºÇÑ ¿Àµğ¿À ¼Ò½º¸¦ ´ëÀÔ
+            //ë”•ì…”ë„ˆë¦¬ë¡œ í‚¤ì™€ ê°’ì„ ë§¤í•‘í•˜ì—¬ ì˜¤ë””ì˜¤ë¥¼ ì €ì¥
             m_BGMPlayer[(BGM)i] = newAudioSource;
         }
     }
-    //BGM°ú °°Àº ¿ø¸®
+    //BGMì„ ë¶ˆëŸ¬ì˜¤ëŠ” í•¨ìˆ˜
     private void LoadSFXPlayer()
     {
         for (int i = 0; i < (int)SFX.COUNT; i++)
@@ -88,45 +88,45 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         }
     }
 
-    //BGM ÇÃ·¹ÀÌ ÇÔ¼ö
+    //BGM ì¬ìƒ í•¨ìˆ˜
     public void PlayBGM(BGM bgm)
     {
-        //¸¸¾à Àç»ıµÇ°í ÀÖ´ÂBGM¼Ò½º°¡ ÀÖ´Ù¸é
-        //Àç»ıÀ» ¸ØÃß°í null°ªÀ¸·Î ÃÊ±âÈ­
+        //í˜„ì¬ ì¬ìƒë˜ê³  ìˆëŠ”BGMì˜¤ë””ì˜¤ê°€ ìˆë‹¤ë©´
+        //ì¬ìƒì„ ì¤‘ì§€í•˜ê³  nullë¡œ ì´ˆê¸°í™”
         if (m_CurrBGMSource)
         {
             m_CurrBGMSource.Stop();
             m_CurrBGMSource = null;
         }
-        //Àç»ıÇÏ°í ½ÍÀº  BGMÀÌ Á¸ÀçÇÏ´ÂÁö È®ÀÎ
-        //Á¸ÀçÇÏÁö ¾ÊÀ¸¸é ¿¡·¯¸¦ ¹ß»ı½ÃÅ°°ÚÀ½.
+        //ì¬ìƒí•˜ê³  ì‹¶ì€  BGMì´ ë“±ë¡ë˜ì–´ ìˆëŠ”ì§€ í™•ì¸
+        //ë“±ë¡ë˜ì§€ ì•Šì•˜ë‹¤ë©´ ì—ëŸ¬ë¥¼ ë°œìƒì‹œì¼œì•¼í•¨.
         if (!m_BGMPlayer.ContainsKey(bgm))
         {
             Logger.LogError($"Invalid clip name. {bgm}");
             return;
         }
-        //Á¸ÀçÇÑ´Ù¸é ÇØ´ç ¿Àµğ¿À¼Ò½º ÄÄÆ÷³ÍÆ®¸¦ ÂüÁ¶½ÃÄÑÁÖ°í
-        //Àç»ı
+        //ì¬ìƒí•œë‹¤ë©´ í•´ë‹¹ ì˜¤ë””ì˜¤ì†ŒìŠ¤ ì˜¤ë¸Œì íŠ¸ë¥¼ í˜„ì¬ì¬ìƒì¤‘ìœ¼ë¡œ ì„¤ì •í•˜ê³ 
+        //ì¬ìƒ
         m_CurrBGMSource = m_BGMPlayer[bgm];
         m_CurrBGMSource.Play();
     }
 
-    //BGM ÀÏÁöÁ¤Áö
+    //BGM ì¼ì‹œì •ì§€
     public void PauseBGM()
     {
         if (m_CurrBGMSource) m_CurrBGMSource.Pause();
     }
-    //BGM Àç½ÇÇà
+    //BGM ì¬ê°œ
     public void ResumeBGM()
     {
         if (m_CurrBGMSource) m_CurrBGMSource.UnPause();
     }
-    //BGM Á¤Áö
+    //BGM ì •ì§€
     public void StopBGM()
     {
         if (m_CurrBGMSource) m_CurrBGMSource.Stop();
     }
-    //SFX ÇÃ·¹ÀÌ(BGM °°Àº ¿ø¸®)
+    //SFX ì¬ìƒ(BGM ì •ì§€ ì—†ìŒ)
     public void PlaySFX(SFX sfx)
     {
         if (!m_SFXPlayer.ContainsKey(sfx))
@@ -139,7 +139,7 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     }
 
 
-    //È¿°úÀ½Àº ÂªÀº ½Ã°£¿¡ Àç»ıµÇ°í ³¡³ª¹Ç·Î µû·Î ÀÏ½ÃÁ¤Áö µîÀº ÇÊ¿ä¾øÀ½.
+    //íš¨ìœ¨ì ìœ¼ë¡œ ë³¼ë¥¨ì„ ì¡°ì ˆí•˜ëŠ” ì‹œê°„ì„ ì €ì¥í•˜ê³  ì¬ìƒë˜ë¯€ë¡œ í•„ìš”í•  ë•Œ ì‚¬ìš©í•  í•„ìš”ê°€ ìˆìŒ.
 
     //Mute
     public void Mute()

@@ -14,14 +14,14 @@ public class JoyStickController : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     private void Awake()
     {
-        // Inspector¿¡¼­ ÇÒ´çÇÏÁö ¾ÊÀº °æ¿ì ÀÚµ¿ Å½»ö
+        // Inspectorì—ì„œ ì„¤ì •ë˜ì§€ ì•Šì•˜ë‹¤ë©´ ìë™ìœ¼ë¡œ ì»´í¬ë„ŒíŠ¸ ì°¾ê¸°
         if (background == null) background = GetComponent<Image>();
         if (controller == null) controller = transform.GetChild(0).GetComponent<Image>();
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        // ÇÊ¿ä½Ã ÅÍÄ¡ ½ÃÀÛ ·ÎÁ÷ Ãß°¡
+        // í•„ìš”í•œ ìœ„ì¹˜ ê³„ì‚° í›„ ì¶”ê°€
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -29,17 +29,17 @@ public class JoyStickController : MonoBehaviour, IPointerDownHandler, IDragHandl
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
             background.rectTransform, eventData.position, eventData.pressEventCamera, out Vector2 localPoint))
         {
-            // ·ÎÄÃ ÁÂÇ¥¸¦ -1 ~ 1 ¹üÀ§·Î Á¤±ÔÈ­
+            // ë¡œì»¬ ì¢Œí‘œë¥¼ -1 ~ 1 ë²”ìœ„ë¡œ ì •ê·œí™”
             Vector2 sizeDelta = background.rectTransform.sizeDelta;
             input = new Vector2(
                 (localPoint.x / sizeDelta.x) * 2,
                 (localPoint.y / sizeDelta.y) * 2
             );
 
-            // ¹üÀ§ Á¦ÇÑ
+            // ê±°ë¦¬ ì œí•œ
             input = input.magnitude > 1 ? input.normalized : input;
 
-            // ÄÁÆ®·Ñ·¯ À§Ä¡ ¾÷µ¥ÀÌÆ®
+            // ì»¨íŠ¸ë¡¤ëŸ¬ ìœ„ì¹˜ ì—…ë°ì´íŠ¸
             controller.rectTransform.anchoredPosition = input * (sizeDelta / 2);
         }
     }

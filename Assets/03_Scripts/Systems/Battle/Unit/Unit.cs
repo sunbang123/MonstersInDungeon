@@ -2,14 +2,14 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Player¿Í EnemyÀÇ °øÅë ±â´ÉÀ» ´ã´çÇÏ´Â ±âº» À¯´Ö Å¬·¡½º
+/// Playerì™€ Enemyê°€ ê³µí†µìœ¼ë¡œ ì‚¬ìš©í•˜ëŠ” ê¸°ë³¸ ì¶”ìƒ í´ë˜ìŠ¤
 /// </summary>
 public abstract class Unit : MonoBehaviour
 {
     protected bool isDead = false;
 
     /// <summary>
-    /// µ¥¹ÌÁö¸¦ ¹Ş´Â ¸Ş¼­µå
+    /// ë°ë¯¸ì§€ë¥¼ ë°›ëŠ” ë©”ì„œë“œ
     /// </summary>
     public virtual void TakeDamage(float damage)
     {
@@ -23,20 +23,20 @@ public abstract class Unit : MonoBehaviour
         currentHp = Mathf.Max(0f, currentHp);
         SetCurrentHp(currentHp);
 
-        Debug.Log($"[µ¥¹ÌÁö Àû¿ë ÈÄ] {gameObject.name} - HP: {currentHp}/{maxHp} (µ¥¹ÌÁö: {finalDamage})");
+        Debug.Log($"[ë°ë¯¸ì§€ ë°›ìŒ] {gameObject.name} - HP: {currentHp}/{maxHp} (ë°ë¯¸ì§€: {finalDamage})");
 
         InvokeHealthChanged(currentHp, maxHp);
 
-        // »ç¸Á Ã¼Å©
+        // ì‚¬ë§ í™•ì¸
         if (currentHp <= 0f && !isDead)
         {
-            Debug.Log($"[»ç¸Á] {gameObject.name}ÀÌ(°¡) »ç¸ÁÇß½À´Ï´Ù.");
+            Debug.Log($"[ì‚¬ë§] {gameObject.name}ì´(ê°€) ì£½ì—ˆìŠµë‹ˆë‹¤.");
             Die();
         }
     }
 
     /// <summary>
-    /// »ç¸Á Ã³¸®
+    /// ì‚¬ë§ ì²˜ë¦¬
     /// </summary>
     protected virtual void Die()
     {
@@ -46,14 +46,14 @@ public abstract class Unit : MonoBehaviour
     }
 
     /// <summary>
-    /// »ç¸Á »óÅÂ¸¦ ¹İÈ¯ÇÏ´Â ¸Ş¼­µå
+    /// ì‚¬ë§ ìƒíƒœë¥¼ ë°˜í™˜í•˜ëŠ” ë©”ì„œë“œ
     /// </summary>
     public bool IsDead()
     {
         return isDead;
     }
 
-    // Ãß»ó ¸Ş¼­µå - ÀÚ½Ä Å¬·¡½º¿¡¼­ ±¸Çö ÇÊ¿ä
+    // ì¶”ìƒ ë©”ì„œë“œ - ìì‹ í´ë˜ìŠ¤ì—ì„œ ë°˜ë“œì‹œ êµ¬í˜„ í•„ìš”
     protected abstract float GetCurrentHp();
     protected abstract float GetMaxHp();
     protected abstract void SetCurrentHp(float value);

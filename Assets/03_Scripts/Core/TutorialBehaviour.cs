@@ -5,7 +5,7 @@ public class TutorialBehaviour : MonoBehaviour
 {
     protected virtual IEnumerator Start()
     {
-        // UserDataManager.Instance°¡ ÁØºñµÉ ¶§±îÁö ±â´Ù¸²
+        // UserDataManager.Instanceê°€ ì¤€ë¹„ë  ë•Œê¹Œì§€ ëŒ€ê¸°
         while (UserDataManager.Instance == null)
             yield return null;
 
@@ -21,12 +21,12 @@ public class TutorialBehaviour : MonoBehaviour
 
         if (status.TutorialEnd)
         {
-            Debug.Log("TutorialBehaviour: Æ©Åä¸®¾ó ³¡ »óÅÂ¶ó ¿ÀºêÁ§Æ® ÆÄ±«");
+            Debug.Log("TutorialBehaviour: íŠœí† ë¦¬ì–¼ì´ ëë‚¬ë‹¤ë©´ ì˜¤ë¸Œì íŠ¸ ì‚­ì œ");
             Destroy(gameObject);
         }
         else
         {
-            Debug.Log("TutorialBehaviour: Æ©Åä¸®¾ó ÁøÇà ÁßÀÌ¶ó ¿ÀºêÁ§Æ® À¯Áö");
+            Debug.Log("TutorialBehaviour: íŠœí† ë¦¬ì–¼ì´ ì§„í–‰ ì¤‘ì´ë¼ë©´ ì˜¤ë¸Œì íŠ¸ ìœ ì§€");
         }
     }
 }

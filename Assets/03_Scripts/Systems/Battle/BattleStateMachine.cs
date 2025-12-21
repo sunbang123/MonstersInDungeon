@@ -29,7 +29,7 @@ public enum EnemyState
 }
 
 /// <summary>
-/// ÀüÅõ »óÅÂ¸¦ °ü¸®ÇÏ´Â Å¬·¡½º
+/// ì „íˆ¬ ìƒíƒœë¥¼ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
 /// </summary>
 public class BattleStateMachine : MonoBehaviour
 {
