@@ -79,6 +79,19 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     /// <summary>
+    /// 프리팹 이름으로 프리팹을 반환 (경고 없이)
+    /// </summary>
+    public GameObject TryGetPrefabByName(string prefabName)
+    {
+        if (prefabByName.ContainsKey(prefabName))
+        {
+            return prefabByName[prefabName];
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// 프리팹 인스턴스 생성
     /// </summary>
     public GameObject InstantiatePrefab(string prefabName, Vector3 position, Quaternion rotation)

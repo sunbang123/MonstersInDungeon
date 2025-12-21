@@ -41,6 +41,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - Tutorial
     - preload
+  - m_GUID: 32566dc45e6461943b6288b9bf70728e
+    m_Address: battleEffect.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - preload
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 54ebaec88757d7249babc70c251f28d2, type: 2}
   m_SchemaSet:
