@@ -18,7 +18,7 @@ public class AddressableGroup
 
 public class TitleManager : MonoBehaviour
 {
-    // ·Î°í
+    // ë¡œê³ 
     public Animator LogoAnimator;
     public TextMeshProUGUI LogoTxt;
 
@@ -27,12 +27,12 @@ public class TitleManager : MonoBehaviour
     public float LogoAnimationDuration = 0.7f;
 
     [Header("Addressable Settings")]
-    public AssetReference LobbySceneReference; // Addressable ¾ÀÀ» Á÷Á¢ µå·¡±×
+    public AssetReference LobbySceneReference; // Addressable ì‹œìŠ¤í…œ ì‚¬ìš© ê¶Œì¥
 
     [Header("Addressable Groups to Load")]
     public List<AddressableGroup> GroupsToLoad = new List<AddressableGroup>();
 
-    // Å¸ÀÌÆ²
+    // íƒ€ì´í‹€
     public GameObject Title;
     public Slider LoadingSlider;
     public TextMeshProUGUI LoadingProgressTxt;
@@ -41,10 +41,75 @@ public class TitleManager : MonoBehaviour
     private AsyncOperationHandle<SceneInstance> m_SceneLoadHandle;
     private List<AsyncOperationHandle> m_PreloadHandles = new List<AsyncOperationHandle>();
 
+    // ë¡œë”© UI ì—…ë°ì´íŠ¸ ì´ë²¤íŠ¸
+    public event Action<string> OnLoadingTextChanged;
+    public event Action<float> OnLoadingProgressChanged;
+    public event Action<bool> OnLogoVisibilityChanged;
+    public event Action<bool> OnTitleVisibilityChanged;
+
     private void Awake()
     {
-        LogoAnimator.gameObject.SetActive(true);
-        Title.SetActive(false);
+        // ì´ë²¤íŠ¸ êµ¬ë…
+        OnLogoVisibilityChanged += UpdateLogoVisibility;
+        OnTitleVisibilityChanged += UpdateTitleVisibility;
+        OnLoadingTextChanged += UpdateLoadingText;
+        OnLoadingProgressChanged += UpdateLoadingProgress;
+
+        OnLogoVisibilityChanged?.Invoke(true);
+        OnTitleVisibilityChanged?.Invoke(false);
+    }
+
+    private void OnDestroy()
+    {
+        // ì´ë²¤íŠ¸ êµ¬ë… í•´ì œ
+        OnLogoVisibilityChanged -= UpdateLogoVisibility;
+        OnTitleVisibilityChanged -= UpdateTitleVisibility;
+        OnLoadingTextChanged -= UpdateLoadingText;
+        OnLoadingProgressChanged -= UpdateLoadingProgress;
+        // ì—ì…‹í”„ë¦¬ë¡œë“œ í•´ì œ ì²˜ë¦¬
+        foreach (var handle in m_PreloadHandles)
+        {
+            if (handle.IsValid())
+            {
+                Addressables.Release(handle);
+            }
+        }
+        m_PreloadHandles.Clear();
+
+        // ì”¬ ì–¸ë¡œë“œ
+        if (m_SceneLoadHandle.IsValid())
+        {
+            Addressables.UnloadSceneAsync(m_SceneLoadHandle);
+        }
+    }
+
+    // UI ì—…ë°ì´íŠ¸ í•¸ë“¤ëŸ¬
+    private void UpdateLogoVisibility(bool isVisible)
+    {
+        if (LogoAnimator != null)
+            LogoAnimator.gameObject.SetActive(isVisible);
+    }
+
+    private void UpdateTitleVisibility(bool isVisible)
+    {
+        if (Title != null)
+            Title.SetActive(isVisible);
+    }
+
+    private void UpdateLoadingText(string text)
+    {
+        if (LoadingItemsTxt != null)
+            LoadingItemsTxt.text = text;
+    }
+
+    private void UpdateLoadingProgress(float progress)
+    {
+        if (LoadingSlider != null)
+        {
+            LoadingSlider.value = progress;
+            if (LoadingProgressTxt != null)
+                LoadingProgressTxt.text = $"{(int)(progress * 100)}%";
+        }
     }
 
     private void Start()
@@ -54,32 +119,31 @@ public class TitleManager : MonoBehaviour
 
     private IEnumerator LoadGameCo()
     {
-        // 1) ·Î°í ¾Ö´Ï¸ŞÀÌ¼Ç
+        // 1) ë¡œê³  ì• ë‹ˆë©”ì´ì…˜
         LogoAnimator.Play(LogoAnimationStateName);
         yield return new WaitForSeconds(LogoAnimationDuration);
 
-        LogoAnimator.gameObject.SetActive(false);
-        Title.SetActive(true);
+        OnLogoVisibilityChanged?.Invoke(false);
+        OnTitleVisibilityChanged?.Invoke(true);
 
-        // 2) ÇÁ¸®·Îµå
-        LoadingItemsTxt.text = "Loading Assets...";
+        // 2) ì—ì…‹í”„ë¦¬ë¡œë“œ
+        OnLoadingTextChanged?.Invoke("Loading Assets...");
         yield return StartCoroutine(PreloadAssetGroups());
 
-        // 3) ·Îºñ ¾À ·Îµù
-        LoadingItemsTxt.text = "Loading Scene...";
+        // 3) ë¡œë¹„ ì”¬ ë¡œë“œ
+        OnLoadingTextChanged?.Invoke("Loading Scene...");
         var handle = LobbySceneReference.LoadSceneAsync(LoadSceneMode.Single, false);
 
         while (!handle.IsDone)
         {
-            LoadingSlider.value = handle.PercentComplete;
-            LoadingProgressTxt.text = $"{(int)(LoadingSlider.value * 100)}%";
+            OnLoadingProgressChanged?.Invoke(handle.PercentComplete);
             yield return null;
         }
 
-        // 4) ¾À È°¼ºÈ­
+        // 4) ì”¬ í™œì„±í™”
         yield return handle.Result.ActivateAsync();
 
-        // 5) À¯Àú µ¥ÀÌÅÍ Àû¿ë
+        // 5) ì €ì¥ ë°ì´í„° ë¡œë“œ
         UserDataManager.Instance.LoadUserData();
         ApplyLoadedUserData();
     }
@@ -96,10 +160,8 @@ public class TitleManager : MonoBehaviour
             player.transform.position = status.Position;
         }
 
-        var invData = UserDataManager.Instance.Get<UserInventoryData>();
-        InventoryManager.Instance.LoadInventory(invData.ItemNames);
-
-        InventoryManager.Instance.LoadInventory(invData.ItemNames);
+        // ì¸ë²¤í† ë¦¬ëŠ” InventoryManagerì˜ Start()ì—ì„œ ìë™ìœ¼ë¡œ ë¡œë“œë©ë‹ˆë‹¤.
+        // (InventoryManagerëŠ” InGame ì”¬ì— ìˆìœ¼ë¯€ë¡œ ì—¬ê¸°ì„œëŠ” ë¡œë“œí•˜ì§€ ì•ŠìŠµë‹ˆë‹¤)
     }
 
     private IEnumerator PreloadAssetGroups()
@@ -109,14 +171,14 @@ public class TitleManager : MonoBehaviour
             if (group?.LabelReference == null)
                 continue;
 
-            LoadingItemsTxt.text = $"Loading {group.GroupName}...";
+            OnLoadingTextChanged?.Invoke($"Loading {group.GroupName}...");
 
-            // BuiltInData + Prefab ¸ğµÎ ·Îµå
+            // BuiltInData + Prefab ëª¨ë‘ ë¡œë“œ
             var handle = Addressables.LoadAssetsAsync<object>(
                 group.LabelReference.labelString,
                 loadedAsset =>
                 {
-                    // Prefab¸¸ Ç®¿¡ µî·Ï
+                    // Prefabì„ ë“±ë¡í•˜ëŠ” ë¡œì§
                     if (loadedAsset is GameObject go)
                     {
                         GameManager.Instance.RegisterPrefab(group.GroupName, go);
@@ -131,26 +193,6 @@ public class TitleManager : MonoBehaviour
             yield return handle;
         }
 
-        LoadingItemsTxt.text = "All Assets Loaded!";
-    }
-
-
-    private void OnDestroy()
-    {
-        // ÇÁ¸®·ÎµåµÈ ¿¡¼Â ÇØÁ¦
-        foreach (var handle in m_PreloadHandles)
-        {
-            if (handle.IsValid())
-            {
-                Addressables.Release(handle);
-            }
-        }
-        m_PreloadHandles.Clear();
-
-        // ¾À ¾ğ·Îµå
-        if (m_SceneLoadHandle.IsValid())
-        {
-            Addressables.UnloadSceneAsync(m_SceneLoadHandle);
-        }
+        OnLoadingTextChanged?.Invoke("All Assets Loaded!");
     }
 }

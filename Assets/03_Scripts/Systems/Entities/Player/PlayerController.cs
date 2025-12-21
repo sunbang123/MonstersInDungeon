@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-// ÀÌµ¿ ¸ğµå Enum
+// ì´ë™ ëª¨ë“œ Enum
 public enum MovementMode
 {
     Stop,
@@ -17,15 +17,20 @@ public class PlayerController : MonoBehaviour
 
     private float moveSpeed;
     private SpriteRenderer spriteRenderer;
+    private Animator animator;
     private MovementMode currentMode = MovementMode.Walk;
 
-    // ÀÌµ¿ ¸ğµå º¯°æ ÀÌº¥Æ®
+    // Animator íŒŒë¼ë¯¸í„° ì´ë¦„
+    private static readonly int SpeedParam = Animator.StringToHash("Speed");
+
+    // ì´ë™ ëª¨ë“œ ë³€ê²½ ì´ë²¤íŠ¸
     public event Action<MovementMode> OnMovementModeChanged;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        moveSpeed = walkSpeed; // ÃÊ±â°ªÀº °È±â
+        animator = GetComponent<Animator>();
+        moveSpeed = walkSpeed; // ì´ˆê¸°ê°’ì€ ê±·ê¸°
     }
 
     private void Update()
@@ -35,14 +40,24 @@ public class PlayerController : MonoBehaviour
 
         if (x != 0 || y != 0)
         {
-            // ÀÌµ¿
+            // ì´ë™
             transform.position += new Vector3(x, y, 0) * moveSpeed * Time.deltaTime;
 
-            // ÁÂ¿ì ¹İÀü (Flip)
+            // ì¢Œìš° ë°˜ì „ (Flip)
             if (x < 0)
                 spriteRenderer.flipX = true;
             else if (x > 0)
                 spriteRenderer.flipX = false;
+
+            // ì• ë‹ˆë©”ì´ì…˜: Walk ì¬ìƒ (Speed > 0)
+            if (animator != null)
+                animator.SetFloat(SpeedParam, moveSpeed);
+        }
+        else
+        {
+            // ì• ë‹ˆë©”ì´ì…˜: Idle ì¬ìƒ (Speed = 0)
+            if (animator != null)
+                animator.SetFloat(SpeedParam, 0f);
         }
     }
 
@@ -54,7 +69,7 @@ public class PlayerController : MonoBehaviour
         {
             case MovementMode.Stop:
                 moveSpeed = 0;
-                virtualJoystick.OnPointerUp(null); // Á¶ÀÌ½ºÆ½ ÃÊ±âÈ­
+                virtualJoystick.OnPointerUp(null); // ì¡°ì´ìŠ¤í‹± ì´ˆê¸°í™”
                 break;
             case MovementMode.Walk:
                 moveSpeed = walkSpeed;

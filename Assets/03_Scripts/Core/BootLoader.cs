@@ -10,10 +10,10 @@ public class BootLoader : MonoBehaviour
 
     private IEnumerator Start()
     {
-        // Addressables ÃÊ±âÈ­
+        // Addressables ì´ˆê¸°í™”
         yield return Addressables.InitializeAsync();
 
-        // ¹Ù·Î TitleScene ·Îµå
+        // ë‹¤ìŒ TitleScene ë¡œë“œ
         var handle = TitleSceneReference.LoadSceneAsync(LoadSceneMode.Single);
         yield return handle;
     }

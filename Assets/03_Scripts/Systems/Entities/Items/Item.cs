@@ -22,7 +22,7 @@ public class Item : MonoBehaviour
 
     private void Start()
     {
-        spriteRenderer.sprite = IData.itemImage; //¾ÆÀÌÅÛ ÀÌ¹ÌÁö °¡Á®¿À±â
+        spriteRenderer.sprite = IData.itemImage; //ì•„ì´í…œì˜ ì´ë¯¸ì§€ë¥¼ ìŠ¤í”„ë¼ì´íŠ¸ì—
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

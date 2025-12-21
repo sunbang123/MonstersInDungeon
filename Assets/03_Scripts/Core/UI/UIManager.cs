@@ -6,15 +6,15 @@ public class UIManager : SingletonBehaviour<UIManager>
     public Transform UICanvasTrs;
     public Transform ClosedUITrs;
 
-    private BaseUI m_FrontUI; // UIÈ­¸é¿¡ °¡Àå »ó´Ü UIÀÎµ¥ ±×°É ¸â¹öº¯¼ö·Î ¾²°íÀÖ´Ù.
+    private BaseUI m_FrontUI; // UIí™”ë©´ì— ë³´ì´ëŠ” ìµœìƒìœ„ UIì¸ë° ê·¸ê²ƒì´ ë¬´ì—‡ì¸ì§€ ì €ì¥í•˜ê³  ìˆëŠ” ë³€ìˆ˜.
 
     private Dictionary<System.Type, GameObject> m_OpenUIPool = new Dictionary<System.Type, GameObject>();
     private Dictionary<System.Type, GameObject> m_ClosedUIPool = new Dictionary<System.Type, GameObject>();
 
-    // ¿©·¯°¡Áö °ªÀÌ³ª ÂüÁ¶¸¦ ¹İÈ¯ÇÏ°í ½ÍÀ»¶§ ÀÌ·¸°Ô out ¸Å°³º¯¼ö »ç¿ëÇÔ.
+    // ì œë„¤ë¦­ìœ¼ë¡œ íƒ€ì…ì„ ë°›ì•„ì„œ ë°˜í™˜í•˜ê³  ìˆëŠ”ë° ì´ë ‡ê²Œ out ë§¤ê°œë³€ìˆ˜ë¥¼ ì‚¬ìš©.
     private BaseUI GetUI<T>(out bool isAlreadyOpen)
     {
-        System.Type uiType = typeof(T); // T´Â ¿­°íÀÚ ÇÏ´Â È­¸é UI Å¬·¡½º Å¸ÀÔ. ÀÌ°ÍÀ» uiTypeÀ¸·Î ¹Ş¾Æ¿Â´Ù.
+        System.Type uiType = typeof(T); // Të¡œ ì „ë‹¬ëœ í™”ë©´ UI í´ë˜ìŠ¤ íƒ€ì…. ì´ê²ƒì„ uiTypeìœ¼ë¡œ ë°›ì•„ì˜¨ë‹¤.
 
         BaseUI ui = null;
         isAlreadyOpen = false;
@@ -39,18 +39,18 @@ public class UIManager : SingletonBehaviour<UIManager>
         return ui;
     }
 
-    // UI È­¸éÀ» ¿©´Â ±â´É ÇÏ´Â ÇÔ¼ö
+    // UI í™”ë©´ì— ë³´ì´ëŠ” ìµœìƒìœ„ë¡œ ì˜¬ë¦¬ëŠ” í•¨ìˆ˜
     public void OpenUI<T>(BaseUIData uiData)
     {
         System.Type uiType = typeof(T);
 
-        Logger.Log($"{GetType()}::OpenUI({uiType})"); // ¾î¶² UIÈ­¸éÀ» ¿­°íÀÚÇÏ´ÂÁö ·Î±×¸¦ Âï´Â´Ù.
+        Logger.Log($"{GetType()}::OpenUI({uiType})"); // ì–´ë–¤ UIí™”ë©´ì„ ì—´ì—ˆëŠ”ì§€ ë¡œê·¸ë¥¼ ë‚¨ê¸´ë‹¤.
 
-        bool isAlreadyOpen = false; // ÀÌ¹Ì ¿­·ÁÀÖ´ÂÁö ¾Ë ¼ö ÀÖ´Â º¯¼ö ¼±¾ğ
+        bool isAlreadyOpen = false; // ì´ë¯¸ ì—´ë ¤ìˆëŠ”ì§€ ì—¬ë¶€ë¥¼ í™•ì¸í•˜ëŠ” ë³€ìˆ˜
 
         var ui = GetUI<T>(out isAlreadyOpen);
 
-        if(!ui) // ¾øÀ¸¸é ¿¡·¯ ·Î±×
+        if(!ui) // ìƒì„±ì— ì‹¤íŒ¨ ë¡œê·¸
         {
             Logger.LogError($"{uiType} does not exist.");
             return;
@@ -74,16 +74,16 @@ public class UIManager : SingletonBehaviour<UIManager>
         m_OpenUIPool[uiType] = ui.gameObject;
     }
 
-    // È­¸é´İ´ÂÇÔ¼ö
+    // í™”ë©´ë‹«ê¸°í•¨ìˆ˜
     public void CloseUI(BaseUI ui)
     {
         System.Type uiType = ui.GetType();
 
-        Logger.Log($"CloseUI UI:{uiType}"); // ¾î¶² UIÀÎÁö ´İ¾ÆÁÖ´Â·Î±×
+        Logger.Log($"CloseUI UI:{uiType}"); // ì–´ë–¤ UIë¥¼ ë‹«ëŠ”ì§€ ë¡œê·¸
 
         ui.gameObject.SetActive(false);
 
-        m_OpenUIPool.Remove(uiType); //¿ÀÇÂÇ®¿¡¼­ Á¦°Å
+        m_OpenUIPool.Remove(uiType); //ì—´ë¦°í’€ì—ì„œ ì œê±°
         m_ClosedUIPool[uiType] = ui.gameObject;
         ui.transform.SetParent(ClosedUITrs);
 
@@ -97,7 +97,7 @@ public class UIManager : SingletonBehaviour<UIManager>
         }
     }
 
-    // Æ¯Á¤ UI È­¸éÀÌ ¿­·ÁÀÖ´ÂÁö È®ÀÎ ±× ¿­·ÁÀÖ´Â UIÈ­¸éÀ» °¡Á®¿È
+    // íŠ¹ì • UI í™”ë©´ì´ ì—´ë ¤ìˆëŠ”ì§€ í™•ì¸ í•˜ê³  ì—´ë ¤ìˆëŠ” UIí™”ë©´ì„ ë°˜í™˜
     public BaseUI GetActiveUI<T>()
     {
         var uiType = typeof(T);
@@ -105,19 +105,19 @@ public class UIManager : SingletonBehaviour<UIManager>
         return m_OpenUIPool.ContainsKey(uiType) ? m_OpenUIPool[uiType].GetComponent<BaseUI>() : null;
     }
 
-    // UIÈ­¸éÀÌ ¿­¸°°ÍÀÌ ÇÏ³ª¶óµµ ÀÖ´ÂÁö È®ÀÎÇÏ´Â ÇÔ¼ö
+    // UIí™”ë©´ì´ ì—´ë ¤ìˆëŠ”ì§€ í•˜ë‚˜ë¼ë„ ìˆëŠ”ì§€ í™•ì¸í•˜ëŠ” í•¨ìˆ˜
     public bool ExistsOpenUI()
     {
-        return m_FrontUI != null; // m_FrontUI°¡ nullÀÎÁö ¾Æ´ÑÁö È®ÀÎÇØ¼­ ±× ºÒ°ªÀ» ¹İÈ¯
+        return m_FrontUI != null; // m_FrontUIê°€ nullì´ ì•„ë‹Œì§€ í™•ì¸í•´ì„œ ì—´ë ¤ìˆëŠ”ì§€ ë°˜í™˜
     }
 
-    // ÇöÀç °¡Àå ÃÖ»ó´Ü¿¡ ÀÖ´Â ÀÎ½ºÅÏ½º¸¦ ¸®ÅÏÇÏ´Â ÇÔ¼ö
+    // í˜„ì¬ ìµœìƒìœ„ì— ìˆëŠ” ì˜¤ë¸Œì íŠ¸ë¥¼ ë°˜í™˜í•˜ëŠ” í•¨ìˆ˜
     public BaseUI GetCurrentFrontUI()
     {
         return m_FrontUI;
     }
 
-    // °¡Àå ÃÖ»ó´Ü¿¡ ÀÖ´Â UIÈ­¸é ÀÎ½ºÅÏ½º¸¦ ´İ´Â ÇÔ¼ö
+    // í˜„ì¬ ìµœìƒìœ„ì— ìˆëŠ” UIí™”ë©´ ì˜¤ë¸Œì íŠ¸ë¥¼ ë‹«ëŠ” í•¨ìˆ˜
     public void CloseCurrFrontUI()
     {
         m_FrontUI.CloseUI();

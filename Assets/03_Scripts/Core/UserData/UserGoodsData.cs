@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class UserGoodsData : IUserData
 {
-    // º¸¼®, int ¹üÀ§¸¦ ¹ş¾î³¯ ¼ö ÀÖ´Ù.
+    // ë³´ì„, int ë²”ìœ„ë¥¼ ë„˜ì„ ìˆ˜ ìˆìŒ.
     public long Gem { get; set; }
-    // °ñµå
+    // ê³¨ë“œ
     public long Gold { get; set; }
     public void SetDefaultData()
     {
@@ -22,7 +22,7 @@ public class UserGoodsData : IUserData
 
         try
         {
-            // Gem, Gold´Â longÀÌ±â ¶§¹®¿¡ ¹®ÀÚ¿­À» ÀÌ¿ëÇØ¼­ µ¥ÀÌÅÍ¸¦ ÀúÀåÇÏ°í ºÒ·¯¿Í¾ß ÇÔ.
+            // Gem, GoldëŠ” longì´ê¸° ë•Œë¬¸ì— ë¬¸ìì—´ì„ ì‚¬ìš©í•´ì„œ ë°ì´í„°ë¥¼ ì €ì¥í•˜ê³  ë¶ˆëŸ¬ì™€ì•¼ í•¨.
             Gem = long.Parse(PlayerPrefs.GetString("Gem"));
             Gold = long.Parse(PlayerPrefs.GetString("Gold"));
             result = true;

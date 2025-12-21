@@ -12,26 +12,26 @@ public class LobbyManager : MonoBehaviour
 
     private void Start()
     {
-        // UserDataManager°¡ ÃÊ±âÈ­µÇ¾ú´ÂÁö È®ÀÎ
+        // UserDataManagerê°€ ì´ˆê¸°í™”ë˜ì—ˆëŠ”ì§€ í™•ì¸
         if (UserDataManager.Instance == null)
         {
-            Debug.LogError("UserDataManager°¡ ÃÊ±âÈ­µÇÁö ¾Ê¾Ò½À´Ï´Ù!");
+            Debug.LogError("UserDataManagerê°€ ì´ˆê¸°í™”ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤!");
             return;
         }
-        // ÀúÀåµÈ µ¥ÀÌÅÍ Á¸Àç ¿©ºÎ·Î Continue ¹öÆ° È°¼ºÈ­
+        // ì €ì¥ëœ ë°ì´í„°ê°€ ìˆìœ¼ë©´ Continue ë²„íŠ¼ í™œì„±í™”
         bool hasPlayerData = UserDataManager.Instance.ExistsSavedData;
         ContinueButton.interactable = hasPlayerData;
         NewGameButton.interactable = true;
         OptionButton.interactable = true;
 
-        Debug.Log($"·Îºñ ÃÊ±âÈ­: ÀúÀåµÈ µ¥ÀÌÅÍ Á¸Àç = {hasPlayerData}");
+        Debug.Log($"ë¡œë¹„ ì´ˆê¸°í™”: ì €ì¥ëœ ë°ì´í„° ì¡´ì¬ = {hasPlayerData}");
     }
 
     public void OnClickContinue()
     {
         if (UserDataManager.Instance == null)
         {
-            Debug.LogError("UserDataManager¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
+            Debug.LogError("UserDataManagerë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
             return;
         }
 
@@ -43,16 +43,25 @@ public class LobbyManager : MonoBehaviour
     {
         if (UserDataManager.Instance == null)
         {
-            Debug.LogError("UserDataManager¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
+            Debug.LogError("UserDataManagerë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
             return;
         }
 
-        Debug.Log("NewGame Å¬¸¯µÊ");
+        Debug.Log("NewGame í´ë¦­ë¨");
 
-        // StartNewGame ¸Ş¼­µå·Î µ¥ÀÌÅÍ ÃÊ±âÈ­
+        // StartNewGame ë©”ì„œë“œë¡œ ë°ì´í„° ì´ˆê¸°í™”
         UserDataManager.Instance.StartNewGame();
 
-        Debug.Log("NewGame ÀÌÈÄ TutorialEnd: " +
+        // ì„ íƒëœ ìš”ì†Œ(SelectedElement)ë¥¼ ì´ˆê¸°í™” í•´ì„œ ì„¸ì´ë¸Œ ë°ì´í„° ì½”ë“œì—ì„œë„ ìƒˆë¡œ ì´ˆê¸°í™”ë˜ë„ë¡ í•¨
+        var status = UserDataManager.Instance.Get<UserPlayerStatusData>();
+        if (status != null)
+        {
+            status.SelectedElement = "";
+            PlayerPrefs.SetString("SelectedElement", "");
+            PlayerPrefs.Save();
+        }
+
+        Debug.Log("NewGame í›„ TutorialEnd: " +
             UserDataManager.Instance.Get<UserPlayerStatusData>()?.TutorialEnd);
 
         LoadInGameScene();
@@ -64,7 +73,7 @@ public class LobbyManager : MonoBehaviour
     }
     private void LoadInGameScene()
     {
-        // Addressables ¹æ½ÄÀ¸·Î ¾À ·Îµå
+        // Addressables ì‹œìŠ¤í…œìœ¼ë¡œ ì”¬ ë¡œë“œ
         InGameSceneReference.LoadSceneAsync(UnityEngine.SceneManagement.LoadSceneMode.Single);
     }
 }

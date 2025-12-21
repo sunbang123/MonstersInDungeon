@@ -2,20 +2,20 @@ using UnityEngine;
 
 public class PlayerInputLogger : MonoBehaviour
 {
-    // ÇÃ·¹ÀÌ¾îÀÇ ÇöÀç À§Ä¡(¿ùµå ÁÂÇ¥)¸¦ ÀúÀåÇÒ º¯¼ö
+    // í”Œë ˆì´ì–´ì˜ í˜„ì¬ ìœ„ì¹˜(ì›”ë“œ ì¢Œí‘œ)ë¥¼ ì €ì¥í•˜ëŠ” ë³€ìˆ˜
     private Vector3 currentWorldPosition;
 
     void Update()
     {
-        // 1. this.transform.positionÀº ÀÌ¹Ì Vector3ÀÔ´Ï´Ù.
+        // 1. this.transform.positionì€ ì´ë¯¸ Vector3ì…ë‹ˆë‹¤.
         currentWorldPosition = this.transform.position;
 
-        // 2. ÀÌ À§Ä¡ Á¤º¸¸¦ È°¿ëÇÕ´Ï´Ù.
-        // ¿¹¸¦ µé¾î, 5ÃÊ¸¶´Ù ÇöÀç À§Ä¡¸¦ Debug.Log·Î Ãâ·ÂÇÕ´Ï´Ù.
-        if (Time.frameCount % 300 == 0) // ¾à 5ÃÊ¸¶´Ù (60FPS ±âÁØ)
+        // 2. ì´ ìœ„ì¹˜ ì •ë³´ë¥¼ í™œìš©í•©ë‹ˆë‹¤.
+        // ì˜ˆë¥¼ ë“¤ì–´, 5ì´ˆë§ˆë‹¤ í˜„ì¬ ìœ„ì¹˜ë¥¼ Debug.Logë¡œ ì¶œë ¥í•©ë‹ˆë‹¤.
+        if (Time.frameCount % 300 == 0) // ì•½ 5ì´ˆë§ˆë‹¤ (60FPS ê¸°ì¤€)
         {
-            Debug.Log($"ÇöÀç ÇÃ·¹ÀÌ¾î ¿ùµå ÁÂÇ¥ º¤ÅÍ: {currentWorldPosition}");
-            Debug.Log($"X ÁÂÇ¥: {currentWorldPosition.x}, Y ÁÂÇ¥: {currentWorldPosition.y}");
+            Debug.Log($"í˜„ì¬ í”Œë ˆì´ì–´ ì›”ë“œ ì¢Œí‘œ ì •ë³´: {currentWorldPosition}");
+            Debug.Log($"X ì¢Œí‘œ: {currentWorldPosition.x}, Y ì¢Œí‘œ: {currentWorldPosition.y}");
         }
     }
 }

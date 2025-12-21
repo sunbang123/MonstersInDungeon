@@ -8,14 +8,14 @@ public class Quest : TutorialBehaviour
 
     protected override IEnumerator Start()
     {
-        // 부모 Start() 먼저 실행 (튜토리얼 끝났으면 여기서 Destroy됨)
+        // 부모 Start() 먼저 실행 (튜토리얼 시스템에서 조건 체크 후 Destroy를)
         yield return StartCoroutine(base.Start());
 
-        // 부모가 Destroy(gameObject) 했다면 여기서 종료
+        // 부모 Destroy(gameObject) 했다면 여기서 종료
         if (this == null)
             yield break;
 
-        // 버튼 이벤트 등록
+        // 버튼 이벤트 연결
         var btn = GetComponent<Button>();
         if (btn != null)
             btn.onClick.AddListener(Toggle);

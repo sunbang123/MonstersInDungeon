@@ -24,8 +24,8 @@ public class PlayerInteraction : MonoBehaviour
 
     [Header("Text")]
     [SerializeField] private TMP_Text hideText;
-    [SerializeField] private string walkButtonText = "°È±â";
-    [SerializeField] private string runButtonText = "´Ş¸®±â";
+    [SerializeField] private string walkButtonText = "ë‹¬ë¦¬ê¸°";
+    [SerializeField] private string runButtonText = "ê±·ê¸°";
 
     [Header("Image")]
     [SerializeField] public Image newItemText;
@@ -48,7 +48,7 @@ public class PlayerInteraction : MonoBehaviour
         if (runButton != null)
         {
             runButton.onClick.AddListener(ToggleMovementMode);
-            UpdateRunButtonText(MovementMode.Walk); // ÃÊ±â ÅØ½ºÆ® ¼³Á¤
+            UpdateRunButtonText(MovementMode.Walk); // ì´ˆê¸° í…ìŠ¤íŠ¸ ì„¤ì •
         }
 
         if (newItemText != null)
@@ -61,7 +61,7 @@ public class PlayerInteraction : MonoBehaviour
             inventoryCanvas.gameObject.SetActive(false);
         }
 
-        // player ¿òÁ÷ÀÓ ÀÌº¥Æ® ±¸µ¶
+        // player ì»¨íŠ¸ë¡¤ëŸ¬ ì´ë²¤íŠ¸ ì—°ê²°
         if (_controll != null)
         {
             _controll.OnMovementModeChanged += UpdateRunButtonText;
@@ -101,13 +101,13 @@ public class PlayerInteraction : MonoBehaviour
         {
             _sprite.enabled = false;
             _controll.enabled = false;
-            hideText.text = "³ª°¡±â";
+            hideText.text = "ë‚˜íƒ€ë‚˜ê¸°";
         }
         else if (_sprite.enabled == false)
         {
             _sprite.enabled = true;
             _controll.enabled = true;
-            hideText.text = "¼û±â";
+            hideText.text = "ìˆ¨ê¸°ê¸°";
         }
     }
 
@@ -122,7 +122,7 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    // ÀÌµ¿ ¸ğµå Åä±Û (°È±â ¡ê ¶Ù±â)
+    // ì´ë™ ëª¨ë“œ ì „í™˜ (ê±·ê¸° â†” ë‹¬ë¦¬ê¸°)
     public void ToggleMovementMode()
     {
         MovementMode currentMode = _controll.GetCurrentMode();
@@ -135,7 +135,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (questCanvas == null) return;
 
-        // Äù½ºÆ® ¹öÆ°À» Ã³À½ Å¬¸¯ÇÑ ¼ø°£ newQuestText¸¦ ²û
+        // í€˜ìŠ¤íŠ¸ ë²„íŠ¼ì„ ì²˜ë¦¬ í´ë¦­í–ˆì„ ë•Œ newQuestTextë¥¼ ë”
         if (newQuestText != null && newQuestText.activeSelf)
             newQuestText.SetActive(false);
 
@@ -148,7 +148,7 @@ public class PlayerInteraction : MonoBehaviour
         UpdateRunButtonText(mode);
     }
 
-    // ¹öÆ° ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
+    // ë²„íŠ¼ í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
     private void UpdateRunButtonText(MovementMode mode)
     {
         if (runButton == null) return;
@@ -180,7 +180,7 @@ public class PlayerInteraction : MonoBehaviour
     }
 
 
-    //¹öÆ° È°¼ºÈ­ ºñÈ°¼ºÈ­
+    //ë²„íŠ¼ í™œì„±í™” ë¹„í™œì„±í™”
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Hide"))

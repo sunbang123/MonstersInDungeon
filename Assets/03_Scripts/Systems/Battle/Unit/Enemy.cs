@@ -4,16 +4,70 @@ using UnityEngine;
 public class Enemy : Unit
 {
     [Header("Health")]
-    public float enemyHp = 300f;
-    public float maxHp = 300f;
+    [SerializeField] private float _enemyHp = 50f;
+    public float maxHp = 50f;
+
+    public float enemyHp
+    {
+        get => _enemyHp;
+        set
+        {
+            _enemyHp = Mathf.Clamp(value, 0f, maxHp);
+            OnHealthChanged?.Invoke(_enemyHp, maxHp);
+        }
+    }
+
+    [Header("Mana")]
+    [SerializeField] private float _enemyPp = 50f;
+    public float maxPp = 50f;
+
+    [Header("Level & Experience")]
+    [SerializeField] private int _level = 1;
+    [Tooltip("ì´ ì ì„ ë¬¼ë¦¬ì¹˜ë©´ ì–»ëŠ” ê²½í—˜ì¹˜")]
+    public float expReward = 50f;
+
+    public int level
+    {
+        get => _level;
+        set
+        {
+            _level = Mathf.Max(1, value);
+            OnLevelChanged?.Invoke(_level);
+        }
+    }
+
+    [Header("Portrait")]
+    [SerializeField] private Sprite _portrait;
+    public Sprite portrait
+    {
+        get => _portrait;
+        set
+        {
+            _portrait = value;
+            OnPortraitChanged?.Invoke(_portrait);
+        }
+    }
+
+    public float enemyPp
+    {
+        get => _enemyPp;
+        set
+        {
+            _enemyPp = Mathf.Clamp(value, 0f, maxPp);
+            OnPPChanged?.Invoke(_enemyPp, maxPp);
+        }
+    }
 
     public event Action<float, float> OnHealthChanged;
+    public event Action<float, float> OnPPChanged;
+    public event Action<int> OnLevelChanged;
+    public event Action<Sprite> OnPortraitChanged;
     public event Action OnEnemyDeath;
 
     [Header("Item Drop")]
-    [Tooltip("ÀûÀÌ Á×¾úÀ» ¶§ µå¶øÇÒ ¾ÆÀÌÅÛ ÇÁ¸®ÆÕ")]
+    [Tooltip("ì´ ì ì´ ì£½ì—ˆì„ ë•Œ ë“œë¡­ë  ì•„ì´í…œì˜ í”„ë¦¬íŒ¹")]
     public GameObject dropItemPrefab;
-    [Tooltip("¾ÆÀÌÅÛ µå¶ø È®·ü (0 ~ 1)")]
+    [Tooltip("ì•„ì´í…œ ë“œë¡­ í™•ë¥  (0 ~ 1)")]
     [Range(0f, 1f)]
     public float dropChance = 1f;
 
@@ -26,17 +80,20 @@ public class Enemy : Unit
     }
 
     /// <summary>
-    /// ÀûÀÇ »ç¸Á »óÅÂ¸¦ ¹İÈ¯ÇÏ´Â ¸Ş¼­µå
+    /// ì ì˜ ì£½ìŒ ìƒíƒœë¥¼ ë°˜í™˜í•˜ëŠ” ë©”ì„œë“œ
     /// </summary>
     public new bool IsDead()
     {
         return isDead;
     }
 
-    // Unit Å¬·¡½ºÀÇ Ãß»ó ¸Ş¼­µå ±¸Çö
+    // Unit í´ë˜ìŠ¤ì˜ ì¶”ìƒ ë©”ì„œë“œ êµ¬í˜„
     protected override float GetCurrentHp() => enemyHp;
     protected override float GetMaxHp() => maxHp;
-    protected override void SetCurrentHp(float value) => enemyHp = value;
+    protected override void SetCurrentHp(float value)
+    {
+        enemyHp = value; // ì†ì„±ì„ í†µí•´ ì´ë²¤íŠ¸ ìë™ ë°œìƒ
+    }
     protected override void InvokeHealthChanged(float current, float max)
         => OnHealthChanged?.Invoke(current, max);
     protected override void InvokeDeath() => OnEnemyDeath?.Invoke();
@@ -45,32 +102,32 @@ public class Enemy : Unit
     {
         base.Die();
 
-        // ¾ÆÀÌÅÛ µå¶ø
+        // ì•„ì´í…œ ë“œë¡­
         DropItem();
     }
 
     /// <summary>
-    /// ¾ÆÀÌÅÛ µå¶ø Ã³¸®
+    /// ì•„ì´í…œ ë“œë¡­ ì²˜ë¦¬
     /// </summary>
     private void DropItem()
     {
         if (dropItemPrefab == null) return;
 
-        // µå¶ø È®·ü Ã¼Å©
+        // ë“œë¡­ í™•ë¥  í™•ì¸
         float randomValue = UnityEngine.Random.Range(0f, 1f);
         if (randomValue <= dropChance)
         {
-            // ÀûÀÌ ÀÖ´ø À§Ä¡¿¡ ¾ÆÀÌÅÛ »ı¼º
+            // í˜„ì¬ ìœ„ì¹˜ì— ì•„ì´í…œ ìƒì„±
             GameObject droppedItem = Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
-            Debug.Log($"[¾ÆÀÌÅÛ µå¶ø] {gameObject.name}ÀÌ(°¡) {dropItemPrefab.name}À»(¸¦) µå¶øÇß½À´Ï´Ù.");
+            Debug.Log($"[ì•„ì´í…œ ë“œë¡­] {gameObject.name}ì´(ê°€) {dropItemPrefab.name}ì„(ë¥¼) ë“œë¡­í–ˆìŠµë‹ˆë‹¤.");
         }
         else
         {
-            Debug.Log($"[¾ÆÀÌÅÛ µå¶ø ½ÇÆĞ] {gameObject.name} - È®·ü: {dropChance * 100}%");
+            Debug.Log($"[ì•„ì´í…œ ë“œë¡­ ì‹¤íŒ¨] {gameObject.name} - í™•ë¥ : {dropChance * 100}%");
         }
     }
 
-    // ÇÃ·¹ÀÌ¾î¿Í Ãæµ¹ ½Ã ÀüÅõ ½ÃÀÛ
+    // í”Œë ˆì´ì–´ì™€ ì¶©ëŒ ì‹œ ì „íˆ¬ ì‹œì‘
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player") && !battleStarted)

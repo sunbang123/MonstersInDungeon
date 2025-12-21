@@ -5,7 +5,7 @@ public class TutorialBehaviour : MonoBehaviour
 {
     protected virtual IEnumerator Start()
     {
-        // UserDataManager.Instance가 준비될 때까지 기다림
+        // UserDataManager.Instance가 준비될 때까지 대기
         while (UserDataManager.Instance == null)
             yield return null;
 
@@ -21,12 +21,12 @@ public class TutorialBehaviour : MonoBehaviour
 
         if (status.TutorialEnd)
         {
-            Debug.Log("TutorialBehaviour: ????? ?? ???��? ??????? ?��?");
+            Debug.Log("TutorialBehaviour: 튜토리얼이 끝났다면 오브젝트 삭제");
             Destroy(gameObject);
         }
         else
         {
-            Debug.Log("TutorialBehaviour: ????? ???? ????? ??????? ????");
+            Debug.Log("TutorialBehaviour: 튜토리얼이 진행 중이라면 오브젝트 유지");
         }
     }
 }

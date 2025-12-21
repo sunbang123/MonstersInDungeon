@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// ÅÏ ½ÇÇà ·ÎÁ÷À» ´ã´çÇÏ´Â Å¬·¡½º
+/// ê° í„´ì˜ ì‹¤í–‰ì„ ë‹´ë‹¹í•˜ëŠ” í´ë˜ìŠ¤
 /// </summary>
 public class TurnExecutor : MonoBehaviour, ITurnExecutor
 {
@@ -17,7 +17,7 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     }
 
     /// <summary>
-    /// ÀüÅõ Âü¿©ÀÚ ¼³Á¤ (ITurnExecutor ±¸Çö)
+    /// ì „íˆ¬ ì°¸ê°€ì ì„¤ì • (ITurnExecutor êµ¬í˜„)
     /// </summary>
     public void SetCombatants(Player p, Enemy e)
     {
@@ -26,55 +26,63 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     }
 
     /// <summary>
-    /// ÇÃ·¹ÀÌ¾î ÅÏ ½ÇÇà
+    /// í”Œë ˆì´ì–´ í„´ ì‹¤í–‰
     /// </summary>
     public IEnumerator ExecutePlayerTurn()
     {
-        // ¹öÆ° È°¼ºÈ­
-        uiController.SetButtonsInteractable(true);
+        // ì•„ì´í…œ ì‚¬ìš© ì¤‘ì´ ì•„ë‹ˆê³ , BattleStateê°€ PlayerTurnì¼ ë•Œë§Œ ë²„íŠ¼ í™œì„±í™”
+        if (stateMachine.BattleState == BattleState.PlayerTurn && 
+            stateMachine.PlayerState != PlayerState.ItemUse &&
+            stateMachine.PlayerState != PlayerState.Attack &&
+            stateMachine.PlayerState != PlayerState.Defense)
+        {
+            uiController.SetButtonsInteractable(true);
+        }
 
-        // ÇÃ·¹ÀÌ¾îÀÇ ÀÔ·ÂÀ» ±â´Ù¸² (»óÅÂ°¡ º¯°æµÉ ¶§±îÁö)
+        // í”Œë ˆì´ì–´ì˜ ì…ë ¥ì„ ê¸°ë‹¤ë¦¼ (ìƒíƒœê°€ ë³€ê²½ë  ë•Œê¹Œì§€)
         yield return new WaitUntil(() => stateMachine.BattleState != BattleState.PlayerTurn);
     }
 
     /// <summary>
-    /// Àû ÅÏ ½ÇÇà
+    /// ì  í„´ ì‹¤í–‰
     /// </summary>
     public IEnumerator ExecuteEnemyTurn()
     {
-        // ¹öÆ° ºñÈ°¼ºÈ­
+        // ë²„íŠ¼ ë¹„í™œì„±í™”
         uiController.SetButtonsInteractable(false);
 
         yield return new WaitForSeconds(1f);
 
         stateMachine.ChangeState(EnemyState.Attack);
-        uiController.AppendBattleLog($"ÀûÀº {stateMachine.EnemyState}Çß´Ù!\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"ì ì´ {stateMachine.EnemyState}í–ˆë‹¤!\n");
 
         yield return new WaitForSeconds(1f);
 
         if (player != null)
         {
-            float enemyAttackDamage = 20f; // ÀÓ½Ã µ¥¹ÌÁö
+            float enemyAttackDamage = 20f; // ì„ì‹œ ë°ë¯¸ì§€
             player.TakeDamage(enemyAttackDamage);
         }
 
         stateMachine.ChangeState(PlayerState.Damaged);
-        uiController.AppendBattleLog($"´ç½ÅÀº {stateMachine.PlayerState} µÇ¾ú´Ù.\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"í”Œë ˆì´ì–´ê°€ {stateMachine.PlayerState} ë˜ì—ˆë‹¤.\n");
 
         yield return new WaitForSeconds(1f);
 
+        // PlayerState ë¦¬ì…‹ í›„ BattleState ë³€ê²½
+        stateMachine.ChangeState(PlayerState.None);
         stateMachine.ChangeState(BattleState.PlayerTurn);
     }
 
     /// <summary>
-    /// °ø°İ ½ÇÇà
+    /// ê³µê²© ì‹¤í–‰
     /// </summary>
     public IEnumerator ExecuteAttack()
     {
         uiController.SetButtonsInteractable(false);
 
         stateMachine.ChangeState(PlayerState.Attack);
-        uiController.AppendBattleLog($"´ç½ÅÀº {stateMachine.PlayerState}À» Çß´Ù.\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"í”Œë ˆì´ì–´ê°€ {stateMachine.PlayerState}ë¥¼ í–ˆë‹¤.\n");
 
         yield return new WaitForSeconds(1f);
 
@@ -85,79 +93,140 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
         }
 
         stateMachine.ChangeState(EnemyState.Damaged);
-        uiController.AppendBattleLog($"Àû {stateMachine.EnemyState}!\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"ì  {stateMachine.EnemyState}!\n");
 
         yield return new WaitForSeconds(1f);
 
+        // PlayerState ë¦¬ì…‹ í›„ BattleState ë³€ê²½
+        stateMachine.ChangeState(PlayerState.None);
         stateMachine.ChangeState(BattleState.EnemyTurn);
     }
 
     /// <summary>
-    /// ¾ÆÀÌÅÛ »ç¿ë ½ÇÇà
+    /// ì•„ì´í…œ ì‚¬ìš© ì‹¤í–‰
     /// </summary>
     public IEnumerator ExecuteItemUse(int itemIndex)
     {
-        uiController.SetButtonsInteractable(false);
+        // ì´ë¯¸ ì•„ì´í…œ ì‚¬ìš© ì¤‘ì´ë©´ ë¬´ì‹œ
+        if (stateMachine.PlayerState == PlayerState.ItemUse)
+        {
+            yield break;
+        }
 
+        // ì¸ë²¤í† ë¦¬ì—ì„œ ì•„ì´í…œ ë°ì´í„° ê°€ì ¸ì˜¤ê¸°
+        ItemData itemData = InventoryManager.Instance?.GetBattleSlotItem(itemIndex);
+        
+        if (itemData == null)
+        {
+            BattleUIController.OnBattleLogAppended?.Invoke($"ì•„ì´í…œì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.\n");
+            stateMachine.ChangeState(PlayerState.None);
+            stateMachine.ChangeState(BattleState.PlayerTurn);
+            uiController.SetButtonsInteractable(true);
+            yield break;
+        }
+
+        // ë²„íŠ¼ì€ ì´ë¯¸ BattleManagerì—ì„œ ë¹„í™œì„±í™”ë¨ (ì¤‘ë³µ í´ë¦­ ë°©ì§€)
+        // PlayerState.ItemUseë¥¼ ì„¤ì •í•˜ì—¬ ExecutePlayerTurnì—ì„œ ë²„íŠ¼ì´ ë‹¤ì‹œ í™œì„±í™”ë˜ì§€ ì•Šë„ë¡ í•¨
         stateMachine.ChangeState(PlayerState.ItemUse);
-        uiController.AppendBattleLog($"´ç½ÅÀº ¾ÆÀÌÅÛ {itemIndex + 1}À» »ç¿ëÇß´Ù.\n");
+        
+        BattleUIController.OnBattleLogAppended?.Invoke($"í”Œë ˆì´ì–´ê°€ {itemData.itemName}ì„(ë¥¼) ì‚¬ìš©í–ˆë‹¤.\n");
 
         yield return new WaitForSeconds(1f);
 
-        if (itemIndex == 0 && player != null) // ¿¹: Ã¹ ¹øÂ° ¾ÆÀÌÅÛÀÌ È¸º¹ ¾ÆÀÌÅÛÀÏ °æ¿ì
+        // ì•„ì´í…œ íš¨ê³¼ ì ìš©
+        ApplyItemEffect(itemData);
+
+        // ì•„ì´í…œ ì‚¬ìš© í›„ ì¸ë²¤í† ë¦¬ì—ì„œ ì œê±°
+        if (InventoryManager.Instance != null)
         {
-            // player.Heal(50f); // ½ÇÁ¦ Èú ·ÎÁ÷
-            uiController.AppendBattleLog($"ÇÃ·¹ÀÌ¾î Ã¼·ÂÀ» 50 È¸º¹Çß½À´Ï´Ù.\n");
+            InventoryManager.Instance.RemoveBattleSlotItem(itemIndex);
         }
-        else if (itemIndex == 1 && enemy != null) // ¿¹: µÎ ¹øÂ° ¾ÆÀÌÅÛÀÌ °ø°İ ¾ÆÀÌÅÛÀÏ °æ¿ì
-        {
-            float itemDamage = 25f;
-            enemy.TakeDamage(itemDamage); // Àû¿¡°Ô µ¥¹ÌÁö
-            uiController.AppendBattleLog($"¾ÆÀÌÅÛÀ¸·Î Àû¿¡°Ô {itemDamage}ÀÇ ÇÇÇØ¸¦ ÀÔÇû½À´Ï´Ù.\n");
-        }
+
         yield return new WaitForSeconds(1f);
 
+        // ì•„ì´í…œ ì‚¬ìš© ì™„ë£Œ - PlayerState ë¦¬ì…‹ í›„ BattleState ë³€ê²½
+        stateMachine.ChangeState(PlayerState.None);
+        // BattleStateë¥¼ EnemyTurnìœ¼ë¡œ ë³€ê²½í•˜ì—¬ ExecutePlayerTurnì˜ WaitUntilì´ ê¹¨ì§€ë„ë¡ í•¨
         stateMachine.ChangeState(BattleState.EnemyTurn);
     }
 
     /// <summary>
-    /// ¹æ¾î ½ÇÇà
+    /// ì•„ì´í…œ íš¨ê³¼ë¥¼ ì ìš©í•©ë‹ˆë‹¤.
+    /// </summary>
+    private void ApplyItemEffect(ItemData itemData)
+    {
+        string statName = itemData.StatName;
+        int statValue = itemData.StatValue;
+
+        // ëŒ€ì†Œë¬¸ì êµ¬ë¶„ ì—†ì´ ë¹„êµ
+        string statNameLower = statName.ToLower();
+
+        if (statNameLower.Contains("heal") || statNameLower.Contains("íšŒë³µ"))
+        {
+            // í”Œë ˆì´ì–´ íšŒë³µ
+            if (player != null)
+            {
+                float healAmount = statValue;
+                float newHp = Mathf.Min(player.playerHp + healAmount, player.maxHp);
+                player.playerHp = newHp;
+                BattleUIController.OnBattleLogAppended?.Invoke($"í”Œë ˆì´ì–´ ì²´ë ¥ì´ {healAmount} íšŒë³µë˜ì—ˆìŠµë‹ˆë‹¤.\n");
+            }
+        }
+        else if (statNameLower.Contains("damage") || statNameLower.Contains("attack") || statNameLower.Contains("ë°ë¯¸ì§€") || statNameLower.Contains("ê³µê²©"))
+        {
+            // ì ì—ê²Œ ë°ë¯¸ì§€
+            if (enemy != null)
+            {
+                enemy.TakeDamage(statValue);
+                stateMachine.ChangeState(EnemyState.Damaged);
+                BattleUIController.OnBattleLogAppended?.Invoke($"ì•„ì´í…œìœ¼ë¡œ ì ì—ê²Œ {statValue}ì˜ ë°ë¯¸ì§€ë¥¼ ì£¼ì—ˆìŠµë‹ˆë‹¤.\n");
+            }
+        }
+    }
+
+    /// <summary>
+    /// ë°©ì–´ ì‹¤í–‰
     /// </summary>
     public IEnumerator ExecuteDefense()
     {
         uiController.SetButtonsInteractable(false);
 
         stateMachine.ChangeState(PlayerState.Defense);
-        uiController.AppendBattleLog($"´ç½ÅÀº ¹æ¾î ÀÚ¼¼¸¦ ÃëÇß´Ù.\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"í”Œë ˆì´ì–´ê°€ ë°©ì–´ ìì„¸ë¥¼ ì·¨í–ˆë‹¤.\n");
 
         yield return new WaitForSeconds(1f);
 
+        // PlayerState ë¦¬ì…‹ í›„ BattleState ë³€ê²½
+        stateMachine.ChangeState(PlayerState.None);
         stateMachine.ChangeState(BattleState.EnemyTurn);
     }
 
     /// <summary>
-    /// Æ¯¼ö °ø°İ ½ÇÇà
+    /// íŠ¹ìˆ˜ ê³µê²© ì‹¤í–‰
     /// </summary>
     public IEnumerator ExecuteSpecialAttack()
     {
         uiController.SetButtonsInteractable(false);
 
         stateMachine.ChangeState(PlayerState.Attack);
-        uiController.AppendBattleLog($"´ç½ÅÀº Æ¯¼ö °ø°İÀ» Çß´Ù!\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"í”Œë ˆì´ì–´ê°€ íŠ¹ìˆ˜ ê³µê²©ì„ í–ˆë‹¤!\n");
 
         yield return new WaitForSeconds(1f);
 
         if (enemy != null)
         {
-            float specialAttackDamage = 50f; // ÀÓ½Ã µ¥¹ÌÁö
+            float specialAttackDamage = 50f; // ì„ì‹œ ë°ë¯¸ì§€
             enemy.TakeDamage(specialAttackDamage);
         }
 
         stateMachine.ChangeState(EnemyState.Damaged);
-        uiController.AppendBattleLog($"Àû¿¡°Ô Å« ÇÇÇØ!\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"ì ì—ê²Œ í° ë°ë¯¸ì§€!\n");
 
         yield return new WaitForSeconds(1f);
 
+        // PlayerState ë¦¬ì…‹ í›„ BattleState ë³€ê²½
+        stateMachine.ChangeState(PlayerState.None);
         stateMachine.ChangeState(BattleState.EnemyTurn);
     }
 }
+

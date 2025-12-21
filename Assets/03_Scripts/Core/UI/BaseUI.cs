@@ -3,25 +3,26 @@ using UnityEngine;
 
 public class BaseUIData
 {
-    // ÇÔ¼ö¸¦ ´ãÀ» ¼ö ÀÖ´Â º¯¼ö¶ó°í »ý°¢
-    // µ¿ÀÏÇÑ UI È­¸é¿¡ ´ëÇØ¼­µµ ¾î¶² »óÈ²¿¡¼­´Â A¶ó´Â ±â´ÉÀ» ½ÇÇàÇØÁà¾ß ÇÏ°í
-    // ¾î¶² »óÈ²¿¡¼­´Â B ¶ó´Â ±â´ÉÀ» ½ÇÇàÇØÁà¾ß ÇÒ¶§°¡ ÀÖ´Âµ¥ ±×·¡¼­ ActionÀ¸·Î
-    public Action OnShow; // UI È­¸éÀ» ¿­¾úÀ» ¶§ ÇØÁÖ°í ½ÍÀº ÇàÀ§¸¦ Á¤ÀÇ
-    public Action OnClose; // UI È­¸éÀ» ´ÝÀ¸¸é¼­ ½ÇÇàÇØ¾ß µÇ´Â ±â´É Á¤ÀÇ
+    // ì•¡ì…˜ìœ¼ë¡œ ë°›ì•„ì„œ ì „ë‹¬í•  ìˆ˜ ìžˆëŠ” ë°ì´í„°ë¥¼ ì €ìž¥
+    // ì˜ˆë¥¼ ë“¤ì–´ UI í™”ë©´ì— ë”°ë¼ì„œ ì–´ë–¤ ìƒí™©ì—ì„œ Aë¼ëŠ” ì²˜ë¦¬ë¥¼ í•´ì•¼í•˜ê³ 
+    // ì–´ë–¤ ìƒí™©ì—ì„œ B ë¼ëŠ” ì²˜ë¦¬ë¥¼ í•´ì•¼í•˜ëŠ”ë° ê·¸ê²ƒì„ Actionìœ¼ë¡œ
+    // ì–´ë–¤ ìƒí™©ì—ì„œ B ë¼ëŠ” ì²˜ë¦¬ë¥¼ í•´ì•¼í•˜ëŠ”ë° ê·¸ê²ƒì„ Actionìœ¼ë¡œ
+    public Action OnShow; // UI í™”ë©´ì´ ì—´ë¦´ ë•Œ ë³´ì—¬ì§€ê³  ì „ë‹¬í•  ë°ì´í„°ë¥¼ ì €ìž¥
+    public Action OnClose; // UI í™”ë©´ì´ ë‹«ížˆë©´ì„œ ì²˜ë¦¬í•´ì•¼ í•  ë°ì´í„° ì €ìž¥
 }
 
 public class BaseUI: MonoBehaviour
 {
-    // UI¸¦ ¿­¾îÁÙ ¶§ Àç»ýÇÒ ¾Ö´Ï¸ÞÀÌ¼Ç º¯¼ö
+    // UIê°€ ì—´ë¦´ ë•Œ ìž¬ìƒí•  ì• ë‹ˆë©”ì´ì…˜ ë³€ìˆ˜
     public Animation m_UIOpenAnim;
 
-    // È­¸éÀ» ¿­ ¶§ ½ÇÇàÇØ¾ßÇÒ ±â´É
-    // È­¸éÀ» ´ÝÀ» ¶§ ½ÇÇàÇØ¾ßÇÒ ¾×¼Ç º¯¼ö ¼±¾ð
+    // í™”ë©´ì´ ì—´ ë•Œ ì²˜ë¦¬í•´ì•¼í•  ë°ì´í„°
+    // í™”ë©´ì´ ë‹«ì„ ë•Œ ì²˜ë¦¬í•´ì•¼í•  ì•¡ì…˜ ë°ì´í„° ì €ìž¥
     private Action m_OnShow;
     private Action m_OnClose;
-    // ÀÌ º¯¼öµéÀº È­¸éÀ» ¿­ ¶§ ¸Å°³º¯¼ö·Î ³Ñ¾î¿Â UIData Å¬·¡½º¿¡
-    // Á¤ÀÇµÈ OnShow¿Í OnClose ±×´ë·Î BaseUI Å¬·¡½º¿¡ ÀÖ´Â m_OnShow¿Í...
-    // m_OnShow = uiData.OnShow; ÀÌ·±½ÄÀ¸·Î
+    // ê° í™”ë©´ì—ì„œ í™”ë©´ì´ ì—´ ë•Œ ë§¤ê°œë³€ìˆ˜ë¡œ ì „ë‹¬ëœ UIData í´ëž˜ìŠ¤ë¥¼
+    // ì €ìž¥í•˜ê³  ìžˆëŠ” OnShowì™€ OnClose ë°”ë¡œ BaseUI í´ëž˜ìŠ¤ì— ìžˆëŠ” m_OnShowì™€...
+    // m_OnShow = uiData.OnShow; ì´ë ‡ê²Œ
 
     public virtual void Init(Transform anchor)
     {
@@ -39,14 +40,14 @@ public class BaseUI: MonoBehaviour
             return;
         }
 
-        // ±âº» °ªÀ¸·Î ÀüºÎ ÃÊ±âÈ­
+        // ê¸°ë³¸ ìœ„ì¹˜ë¥¼ ì„¤ì • ì´ˆê¸°í™”
         rectTransform.localPosition = new Vector3(0f, 0f, 0f);
         rectTransform.localScale = new Vector3(1f, 1f, 1f);
         rectTransform.offsetMin = new Vector2(0, 0);
         rectTransform.offsetMax = new Vector2(0, 0);
     }
 
-    // UIÈ­¸é¿¡ UI¿ä¼Ò¸¦ ¼¼ÆÃÇØÁÖ´Â ÇÔ¼ö
+    // UIí™”ë©´ì— UIìš”ì†Œë¥¼ ì„¤ì •í•˜ëŠ” í•¨ìˆ˜
     public virtual void SetInfo(BaseUIData uiData)
     {
         Logger.Log($"{GetType()} set info");
@@ -55,7 +56,7 @@ public class BaseUI: MonoBehaviour
         m_OnClose = uiData.OnClose;
     }
 
-    // UI È­¸éÀ» ½ÇÁ¦·Î ¿­¾î¼­ È­¸é¿¡ Ç¥½ÃÇØ ÁÖ´Â ÇÔ¼ö
+    // UI í™”ë©´ì´ ì—´ë¦´ ë•Œ ì²˜ë¦¬í•´ì„œ í™”ë©´ì— í‘œì‹œí•˜ëŠ” í•¨ìˆ˜
     public virtual void ShowUI()
     {
         if(m_UIOpenAnim)
@@ -63,14 +64,14 @@ public class BaseUI: MonoBehaviour
             m_UIOpenAnim.Play();
         }
 
-        m_OnShow?.Invoke(); // m_OnShow°¡ nullÀÌ ¾Æ´Ï¶ó¸é m_OnShow ½ÇÇà
-        m_OnShow = null; // ½ÇÇà ÈÄ ³Î°ªÀ¸·Î ÃÊ±âÈ­
+        m_OnShow?.Invoke(); // m_OnShowê°€ nullì´ ì•„ë‹ˆë©´ m_OnShow í˜¸ì¶œ
+        m_OnShow = null; // í˜¸ì¶œ í›„ ë³€ìˆ˜ë¥¼ ì´ˆê¸°í™”
     }
 
-    // È­¸éÀ» ´Ý´Â ÇÔ¼ö
+    // í™”ë©´ì„ ë‹«ëŠ” í•¨ìˆ˜
     public virtual void CloseUI(bool isCloseAll = false)
     {
-        // isCloseAll: ¾ÀÀ» ÀüÈ¯ÇÏ°Å³ª ÇÒ ¶§ ¿­·ÁÀÖ´Â È­¸éÀ»
+        // isCloseAll: ëª¨ë“  í™”ë©´ì„ ë‹«ê±°ë‚˜ í•œ ê°œë§Œ ë‹«ëŠ” í™”ë©´ì„
         if(!isCloseAll)
         {
             m_OnClose?.Invoke();

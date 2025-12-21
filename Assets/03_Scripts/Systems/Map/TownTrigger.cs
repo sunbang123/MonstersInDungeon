@@ -10,12 +10,10 @@ public class TownTrigger : MonoBehaviour
     [Tooltip("전환할 맵 인덱스 (MapManager의 mapIndex와 동일)")]
     public int mapIndex;
     
-    private TownUIManager townText;
     private MapManager mapManager;
 
     void Awake()
     {
-        townText = FindObjectOfType<TownUIManager>();
         mapManager = FindObjectOfType<MapManager>();
     }
     
@@ -24,10 +22,10 @@ public class TownTrigger : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
-        // 마을 이름 표시
-        if (townText != null && mapData != null)
+        // 마을 이름 표시 (이벤트 기반)
+        if (mapData != null)
         {
-            townText.SetTownName(mapData.mapName);
+            TownUIManager.OnTownNameChanged?.Invoke(mapData.mapName);
         }
 
         // MapManager를 통해 맵 전환

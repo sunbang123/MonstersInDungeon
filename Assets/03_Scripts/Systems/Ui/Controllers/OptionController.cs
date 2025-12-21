@@ -22,13 +22,13 @@ public class OptionController : MonoBehaviour
 
     private void Awake()
     {
-        // �ڽ� ������Ʈ���� Button �ڵ� ����
+        // 자식 GameObject들에서 Button 컴포넌트 찾기
         buttons.AddRange(GetComponentsInChildren<Button>(true));
 
-        // enum ������� ��� ����
+        // enum 순서대로 버튼 할당
         for (int i = 0; i < buttons.Count; i++)
         {
-            int index = i; // Ŭ���� ���� ����
+            int index = i; // 클로저 문제 해결
             buttons[i].onClick.AddListener(() => HandleButton((OptionButton)index));
         }
     }
@@ -38,17 +38,17 @@ public class OptionController : MonoBehaviour
         switch (type)
         {
             case OptionButton.Save:
-                Debug.Log("���� ��� ����");
+                Debug.Log("게임 저장 처리");
                 SaveGame();
                 break;
 
             case OptionButton.ToLobby:
-                Debug.Log("�κ�� �̵�");
+                Debug.Log("로비로 이동");
                 LoadLobbyScene();
                 break;
 
             case OptionButton.Quit:
-                Debug.Log("���� ����");
+                Debug.Log("게임 종료");
                 Application.Quit();
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
@@ -61,7 +61,7 @@ public class OptionController : MonoBehaviour
     {
         if (UserDataManager.Instance == null)
         {
-            Debug.LogError("UserDataManager.Instance�� null�Դϴ�!");
+            Debug.LogError("UserDataManager.Instance가 null입니다!");
             return;
         }
 
@@ -73,6 +73,8 @@ public class OptionController : MonoBehaviour
             {
                 data.Position = player.transform.position;
                 data.HP = player.playerHp;
+                data.Level = player.level;
+                data.CurrentExp = player.currentExp;
             }
         }
 
@@ -88,24 +90,35 @@ public class OptionController : MonoBehaviour
             }
         }
 
+        // 인벤토리 데이터 저장
+        if (InventoryManager.Instance != null)
+        {
+            var invData = UserDataManager.Instance.Get<UserInventoryData>();
+            if (invData != null)
+            {
+                invData.ItemNames = InventoryManager.Instance.GetInventoryItemNames();
+                Debug.Log($"Saved inventory: {invData.ItemNames.Count} items");
+            }
+        }
+
         UserDataManager.Instance.SaveUserData();
         Debug.Log("Saved HP: " + PlayerPrefs.GetFloat("PlayerHP"));
     }
 
     private void LoadLobbyScene()
     {
-        // ���� InGame ���� ��ε��ϰ�, �κ� ���� �ε�
-        // �� ����� DontDestroyOnLoad ������Ʈ�� �����մϴ�
+        // 현재 InGame 씬을 언로드하고, 로비 씬 로드
+        // 이 방법으로 DontDestroyOnLoad 오브젝트를 보존합니다
         StartCoroutine(LoadLobbySceneCoroutine());
     }
 
     private System.Collections.IEnumerator LoadLobbySceneCoroutine()
     {
-        // 1. ���� �� �̸� ����
+        // 1. 현재 씬 이름 저장
         var currentScene = SceneManager.GetActiveScene();
-        Debug.Log($"���� �� ��ε� ����: {currentScene.name}");
+        Debug.Log($"현재 씬 언로드 시작: {currentScene.name}");
 
-        // 2. �κ� �� �ε�
+        // 2. 로비 씬 로드
         var loadHandle = Addressables.LoadSceneAsync(
             LobbySceneReference,
             LoadSceneMode.Single,
@@ -116,31 +129,31 @@ public class OptionController : MonoBehaviour
 
         if (loadHandle.Status == AsyncOperationStatus.Succeeded)
         {
-            Debug.Log("�κ� �� �ε� �Ϸ� (Additive)");
+            Debug.Log("로비 씬 로드 완료 (Additive)");
 
-            // 3. �� ���� Ȱ�� ������ ����
+            // 3. 로비 씬을 활성화 상태로 설정
             var lobbyScene = loadHandle.Result.Scene;
             SceneManager.SetActiveScene(lobbyScene);
 
-            // 4. ���� InGame �� ��ε�
+            // 4. 이전 InGame 씬 언로드
             var unloadOp = SceneManager.UnloadSceneAsync(currentScene);
             yield return unloadOp;
 
-            Debug.Log("���� �� ��ε� �Ϸ�");
+            Debug.Log("이전 씬 언로드 완료");
 
-            // 5. UserDataManager Ȯ��
+            // 5. UserDataManager 확인
             if (UserDataManager.Instance != null)
             {
-                Debug.Log("UserDataManager ���� ������!");
+                Debug.Log("UserDataManager 정상 작동 중!");
             }
             else
             {
-                Debug.LogError("�� ��ȯ �Ŀ��� UserDataManager�� ��������ϴ�!");
+                Debug.LogError("씬 전환 후에 UserDataManager가 사라졌습니다!");
             }
         }
         else
         {
-            Debug.LogError($"�κ� �� �ε� ����: {loadHandle.OperationException}");
+            Debug.LogError($"로비 씬 로드 실패: {loadHandle.OperationException}");
         }
     }
 }

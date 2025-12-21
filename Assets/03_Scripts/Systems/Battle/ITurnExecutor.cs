@@ -1,7 +1,7 @@
 using System.Collections;
 
 /// <summary>
-/// ÅÏ ½ÇÇàÀ» ´ã´çÇÏ´Â ÀÎÅÍÆäÀÌ½º
+/// í„´ ì‹¤í–‰ì„ ë‹´ë‹¹í•˜ëŠ” ì¸í„°í˜ì´ìŠ¤
 /// </summary>
 public interface ITurnExecutor
 {

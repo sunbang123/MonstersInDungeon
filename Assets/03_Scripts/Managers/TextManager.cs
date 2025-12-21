@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -52,17 +52,75 @@ public class TextManager : MonoBehaviour
     private bool isPostSelectionStory = false;
     private int currentSelectionIndex = 0;
 
+    // 대화 UI 업데이트 이벤트
+    public event Action<string> OnDialogueChanged;
+    public event Action<string> OnItemInfoChanged;
+    public event Action<bool> OnDialogPanelVisibilityChanged;
+    public event Action<bool> OnSelectPanelVisibilityChanged;
+    public event Action<int, bool> OnSelectionCursorChanged; // index, active
+
     void Start()
     {
         StartCoroutine(FadeIn());
         LoadCurrentStory();
-        selectPanel.SetActive(false);
-        itemInfoTxt.text = "";
+        
+        // 이벤트 구독
+        OnDialogueChanged += UpdateDialogueText;
+        OnItemInfoChanged += UpdateItemInfoText;
+        OnDialogPanelVisibilityChanged += UpdateDialogPanelVisibility;
+        OnSelectPanelVisibilityChanged += UpdateSelectPanelVisibility;
+        OnSelectionCursorChanged += UpdateSelectionCursor;
+
+        // 초기 상태 설정
+        OnSelectPanelVisibilityChanged?.Invoke(false);
+        OnItemInfoChanged?.Invoke("");
 
         foreach (var cursor in selectCursorPrefab)
         {
-            if (cursor != null) cursor.SetActive(false);
+            if (cursor != null)
+                OnSelectionCursorChanged?.Invoke(selectCursorPrefab.IndexOf(cursor), false);
         }
+    }
+
+    private void OnDestroy()
+    {
+        // 이벤트 구독 해제
+        OnDialogueChanged -= UpdateDialogueText;
+        OnItemInfoChanged -= UpdateItemInfoText;
+        OnDialogPanelVisibilityChanged -= UpdateDialogPanelVisibility;
+        OnSelectPanelVisibilityChanged -= UpdateSelectPanelVisibility;
+        OnSelectionCursorChanged -= UpdateSelectionCursor;
+    }
+
+    // UI 업데이트 핸들러
+    private void UpdateDialogueText(string text)
+    {
+        if (dialog != null)
+            dialog.text = text;
+    }
+
+    private void UpdateItemInfoText(string text)
+    {
+        if (itemInfoTxt != null)
+            itemInfoTxt.text = text;
+    }
+
+    private void UpdateDialogPanelVisibility(bool isVisible)
+    {
+        if (dialogPanel != null)
+            dialogPanel.SetActive(isVisible);
+    }
+
+    private void UpdateSelectPanelVisibility(bool isVisible)
+    {
+        if (selectPanel != null)
+            selectPanel.SetActive(isVisible);
+    }
+
+    private void UpdateSelectionCursor(int index, bool isActive)
+    {
+        if (index >= 0 && index < selectCursorPrefab.Count && selectCursorPrefab[index] != null)
+            selectCursorPrefab[index].SetActive(isActive);
     }
 
     void Update()
@@ -103,15 +161,15 @@ public class TextManager : MonoBehaviour
     {
         currentState = newState;
 
-        dialogPanel.SetActive(currentState == StoryState.STORY);
-        selectPanel.SetActive(currentState == StoryState.SELECT);
+        OnDialogPanelVisibilityChanged?.Invoke(currentState == StoryState.STORY);
+        OnSelectPanelVisibilityChanged?.Invoke(currentState == StoryState.SELECT);
 
-        if (currentState == StoryState.STORY && itemInfoTxt != null)
+        if (currentState == StoryState.STORY)
         {
-            itemInfoTxt.text = "";
-            foreach (var cursor in selectCursorPrefab)
+            OnItemInfoChanged?.Invoke("");
+            for (int i = 0; i < selectCursorPrefab.Count; i++)
             {
-                if (cursor != null) cursor.SetActive(false);
+                OnSelectionCursorChanged?.Invoke(i, false);
             }
         }
     }
@@ -119,7 +177,7 @@ public class TextManager : MonoBehaviour
     private void ShowNextDialogue()
     {
         var currentLine = currentData[dialogIndex];
-        dialog.text = $"{currentLine["이름"]} : {currentLine["대사"]}";
+        OnDialogueChanged?.Invoke($"{currentLine["이름"]} : {currentLine["대사"]}");
         dialogIndex++;
     }
 
@@ -159,14 +217,11 @@ public class TextManager : MonoBehaviour
 
     private void UpdateSelectionUI(int index)
     {
-        if (itemInfoTxt == null || index < 0 || index >= selectCursorPrefab.Count) return;
+        if (index < 0 || index >= selectCursorPrefab.Count) return;
 
         for (int i = 0; i < selectCursorPrefab.Count; i++)
         {
-            if (selectCursorPrefab[i] != null)
-            {
-                selectCursorPrefab[i].SetActive(i == index);
-            }
+            OnSelectionCursorChanged?.Invoke(i, i == index);
         }
 
         if (index < infoFiles.Count)
@@ -189,21 +244,21 @@ public class TextManager : MonoBehaviour
 
                 if (!string.IsNullOrEmpty(displayText))
                 {
-                    itemInfoTxt.text = displayText.TrimEnd('\n');
+                    OnItemInfoChanged?.Invoke(displayText.TrimEnd('\n'));
                 }
                 else
                 {
-                    itemInfoTxt.text = $"[경고] {infoFileName} 파일에서 '{infoKey}' 키의 내용을 찾을 수 없습니다.";
+                    OnItemInfoChanged?.Invoke($"[경고] {infoFileName} 파일에서 '{infoKey}' 키의 내용을 찾을 수 없습니다.");
                 }
             }
             else
             {
-                itemInfoTxt.text = $"[오류] {infoFileName} 파일을 불러오는 데 실패했습니다.";
+                OnItemInfoChanged?.Invoke($"[오류] {infoFileName} 파일을 불러오는 데 실패했습니다.");
             }
         }
         else
         {
-            itemInfoTxt.text = "원소를 선택하여 정보를 확인하세요.";
+            OnItemInfoChanged?.Invoke("원소를 선택하여 정보를 확인하세요.");
         }
     }
 
