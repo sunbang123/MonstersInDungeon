@@ -60,7 +60,26 @@ public class InventoryManager : MonoBehaviour
         OnSlotVisibilityChanged += UpdateSlotVisibility;
         OnBattleSlotVisibilityChanged += UpdateBattleSlotVisibility;
         
+        // 저장된 인벤토리 데이터 로드
+        LoadSavedInventory();
+        
         UpdateSlotVisibility();
+    }
+
+    /// <summary>
+    /// 저장된 인벤토리 데이터를 자동으로 로드합니다.
+    /// </summary>
+    private void LoadSavedInventory()
+    {
+        if (UserDataManager.Instance == null)
+            return;
+
+        var invData = UserDataManager.Instance.Get<UserInventoryData>();
+        if (invData != null && invData.ItemNames != null && invData.ItemNames.Count > 0)
+        {
+            LoadInventory(invData.ItemNames);
+            Debug.Log($"인벤토리 로드 완료: {invData.ItemNames.Count}개 아이템");
+        }
     }
 
     private void OnDestroy()
@@ -188,6 +207,26 @@ public class InventoryManager : MonoBehaviour
             ItemData data = ItemDatabase.GetItem(name);
             AddItemToSlot(data);
         }
+    }
+
+    /// <summary>
+    /// 현재 인벤토리에 있는 아이템 이름 목록을 반환합니다.
+    /// </summary>
+    public List<string> GetInventoryItemNames()
+    {
+        List<string> itemNames = new List<string>();
+        foreach (var slot in slots)
+        {
+            if (!slot.IsEmpty())
+            {
+                ItemData itemData = slot.GetItemData();
+                if (itemData != null && !string.IsNullOrEmpty(itemData.itemName))
+                {
+                    itemNames.Add(itemData.itemName);
+                }
+            }
+        }
+        return itemNames;
     }
     public void AddItemToSlot(ItemData data)
     {

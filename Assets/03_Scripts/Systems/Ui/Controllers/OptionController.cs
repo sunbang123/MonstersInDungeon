@@ -90,6 +90,17 @@ public class OptionController : MonoBehaviour
             }
         }
 
+        // 인벤토리 데이터 저장
+        if (InventoryManager.Instance != null)
+        {
+            var invData = UserDataManager.Instance.Get<UserInventoryData>();
+            if (invData != null)
+            {
+                invData.ItemNames = InventoryManager.Instance.GetInventoryItemNames();
+                Debug.Log($"Saved inventory: {invData.ItemNames.Count} items");
+            }
+        }
+
         UserDataManager.Instance.SaveUserData();
         Debug.Log("Saved HP: " + PlayerPrefs.GetFloat("PlayerHP"));
     }

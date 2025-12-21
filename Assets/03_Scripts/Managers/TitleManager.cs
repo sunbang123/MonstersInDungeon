@@ -160,10 +160,8 @@ public class TitleManager : MonoBehaviour
             player.transform.position = status.Position;
         }
 
-        var invData = UserDataManager.Instance.Get<UserInventoryData>();
-        InventoryManager.Instance.LoadInventory(invData.ItemNames);
-
-        InventoryManager.Instance.LoadInventory(invData.ItemNames);
+        // 인벤토리는 InventoryManager의 Start()에서 자동으로 로드됩니다.
+        // (InventoryManager는 InGame 씬에 있으므로 여기서는 로드하지 않습니다)
     }
 
     private IEnumerator PreloadAssetGroups()

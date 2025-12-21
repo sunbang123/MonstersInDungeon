@@ -22,6 +22,8 @@ public class ItemSlot : MonoBehaviour
 
     public bool IsEmpty() => currentItem == null;
 
+    public ItemData GetItemData() => currentItem;
+
     public void SetItem(ItemData itemData)
     {
         currentItem = itemData;
