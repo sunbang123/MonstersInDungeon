@@ -6,6 +6,8 @@ public class UserPlayerStatusData : IUserData
     public Vector3 Position { get; set; }
     public bool TutorialEnd { get; set; }
     public int CurrentMapIndex { get; set; }
+    public int Level { get; set; }
+    public float CurrentExp { get; set; }
 
     public string SelectedElement; // "FIRE", "WATER", "PLANT"
     public void SetDefaultData()
@@ -15,6 +17,8 @@ public class UserPlayerStatusData : IUserData
         TutorialEnd = false;
         CurrentMapIndex = 0; // 기본값은 첫 번째 맵
         SelectedElement = ""; // 기본값
+        Level = 1;
+        CurrentExp = 0f;
     }
 
     public bool LoadData()
@@ -31,6 +35,8 @@ public class UserPlayerStatusData : IUserData
             TutorialEnd = PlayerPrefs.GetInt("TutorialEnd", 0) == 1;
             SelectedElement = PlayerPrefs.GetString("SelectedElement", "");
             CurrentMapIndex = PlayerPrefs.GetInt("CurrentMapIndex", 0);
+            Level = PlayerPrefs.GetInt("PlayerLevel", 1);
+            CurrentExp = PlayerPrefs.GetFloat("PlayerCurrentExp", 0f);
 
             return true;
         }
@@ -49,6 +55,8 @@ public class UserPlayerStatusData : IUserData
             PlayerPrefs.SetInt("TutorialEnd", TutorialEnd ? 1 : 0);
             PlayerPrefs.SetString("SelectedElement", SelectedElement);
             PlayerPrefs.SetInt("CurrentMapIndex", CurrentMapIndex);
+            PlayerPrefs.SetInt("PlayerLevel", Level);
+            PlayerPrefs.SetFloat("PlayerCurrentExp", CurrentExp);
 
             PlayerPrefs.Save();
             return true;

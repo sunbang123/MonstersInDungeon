@@ -4,20 +4,49 @@ using UnityEngine;
 public class Enemy : Unit
 {
     [Header("Health")]
-    public float enemyHp = 50f;
+    [SerializeField] private float _enemyHp = 50f;
     public float maxHp = 50f;
+
+    public float enemyHp
+    {
+        get => _enemyHp;
+        set
+        {
+            _enemyHp = Mathf.Clamp(value, 0f, maxHp);
+            OnHealthChanged?.Invoke(_enemyHp, maxHp);
+        }
+    }
 
     [Header("Mana")]
     [SerializeField] private float _enemyPp = 50f;
     public float maxPp = 50f;
 
     [Header("Level & Experience")]
-    public int level = 1;
+    [SerializeField] private int _level = 1;
     [Tooltip("이 적을 물리치면 얻는 경험치")]
     public float expReward = 50f;
 
+    public int level
+    {
+        get => _level;
+        set
+        {
+            _level = Mathf.Max(1, value);
+            OnLevelChanged?.Invoke(_level);
+        }
+    }
+
     [Header("Portrait")]
-    public Sprite portrait;
+    [SerializeField] private Sprite _portrait;
+    public Sprite portrait
+    {
+        get => _portrait;
+        set
+        {
+            _portrait = value;
+            OnPortraitChanged?.Invoke(_portrait);
+        }
+    }
 
     public float enemyPp
     {
@@ -31,6 +60,8 @@ public class Enemy : Unit
 
     public event Action<float, float> OnHealthChanged;
     public event Action<float, float> OnPPChanged;
+    public event Action<int> OnLevelChanged;
+    public event Action<Sprite> OnPortraitChanged;
     public event Action OnEnemyDeath;
 
     [Header("Item Drop")]
@@ -59,7 +90,10 @@ public class Enemy : Unit
     // Unit 클래스의 추상 메서드 구현
     protected override float GetCurrentHp() => enemyHp;
     protected override float GetMaxHp() => maxHp;
-    protected override void SetCurrentHp(float value) => enemyHp = value;
+    protected override void SetCurrentHp(float value)
+    {
+        enemyHp = value; // 속성을 통해 이벤트 자동 발생
+    }
     protected override void InvokeHealthChanged(float current, float max)
         => OnHealthChanged?.Invoke(current, max);
     protected override void InvokeDeath() => OnEnemyDeath?.Invoke();

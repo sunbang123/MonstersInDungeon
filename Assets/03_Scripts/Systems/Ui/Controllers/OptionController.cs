@@ -73,6 +73,8 @@ public class OptionController : MonoBehaviour
             {
                 data.Position = player.transform.position;
                 data.HP = player.playerHp;
+                data.Level = player.level;
+                data.CurrentExp = player.currentExp;
             }
         }
 

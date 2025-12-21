@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -33,6 +34,11 @@ public class InventoryManager : MonoBehaviour
         get { return m_Instance; }
     }
 
+    // 인벤토리 UI 업데이트 이벤트
+    public event Action<int, bool> OnSlotVisibilityChanged; // slotIndex, isVisible (일반 인벤토리)
+    public event Action<int, bool> OnBattleSlotVisibilityChanged; // slotIndex, isVisible (전투 인벤토리)
+    public event Action OnInventoryChanged; // 인벤토리가 변경되었을 때
+
     protected void Awake()
     {
         Init();
@@ -49,7 +55,36 @@ public class InventoryManager : MonoBehaviour
     {
         InitializeSlots();
         InitializeBattleSlots();
+        
+        // 이벤트 구독
+        OnSlotVisibilityChanged += UpdateSlotVisibility;
+        OnBattleSlotVisibilityChanged += UpdateBattleSlotVisibility;
+        
         UpdateSlotVisibility();
+    }
+
+    private void OnDestroy()
+    {
+        // 이벤트 구독 해제
+        OnSlotVisibilityChanged -= UpdateSlotVisibility;
+        OnBattleSlotVisibilityChanged -= UpdateBattleSlotVisibility;
+    }
+
+    // 슬롯 가시성 업데이트 핸들러
+    private void UpdateSlotVisibility(int slotIndex, bool isVisible)
+    {
+        if (slotIndex >= 0 && slotIndex < slots.Count && slots[slotIndex] != null)
+        {
+            slots[slotIndex].gameObject.SetActive(isVisible);
+        }
+    }
+
+    private void UpdateBattleSlotVisibility(int slotIndex, bool isVisible)
+    {
+        if (slotIndex >= 0 && slotIndex < b_Slots.Count && b_Slots[slotIndex] != null)
+        {
+            b_Slots[slotIndex].gameObject.SetActive(isVisible);
+        }
     }
 
     private void InitializeSlots()
@@ -106,8 +141,11 @@ public class InventoryManager : MonoBehaviour
 
         item.DestroyItem();
 
-        // 슬롯 가시성 업데이트
+        // 슬롯 가시성 업데이트 (이벤트 기반)
         UpdateSlotVisibility();
+        
+        // 인벤토리 변경 이벤트 발행
+        OnInventoryChanged?.Invoke();
     }
 
     private ItemSlot FindEmptySlot()
@@ -130,16 +168,16 @@ public class InventoryManager : MonoBehaviour
 
     private void UpdateSlotVisibility()
     {
-        // 일반 인벤토리 슬롯 가시성 업데이트
+        // 일반 인벤토리 슬롯 가시성 업데이트 (이벤트 기반)
         for (int i = 0; i < slots.Count; i++)
         {
-            slots[i].gameObject.SetActive(!slots[i].IsEmpty());
+            OnSlotVisibilityChanged?.Invoke(i, !slots[i].IsEmpty());
         }
 
-        // 전투 인벤토리 슬롯 가시성 업데이트
+        // 전투 인벤토리 슬롯 가시성 업데이트 (이벤트 기반)
         for (int i = 0; i < b_Slots.Count; i++)
         {
-            b_Slots[i].gameObject.SetActive(!b_Slots[i].IsEmpty());
+            OnBattleSlotVisibilityChanged?.Invoke(i, !b_Slots[i].IsEmpty());
         }
     }
 
@@ -160,5 +198,11 @@ public class InventoryManager : MonoBehaviour
         ItemSlot bEmpty = FindEmptyBattleSlot();
         if (bEmpty != null)
             bEmpty.SetItem(data);
+
+        // 슬롯 가시성 업데이트 (이벤트 기반)
+        UpdateSlotVisibility();
+        
+        // 인벤토리 변경 이벤트 발행
+        OnInventoryChanged?.Invoke();
     }
 }

@@ -41,10 +41,75 @@ public class TitleManager : MonoBehaviour
     private AsyncOperationHandle<SceneInstance> m_SceneLoadHandle;
     private List<AsyncOperationHandle> m_PreloadHandles = new List<AsyncOperationHandle>();
 
+    // 로딩 UI 업데이트 이벤트
+    public event Action<string> OnLoadingTextChanged;
+    public event Action<float> OnLoadingProgressChanged;
+    public event Action<bool> OnLogoVisibilityChanged;
+    public event Action<bool> OnTitleVisibilityChanged;
+
     private void Awake()
     {
-        LogoAnimator.gameObject.SetActive(true);
-        Title.SetActive(false);
+        // 이벤트 구독
+        OnLogoVisibilityChanged += UpdateLogoVisibility;
+        OnTitleVisibilityChanged += UpdateTitleVisibility;
+        OnLoadingTextChanged += UpdateLoadingText;
+        OnLoadingProgressChanged += UpdateLoadingProgress;
+
+        OnLogoVisibilityChanged?.Invoke(true);
+        OnTitleVisibilityChanged?.Invoke(false);
+    }
+
+    private void OnDestroy()
+    {
+        // 이벤트 구독 해제
+        OnLogoVisibilityChanged -= UpdateLogoVisibility;
+        OnTitleVisibilityChanged -= UpdateTitleVisibility;
+        OnLoadingTextChanged -= UpdateLoadingText;
+        OnLoadingProgressChanged -= UpdateLoadingProgress;
+        // 에셋프리로드 해제 처리
+        foreach (var handle in m_PreloadHandles)
+        {
+            if (handle.IsValid())
+            {
+                Addressables.Release(handle);
+            }
+        }
+        m_PreloadHandles.Clear();
+
+        // 씬 언로드
+        if (m_SceneLoadHandle.IsValid())
+        {
+            Addressables.UnloadSceneAsync(m_SceneLoadHandle);
+        }
+    }
+
+    // UI 업데이트 핸들러
+    private void UpdateLogoVisibility(bool isVisible)
+    {
+        if (LogoAnimator != null)
+            LogoAnimator.gameObject.SetActive(isVisible);
+    }
+
+    private void UpdateTitleVisibility(bool isVisible)
+    {
+        if (Title != null)
+            Title.SetActive(isVisible);
+    }
+
+    private void UpdateLoadingText(string text)
+    {
+        if (LoadingItemsTxt != null)
+            LoadingItemsTxt.text = text;
+    }
+
+    private void UpdateLoadingProgress(float progress)
+    {
+        if (LoadingSlider != null)
+        {
+            LoadingSlider.value = progress;
+            if (LoadingProgressTxt != null)
+                LoadingProgressTxt.text = $"{(int)(progress * 100)}%";
+        }
     }
 
     private void Start()
@@ -58,21 +123,20 @@ public class TitleManager : MonoBehaviour
         LogoAnimator.Play(LogoAnimationStateName);
         yield return new WaitForSeconds(LogoAnimationDuration);
 
-        LogoAnimator.gameObject.SetActive(false);
-        Title.SetActive(true);
+        OnLogoVisibilityChanged?.Invoke(false);
+        OnTitleVisibilityChanged?.Invoke(true);
 
         // 2) 에셋프리로드
-        LoadingItemsTxt.text = "Loading Assets...";
+        OnLoadingTextChanged?.Invoke("Loading Assets...");
         yield return StartCoroutine(PreloadAssetGroups());
 
         // 3) 로비 씬 로드
-        LoadingItemsTxt.text = "Loading Scene...";
+        OnLoadingTextChanged?.Invoke("Loading Scene...");
         var handle = LobbySceneReference.LoadSceneAsync(LoadSceneMode.Single, false);
 
         while (!handle.IsDone)
         {
-            LoadingSlider.value = handle.PercentComplete;
-            LoadingProgressTxt.text = $"{(int)(LoadingSlider.value * 100)}%";
+            OnLoadingProgressChanged?.Invoke(handle.PercentComplete);
             yield return null;
         }
 
@@ -109,7 +173,7 @@ public class TitleManager : MonoBehaviour
             if (group?.LabelReference == null)
                 continue;
 
-            LoadingItemsTxt.text = $"Loading {group.GroupName}...";
+            OnLoadingTextChanged?.Invoke($"Loading {group.GroupName}...");
 
             // BuiltInData + Prefab 모두 로드
             var handle = Addressables.LoadAssetsAsync<object>(
@@ -131,26 +195,6 @@ public class TitleManager : MonoBehaviour
             yield return handle;
         }
 
-        LoadingItemsTxt.text = "All Assets Loaded!";
-    }
-
-
-    private void OnDestroy()
-    {
-        // 에셋프리로드 해제 처리
-        foreach (var handle in m_PreloadHandles)
-        {
-            if (handle.IsValid())
-            {
-                Addressables.Release(handle);
-            }
-        }
-        m_PreloadHandles.Clear();
-
-        // 씬 언로드
-        if (m_SceneLoadHandle.IsValid())
-        {
-            Addressables.UnloadSceneAsync(m_SceneLoadHandle);
-        }
+        OnLoadingTextChanged?.Invoke("All Assets Loaded!");
     }
 }

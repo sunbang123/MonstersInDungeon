@@ -48,7 +48,7 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
         yield return new WaitForSeconds(1f);
 
         stateMachine.ChangeState(EnemyState.Attack);
-        uiController.AppendBattleLog($"적이 {stateMachine.EnemyState}했다!\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"적이 {stateMachine.EnemyState}했다!\n");
 
         yield return new WaitForSeconds(1f);
 
@@ -59,7 +59,7 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
         }
 
         stateMachine.ChangeState(PlayerState.Damaged);
-        uiController.AppendBattleLog($"플레이어가 {stateMachine.PlayerState} 되었다.\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 {stateMachine.PlayerState} 되었다.\n");
 
         yield return new WaitForSeconds(1f);
 
@@ -74,7 +74,7 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
         uiController.SetButtonsInteractable(false);
 
         stateMachine.ChangeState(PlayerState.Attack);
-        uiController.AppendBattleLog($"플레이어가 {stateMachine.PlayerState}를 했다.\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 {stateMachine.PlayerState}를 했다.\n");
 
         yield return new WaitForSeconds(1f);
 
@@ -85,7 +85,7 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
         }
 
         stateMachine.ChangeState(EnemyState.Damaged);
-        uiController.AppendBattleLog($"적 {stateMachine.EnemyState}!\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"적 {stateMachine.EnemyState}!\n");
 
         yield return new WaitForSeconds(1f);
 
@@ -100,20 +100,20 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
         uiController.SetButtonsInteractable(false);
 
         stateMachine.ChangeState(PlayerState.ItemUse);
-        uiController.AppendBattleLog($"플레이어가 아이템 {itemIndex + 1}번 사용했다.\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 아이템 {itemIndex + 1}번 사용했다.\n");
 
         yield return new WaitForSeconds(1f);
 
         if (itemIndex == 0 && player != null) // 예: 첫 번째 아이템이 회복 아이템인 경우
         {
             // player.Heal(50f); // 실제 구현 필요
-            uiController.AppendBattleLog($"플레이어 체력이 50 회복되었습니다.\n");
+            BattleUIController.OnBattleLogAppended?.Invoke($"플레이어 체력이 50 회복되었습니다.\n");
         }
         else if (itemIndex == 1 && enemy != null) // 예: 두 번째 아이템이 공격 아이템인 경우
         {
             float itemDamage = 25f;
             enemy.TakeDamage(itemDamage); // 적에게 데미지
-            uiController.AppendBattleLog($"아이템으로 적에게 {itemDamage}의 데미지를 주었습니다.\n");
+            BattleUIController.OnBattleLogAppended?.Invoke($"아이템으로 적에게 {itemDamage}의 데미지를 주었습니다.\n");
         }
         yield return new WaitForSeconds(1f);
 
@@ -128,7 +128,7 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
         uiController.SetButtonsInteractable(false);
 
         stateMachine.ChangeState(PlayerState.Defense);
-        uiController.AppendBattleLog($"플레이어가 방어 자세를 취했다.\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 방어 자세를 취했다.\n");
 
         yield return new WaitForSeconds(1f);
 
@@ -143,7 +143,7 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
         uiController.SetButtonsInteractable(false);
 
         stateMachine.ChangeState(PlayerState.Attack);
-        uiController.AppendBattleLog($"플레이어가 특수 공격을 했다!\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 특수 공격을 했다!\n");
 
         yield return new WaitForSeconds(1f);
 
@@ -154,7 +154,7 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
         }
 
         stateMachine.ChangeState(EnemyState.Damaged);
-        uiController.AppendBattleLog($"적에게 큰 데미지!\n");
+        BattleUIController.OnBattleLogAppended?.Invoke($"적에게 큰 데미지!\n");
 
         yield return new WaitForSeconds(1f);
 

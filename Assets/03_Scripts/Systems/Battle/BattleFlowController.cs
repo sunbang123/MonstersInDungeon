@@ -41,34 +41,27 @@ public class BattleFlowController : MonoBehaviour
         uiController.ShowBattleUI();
         playerController.SetMovementMode(MovementMode.Stop);
 
-        // Player 이벤트 구독
-        player.OnHealthChanged += uiController.UpdatePlayerHealthSlider;
-        player.OnPPChanged += uiController.UpdatePlayerPPSlider;
-        player.OnLevelChanged += uiController.UpdatePlayerLevel;
-        player.OnExpChanged += uiController.UpdatePlayerExpSlider;
-        player.OnPortraitChanged += uiController.UpdatePlayerPortrait;
-        uiController.UpdatePlayerHealthSlider(player.playerHp, player.maxHp);
-        uiController.UpdatePlayerPPSlider(player.playerPp, player.maxMp);
-        uiController.UpdatePlayerLevel(player.level);
-        uiController.UpdatePlayerExpSlider(player.currentExp, player.expToNextLevel);
-        uiController.UpdatePlayerPortrait(player.portrait);
-
+        // Player 이벤트 구독 (전투 종료 시에만 사용하는 것만)
+        // Player UI 업데이트는 BattleUIController의 Start에서 이미 구독됨
         player.OnPlayerDeath += () => stateMachine.ChangeState(BattleState.Lose);
 
         // Enemy 이벤트 구독
         enemy.OnHealthChanged += uiController.UpdateEnemyHealthSlider;
         enemy.OnPPChanged += uiController.UpdateEnemyPPSlider;
-        uiController.UpdateEnemyHealthSlider(enemy.enemyHp, enemy.maxHp);
-        uiController.UpdateEnemyPPSlider(enemy.enemyPp, enemy.maxPp);
-        uiController.UpdateEnemyLevel(enemy.level);
-        uiController.UpdateEnemyPortrait(enemy.portrait);
-
+        enemy.OnLevelChanged += uiController.UpdateEnemyLevel;
+        enemy.OnPortraitChanged += uiController.UpdateEnemyPortrait;
         enemy.OnEnemyDeath += OnEnemyDefeated;
+        
+        // Enemy 초기값 설정 (속성을 통해 이벤트 발생)
+        enemy.enemyHp = enemy.enemyHp; // 이미 설정되어 있지만 이벤트 발생을 위해
+        enemy.enemyPp = enemy.enemyPp;
+        enemy.level = enemy.level;
+        enemy.portrait = enemy.portrait;
 
         stateMachine.ChangeState(BattleState.Start);
 
         // 전투 시작 메시지
-        uiController.SetBattleLog("Battle Start!");
+        BattleUIController.OnBattleLogChanged?.Invoke("Battle Start!");
         yield return new WaitForSeconds(1f);
 
         stateMachine.ChangeState(BattleState.PlayerTurn);
@@ -78,7 +71,7 @@ public class BattleFlowController : MonoBehaviour
             switch (stateMachine.BattleState)
             {
                 case BattleState.PlayerTurn:
-                    uiController.SetBattleLog($"전투 상태: {stateMachine.BattleState}\n");
+                    BattleUIController.OnBattleLogChanged?.Invoke($"전투 상태: {stateMachine.BattleState}\n");
                     yield return StartCoroutine(turnExecutor.ExecutePlayerTurn());
 
                     // 승부 확인
@@ -90,7 +83,7 @@ public class BattleFlowController : MonoBehaviour
                     break;
 
                 case BattleState.EnemyTurn:
-                    uiController.SetBattleLog($"전투 상태: {stateMachine.BattleState}\n");
+                    BattleUIController.OnBattleLogChanged?.Invoke($"전투 상태: {stateMachine.BattleState}\n");
                     yield return StartCoroutine(turnExecutor.ExecuteEnemyTurn());
 
                     // 승부 확인
@@ -105,7 +98,7 @@ public class BattleFlowController : MonoBehaviour
 
         // 전투 종료
         yield return new WaitForSeconds(1f);
-        uiController.SetBattleLog($"Battle End: {stateMachine.BattleState}");
+        BattleUIController.OnBattleLogChanged?.Invoke($"Battle End: {stateMachine.BattleState}");
         yield return new WaitForSeconds(1f);
 
         EndBattle();
@@ -128,7 +121,7 @@ public class BattleFlowController : MonoBehaviour
             if (player != null && enemy != null)
             {
                 player.GainExperience(enemy.expReward);
-                uiController.SetBattleLog($"경험치 {enemy.expReward} 획득!");
+                BattleUIController.OnBattleLogChanged?.Invoke($"경험치 {enemy.expReward} 획득!");
             }
             stateMachine.ChangeState(BattleState.Win);
             return true;
@@ -151,16 +144,13 @@ public class BattleFlowController : MonoBehaviour
     private void EndBattle()
     {
         // Player 이벤트 구독 해제
-        player.OnHealthChanged -= uiController.UpdatePlayerHealthSlider;
-        player.OnPPChanged -= uiController.UpdatePlayerPPSlider;
-        player.OnLevelChanged -= uiController.UpdatePlayerLevel;
-        player.OnExpChanged -= uiController.UpdatePlayerExpSlider;
-        player.OnPortraitChanged -= uiController.UpdatePlayerPortrait;
         player.OnPlayerDeath -= () => stateMachine.ChangeState(BattleState.Lose);
 
         // Enemy 이벤트 구독 해제
         enemy.OnHealthChanged -= uiController.UpdateEnemyHealthSlider;
         enemy.OnPPChanged -= uiController.UpdateEnemyPPSlider;
+        enemy.OnLevelChanged -= uiController.UpdateEnemyLevel;
+        enemy.OnPortraitChanged -= uiController.UpdateEnemyPortrait;
         enemy.OnEnemyDeath -= OnEnemyDefeated;
 
         uiController.HideBattleUI();

@@ -57,6 +57,12 @@ public class Player : Unit
         {
             _level = Mathf.Max(1, value);
             OnLevelChanged?.Invoke(_level);
+            // 레벨 변경 시 데이터 저장
+            var data = UserDataManager.Instance?.Get<UserPlayerStatusData>();
+            if (data != null)
+            {
+                data.Level = _level;
+            }
         }
     }
 
@@ -75,6 +81,12 @@ public class Player : Unit
             }
             // 경험치 변경 이벤트 발생
             OnExpChanged?.Invoke(_currentExp, expToNextLevel);
+            // 경험치 변경 시 데이터 저장
+            var data = UserDataManager.Instance?.Get<UserPlayerStatusData>();
+            if (data != null)
+            {
+                data.CurrentExp = _currentExp;
+            }
         }
     }
 
@@ -102,6 +114,15 @@ public class Player : Unit
 
         // 초기 HP 설정 (속성 사용으로 데이터 저장 자동 처리)
         playerHp = _playerHp;
+
+        // 레벨과 경험치 로드
+        _level = data.Level;
+        _currentExp = data.CurrentExp;
+        expToNextLevel = CalculateExpForNextLevel(_level);
+        
+        // 레벨과 경험치 이벤트 발생
+        OnLevelChanged?.Invoke(_level);
+        OnExpChanged?.Invoke(_currentExp, expToNextLevel);
 
         // PlayerAppearance 이벤트 구독
         SubscribeToPlayerAppearance();

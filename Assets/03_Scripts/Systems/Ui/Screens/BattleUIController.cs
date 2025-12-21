@@ -51,6 +51,10 @@ public class BattleUIController : MonoBehaviour
     public event Action OnSpecialAttackClicked;
     public event Action OnDefenseClicked;
 
+    // 전투 로그 이벤트 (외부에서 호출 가능하도록 Action으로 변경)
+    public static Action<string> OnBattleLogChanged;
+    public static Action<string> OnBattleLogAppended;
+
     private void Start()
     {
         GetInventoryButtons();
@@ -73,6 +77,10 @@ public class BattleUIController : MonoBehaviour
             UpdatePlayerExpSlider(player.currentExp, player.expToNextLevel);
             UpdatePlayerPortrait(player.portrait);
         }
+
+        // 전투 로그 이벤트 구독
+        OnBattleLogChanged += SetBattleLog;
+        OnBattleLogAppended += AppendBattleLog;
 
         SetButtonsInteractable(false);
     }
@@ -285,6 +293,10 @@ public class BattleUIController : MonoBehaviour
             player.OnExpChanged -= UpdatePlayerExpSlider;
             player.OnPortraitChanged -= UpdatePlayerPortrait;
         }
+
+        // 전투 로그 이벤트 구독 해제
+        OnBattleLogChanged -= SetBattleLog;
+        OnBattleLogAppended -= AppendBattleLog;
 
         // 이벤트 리스너 정리
         if (Atk_btn != null)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class TownUIManager : MonoBehaviour
 {
@@ -11,15 +12,25 @@ public class TownUIManager : MonoBehaviour
     private float fadeDuration = 1f; //페이드 인/아웃 시간
     private float showDuration = 1.5f; //표시 시간
 
-
     private Coroutine fadeRoutine;
 
+    // 마을 이름 변경 이벤트 (외부에서 호출 가능하도록 Action으로 변경)
+    public static Action<string> OnTownNameChanged;
 
     void Start()
     {
         Color c = townText.color;
         c.a = 0;
         townText.color = c;
+
+        // 마을 이름 변경 이벤트 구독
+        OnTownNameChanged += SetTownName;
+    }
+
+    private void OnDestroy()
+    {
+        // 이벤트 구독 해제
+        OnTownNameChanged -= SetTownName;
     }
 
     public void SetTownName(string townName)
