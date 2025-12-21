@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/03_Scripts/Core/Enums.cs.meta
+guid: 4524f44bfb1599d48b96824ea3edbe38
+========
 guid: 1d368b6daf0f0ad478ac3537165b4603
+>>>>>>>> Sunyoung:Assets/03_Scripts/Core/BootLoader.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
