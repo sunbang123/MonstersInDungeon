@@ -73,12 +73,15 @@ public class Player : Unit
                 level++;
                 expToNextLevel = CalculateExpForNextLevel(_level);
             }
+            // 경험치 변경 이벤트 발생
+            OnExpChanged?.Invoke(_currentExp, expToNextLevel);
         }
     }
 
     public event Action<float, float> OnHealthChanged;
     public event Action<float, float> OnPPChanged;
     public event Action<int> OnLevelChanged;
+    public event Action<float, float> OnExpChanged;
     public event Action<Sprite> OnPortraitChanged;
 
     [Header("Skills")]
@@ -157,6 +160,26 @@ public class Player : Unit
     {
         currentExp += exp;
     }
+
+#if UNITY_EDITOR
+    [ContextMenu("경험치 50 추가")]
+    private void EditorAddExp50()
+    {
+        GainExperience(50f);
+    }
+
+    [ContextMenu("경험치 100 추가")]
+    private void EditorAddExp100()
+    {
+        GainExperience(100f);
+    }
+
+    [ContextMenu("경험치 200 추가")]
+    private void EditorAddExp200()
+    {
+        GainExperience(200f);
+    }
+#endif
 
     /// <summary>
     /// 다음 레벨까지 필요한 경험치 계산

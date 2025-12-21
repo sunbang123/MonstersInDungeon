@@ -45,10 +45,12 @@ public class BattleFlowController : MonoBehaviour
         player.OnHealthChanged += uiController.UpdatePlayerHealthSlider;
         player.OnPPChanged += uiController.UpdatePlayerPPSlider;
         player.OnLevelChanged += uiController.UpdatePlayerLevel;
+        player.OnExpChanged += uiController.UpdatePlayerExpSlider;
         player.OnPortraitChanged += uiController.UpdatePlayerPortrait;
         uiController.UpdatePlayerHealthSlider(player.playerHp, player.maxHp);
         uiController.UpdatePlayerPPSlider(player.playerPp, player.maxMp);
         uiController.UpdatePlayerLevel(player.level);
+        uiController.UpdatePlayerExpSlider(player.currentExp, player.expToNextLevel);
         uiController.UpdatePlayerPortrait(player.portrait);
 
         player.OnPlayerDeath += () => stateMachine.ChangeState(BattleState.Lose);
@@ -152,6 +154,7 @@ public class BattleFlowController : MonoBehaviour
         player.OnHealthChanged -= uiController.UpdatePlayerHealthSlider;
         player.OnPPChanged -= uiController.UpdatePlayerPPSlider;
         player.OnLevelChanged -= uiController.UpdatePlayerLevel;
+        player.OnExpChanged -= uiController.UpdatePlayerExpSlider;
         player.OnPortraitChanged -= uiController.UpdatePlayerPortrait;
         player.OnPlayerDeath -= () => stateMachine.ChangeState(BattleState.Lose);
 

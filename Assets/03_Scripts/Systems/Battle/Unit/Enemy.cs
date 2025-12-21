@@ -4,8 +4,8 @@ using UnityEngine;
 public class Enemy : Unit
 {
     [Header("Health")]
-    public float enemyHp = 300f;
-    public float maxHp = 300f;
+    public float enemyHp = 50f;
+    public float maxHp = 50f;
 
     [Header("Mana")]
     [SerializeField] private float _enemyPp = 50f;

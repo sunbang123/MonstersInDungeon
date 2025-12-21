@@ -34,6 +34,9 @@ public class BattleUIController : MonoBehaviour
     public Slider playerPPSlider;
     public Slider enemyPPSlider;
 
+    [Header("Experience Slider")]
+    public Slider playerExpSlider;
+
     [Header("Portraits")]
     public Image playerPortrait;
     public Image enemyPortrait;
@@ -53,12 +56,22 @@ public class BattleUIController : MonoBehaviour
         GetInventoryButtons();
         BindButtons();
 
-        // Player 찾기
+        // Player 찾기 및 이벤트 구독 (전투/비전투 모두)
         Player player = FindObjectOfType<Player>();
         if (player != null)
         {
             player.OnHealthChanged += UpdatePlayerHealthSlider;
+            player.OnPPChanged += UpdatePlayerPPSlider;
+            player.OnLevelChanged += UpdatePlayerLevel;
+            player.OnExpChanged += UpdatePlayerExpSlider;
             player.OnPortraitChanged += UpdatePlayerPortrait;
+            
+            // 초기값 설정
+            UpdatePlayerHealthSlider(player.playerHp, player.maxHp);
+            UpdatePlayerPPSlider(player.playerPp, player.maxMp);
+            UpdatePlayerLevel(player.level);
+            UpdatePlayerExpSlider(player.currentExp, player.expToNextLevel);
+            UpdatePlayerPortrait(player.portrait);
         }
 
         SetButtonsInteractable(false);
@@ -142,13 +155,15 @@ public class BattleUIController : MonoBehaviour
         Transform targetParent = enableBattle ? batTransform : nonBatTransform;
         bool useWorldSpace = !enableBattle;
 
+        // 스케일 보존을 위해 원래 스케일 저장
+        Vector3 originalScale = playerStatus.transform.localScale;
+
         playerStatus.transform.SetParent(null, false);
         playerStatus.transform.SetParent(targetParent, useWorldSpace);
 
-        // playerStatus의 rectTransform 초기화 (부모 변경 후 초기화)
+        // 부모 변경 후 스케일 복원 및 위치 오프셋 초기화 (anchor는 유지)
+        playerStatus.transform.localScale = originalScale;
         RectTransform rectTransform = playerStatus.GetComponent<RectTransform>();
-        rectTransform.anchoredPosition = Vector2.zero;
-        rectTransform.sizeDelta = Vector2.zero;
         rectTransform.offsetMin = Vector2.zero;
         rectTransform.offsetMax = Vector2.zero;
     }
@@ -232,6 +247,15 @@ public class BattleUIController : MonoBehaviour
         }
     }
 
+    public void UpdatePlayerExpSlider(float currentExp, float maxExp)
+    {
+        if (playerExpSlider != null)
+        {
+            playerExpSlider.maxValue = maxExp;
+            playerExpSlider.value = currentExp;
+        }
+    }
+
     public void UpdateEnemyLevel(int level)
     {
         if (enemyLevelText != null)
@@ -251,6 +275,17 @@ public class BattleUIController : MonoBehaviour
 
     private void OnDestroy()
     {
+        // Player 이벤트 구독 해제
+        Player player = FindObjectOfType<Player>();
+        if (player != null)
+        {
+            player.OnHealthChanged -= UpdatePlayerHealthSlider;
+            player.OnPPChanged -= UpdatePlayerPPSlider;
+            player.OnLevelChanged -= UpdatePlayerLevel;
+            player.OnExpChanged -= UpdatePlayerExpSlider;
+            player.OnPortraitChanged -= UpdatePlayerPortrait;
+        }
+
         // 이벤트 리스너 정리
         if (Atk_btn != null)
             Atk_btn.onClick.RemoveAllListeners();
