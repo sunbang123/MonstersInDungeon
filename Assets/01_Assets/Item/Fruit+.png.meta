@@ -33,7 +33,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -69,7 +69,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -5028,13 +5028,13 @@ TextureImporter:
       Fruit+_82: 337723487
       Fruit+_65: 258594022
       Fruit+_29: -1538662279
-      Fruit+_152: 42594019
       Fruit+_208: 779846869
+      Fruit+_81: 1094238445
+      Fruit+_212: -40393562
+      Fruit+_152: 42594019
+      Fruit+_19: 983582771
       Fruit+_55: -1959629526
       Fruit+_79: -850413104
-      Fruit+_19: 983582771
-      Fruit+_212: -40393562
-      Fruit+_81: 1094238445
       Fruit+_153: -972098013
       Fruit+_105: -1794730496
       Fruit+_20: 1774698573

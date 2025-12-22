@@ -33,7 +33,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -69,7 +69,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -5749,7 +5749,7 @@ TextureImporter:
       UiElegant_11: -842785740
       UiElegant_266: 892999424
       UiElegant_141: -1576227629
-      UiElegant_109: 1646863945
+      UiElegant_10: 616043888
       UiElegant_176: -491609729
       UiElegant_99: -625680919
       UiElegant_160: 418412408
@@ -6011,7 +6011,7 @@ TextureImporter:
       UiElegant_138: 709895120
       UiElegant_200: 553448044
       UiElegant_126: -1183243156
-      UiElegant_10: 616043888
+      UiElegant_109: 1646863945
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

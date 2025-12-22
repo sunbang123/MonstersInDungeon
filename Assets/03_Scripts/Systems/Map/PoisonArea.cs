@@ -170,6 +170,23 @@ public class PoisonArea : MonoBehaviour
         hasOriginalColor = false; // 플레이어가 나가면 다시 저장하도록 초기화
     }
 
+    /// <summary>
+    /// 씬 전환 시 독 상태를 정리하는 public 메서드
+    /// </summary>
+    public void ForceCleanup()
+    {
+        // 플레이어 상태 복원
+        if (playerRenderer != null && hasOriginalColor)
+        {
+            RestorePlayerState();
+        }
+        
+        // 모든 코루틴 중지 및 상태 초기화
+        CleanupPoisonState();
+        
+        Logger.Log($"PoisonArea 강제 정리 완료: {gameObject.name}");
+    }
+
     void StopRecovery()
     {
         if (recoveryCoroutine != null)

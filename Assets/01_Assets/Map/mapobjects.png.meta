@@ -33,7 +33,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -69,7 +69,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -1516,9 +1516,9 @@ TextureImporter:
       mapobjects_54: -1386318520
       mapobjects_13: -1162422163
       mapobjects_15: -440193953
-      mapobjects_38: 2123861643
-      mapobjects_37: -2001393350
       mapobjects_1: -122560080
+      mapobjects_37: -2001393350
+      mapobjects_38: 2123861643
       mapobjects_40: 1610284370
       mapobjects_8: -6872701
       mapobjects_62: -1987408425
@@ -1544,8 +1544,8 @@ TextureImporter:
       mapobjects_61: -1442252123
       mapobjects_18: -600336053
       mapobjects_3: 492169869
-      mapobjects_7: -240287564
       mapobjects_2: -1740359769
+      mapobjects_7: -240287564
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

@@ -180,9 +180,12 @@ public class MapManager : MonoBehaviour
     /// </summary>
     private IEnumerator LoadMapScene(int mapIndex, MapData.MapDirection direction = MapData.MapDirection.None)
     {
-        // 현재 맵 씬이 로드되어 있으면 언로드
+        // 현재 맵 씬이 로드되어 있으면 언로드 전에 독 상태 정리
         if (currentMapSceneHandle.IsValid())
         {
+            // 씬 언로드 전에 PoisonArea의 독 상태 정리
+            CleanupPoisonAreas();
+            
             Logger.Log($"Unloading current map scene: Map{currentMapIndex:D2}");
             yield return Addressables.UnloadSceneAsync(currentMapSceneHandle);
         }
@@ -337,5 +340,34 @@ public class MapManager : MonoBehaviour
             return mapIndexToDataDict[currentMapIndex][0];
         }
         return null;
+    }
+
+    /// <summary>
+    /// 현재 로드된 맵 씬의 모든 PoisonArea 정리 (씬 전환 시 독 상태 초기화 방지)
+    /// </summary>
+    private void CleanupPoisonAreas()
+    {
+        // 현재 활성화된 모든 씬에서 PoisonArea 찾기
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            var scene = SceneManager.GetSceneAt(i);
+            if (scene.isLoaded)
+            {
+                var rootObjects = scene.GetRootGameObjects();
+                foreach (var rootObj in rootObjects)
+                {
+                    // 모든 자식에서 PoisonArea 찾기
+                    var poisonAreas = rootObj.GetComponentsInChildren<PoisonArea>(true);
+                    foreach (var poisonArea in poisonAreas)
+                    {
+                        if (poisonArea != null)
+                        {
+                            // 독 상태 강제 정리
+                            poisonArea.ForceCleanup();
+                        }
+                    }
+                }
+            }
+        }
     }
 }
