@@ -46,6 +46,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - preload
+  - m_GUID: e0c7d13f096d5f8488e789925ff459f8
+    m_Address: MapManager
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - preload
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 54ebaec88757d7249babc70c251f28d2, type: 2}
   m_SchemaSet:

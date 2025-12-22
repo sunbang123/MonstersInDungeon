@@ -40,6 +40,7 @@ public class TitleManager : MonoBehaviour
 
     private AsyncOperationHandle<SceneInstance> m_SceneLoadHandle;
     private List<AsyncOperationHandle> m_PreloadHandles = new List<AsyncOperationHandle>();
+    private List<MapData> m_LoadedMapData = new List<MapData>(); // 로드된 MapData 임시 저장
 
     // 로딩 UI 업데이트 이벤트
     public event Action<string> OnLoadingTextChanged;
@@ -129,6 +130,15 @@ public class TitleManager : MonoBehaviour
         // 2) 에셋프리로드
         OnLoadingTextChanged?.Invoke("Loading Assets...");
         yield return StartCoroutine(PreloadAssetGroups());
+        
+        // 2-1) 로드된 MapData를 MapManager에 전달 (MapManager가 생성되어 있으면)
+        if (MapManager.Instance != null)
+        {
+            foreach (var mapData in m_LoadedMapData)
+            {
+                MapManager.Instance.AddMapData(mapData);
+            }
+        }
 
         // 3) 로비 씬 로드
         OnLoadingTextChanged?.Invoke("Loading Scene...");
@@ -146,6 +156,15 @@ public class TitleManager : MonoBehaviour
         // 5) 저장 데이터 로드
         UserDataManager.Instance.LoadUserData();
         ApplyLoadedUserData();
+        
+        // 6) MapManager가 생성되었을 수 있으므로 MapData 다시 전달 시도
+        if (MapManager.Instance != null && m_LoadedMapData.Count > 0)
+        {
+            foreach (var mapData in m_LoadedMapData)
+            {
+                MapManager.Instance.AddMapData(mapData);
+            }
+        }
     }
 
 
@@ -185,6 +204,14 @@ public class TitleManager : MonoBehaviour
 
                         if (go.TryGetComponent<Item>(out var item))
                             ItemDatabase.Register(item.IData);
+                    }
+                    // MapData를 임시 저장 (나중에 MapManager에 전달)
+                    else if (loadedAsset is MapData mapData)
+                    {
+                        if (mapData != null && !m_LoadedMapData.Contains(mapData))
+                        {
+                            m_LoadedMapData.Add(mapData);
+                        }
                     }
                 }
             );

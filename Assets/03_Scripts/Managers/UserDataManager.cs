@@ -6,7 +6,7 @@ public class UserDataManager : SingletonBehaviour<UserDataManager>
     public bool ExistsSavedData { get; private set; }
     public List<IUserData> UserDataList { get; private set; } = new List<IUserData>();
 
-    protected override void Init()
+    public override void Init()
     {
         base.Init();
         Logger.Log("UserDataManager Init 시작");

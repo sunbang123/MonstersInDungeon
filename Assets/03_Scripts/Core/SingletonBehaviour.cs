@@ -21,7 +21,8 @@ public class SingletonBehaviour<T> : MonoBehaviour where T : SingletonBehaviour<
     // 초기화 함수
     // 이 [SingletonBehaviour]클래스를 상속받아서 만든 클래스에서
     // 이 함수를 오버라이드해서 각각 다른 처리를 추가할 수 있도록 하기 위해서
-    protected virtual void Init()
+    // 외부에서 수동 초기화가 필요한 경우를 위해 public으로 변경
+    public virtual void Init()
     {
         if (m_Instance == null)
         {

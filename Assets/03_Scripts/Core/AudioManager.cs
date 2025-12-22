@@ -30,7 +30,7 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     //모든 SFX 오디오 플레이어를 담을 딕셔너리 변수 선언
     private Dictionary<SFX, AudioSource> m_SFXPlayer = new Dictionary<SFX, AudioSource>();
 
-    protected override void Init()
+    public override void Init()
     {
         base.Init();
 

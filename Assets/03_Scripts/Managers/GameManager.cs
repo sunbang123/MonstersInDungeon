@@ -9,7 +9,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     // 프리팹 이름으로 프리팹을 찾기 위한 딕셔너리
     private Dictionary<string, GameObject> prefabByName = new Dictionary<string, GameObject>();
 
-    protected override void Init()
+    public override void Init()
     {
         base.Init();
 
