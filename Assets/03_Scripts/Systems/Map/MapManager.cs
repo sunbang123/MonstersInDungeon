@@ -1,37 +1,36 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.SceneManagement;
 
 public class MapManager : MonoBehaviour
 {
     [Header("Map References")]
-    [Tooltip("맵 GameObject 리스트 (Inspector에서 설정)")]
-    public List<GameObject> maps = new List<GameObject>();
-    
     [Tooltip("맵 데이터 ScriptableObject 리스트 (Inspector에서 설정)")]
     public List<MapData> mapDatas = new List<MapData>();
 
     // ScriptableObject 기반 맵 인덱스 딕셔너리 (mapIndex -> MapData 리스트)
     private Dictionary<int, List<MapData>> mapIndexToDataDict = new Dictionary<int, List<MapData>>();
     
-    // ScriptableObject 기반 맵 인덱스 딕셔너리 (mapIndex -> GameObject 리스트)
-    private Dictionary<int, List<GameObject>> mapIndexToGameObjectDict = new Dictionary<int, List<GameObject>>();
-    
-    // 방향별 맵 딕셔너리 (mapIndex -> direction -> GameObject)
-    private Dictionary<int, Dictionary<MapData.MapDirection, GameObject>> mapIndexDirectionToGameObjectDict = new Dictionary<int, Dictionary<MapData.MapDirection, GameObject>>();
-    
     // 고유한 맵 인덱스 리스트 (정렬된)
     private List<int> uniqueMapIndices = new List<int>();
+
+    // 현재 로드된 맵 씬 Handle
+    private AsyncOperationHandle<SceneInstance> currentMapSceneHandle;
 
     private static int currentMapIndex = 0;
 
     void Awake()
     {
         // 맵 초기화
-        InitializeMaps();
+        StartCoroutine(InitializeMaps());
     }
 
-    void InitializeMaps()
+    IEnumerator InitializeMaps()
     {
         // ScriptableObject 기반으로 맵 인덱스화
         BuildMapIndexDictionary();
@@ -67,8 +66,8 @@ public class MapManager : MonoBehaviour
             currentMapIndex = uniqueMapIndices.Count > 0 ? uniqueMapIndices[0] : 0;
         }
 
-        // 저장된 맵 활성화, 나머지 비활성화 (방향 없이 활성화)
-        ActivateMapByIndex(currentMapIndex, MapData.MapDirection.None);
+        // 저장된 맵 씬 로드
+        yield return StartCoroutine(LoadMapScene(currentMapIndex, MapData.MapDirection.None));
 
         Logger.Log($"Initialized {uniqueMapIndices.Count} unique map indices, starting with index {currentMapIndex}");
     }
@@ -79,7 +78,6 @@ public class MapManager : MonoBehaviour
     private void BuildMapIndexDictionary()
     {
         mapIndexToDataDict.Clear();
-        mapIndexToGameObjectDict.Clear();
         uniqueMapIndices.Clear();
 
         // MapData를 기반으로 인덱스 딕셔너리 구축
@@ -98,94 +96,6 @@ public class MapManager : MonoBehaviour
             mapIndexToDataDict[mapIdx].Add(mapDatas[i]);
         }
 
-        // MapData를 이름으로 빠르게 조회하기 위한 딕셔너리 구축 (O(1) 조회)
-        Dictionary<string, MapData> mapDataByNameDict = new Dictionary<string, MapData>();
-        Dictionary<string, MapData> mapDataByNormalizedNameDict = new Dictionary<string, MapData>();
-        
-        foreach (var mapData in mapDatas)
-        {
-            if (mapData == null) continue;
-            
-            // gameObjectName이 있으면 우선 사용
-            if (!string.IsNullOrEmpty(mapData.gameObjectName))
-            {
-                string key = mapData.gameObjectName.ToLower();
-                if (!mapDataByNameDict.ContainsKey(key))
-                {
-                    mapDataByNameDict[key] = mapData;
-                }
-            }
-            
-            // mapName도 인덱스로 추가
-            string normalizedName = NormalizeName(mapData.mapName);
-            if (!mapDataByNormalizedNameDict.ContainsKey(normalizedName))
-            {
-                mapDataByNormalizedNameDict[normalizedName] = mapData;
-            }
-        }
-
-        // MapData를 기준으로 GameObject 찾아서 매칭 (같은 GameObject가 여러 방향에 사용될 수 있음)
-        foreach (var mapData in mapDatas)
-        {
-            if (mapData == null) continue;
-            
-            int mapIdx = mapData.mapIndex;
-            GameObject matchedGameObject = null;
-            
-            // gameObjectName으로 GameObject 찾기
-            if (!string.IsNullOrEmpty(mapData.gameObjectName))
-            {
-                foreach (var map in maps)
-                {
-                    if (map != null && map.name.Equals(mapData.gameObjectName, System.StringComparison.OrdinalIgnoreCase))
-                    {
-                        matchedGameObject = map;
-                        break;
-                    }
-                }
-            }
-            
-            // GameObject를 찾지 못했으면 이름으로 찾기
-            if (matchedGameObject == null)
-            {
-                string normalizedDataName = NormalizeName(mapData.mapName);
-                foreach (var map in maps)
-                {
-                    if (map == null) continue;
-                    string normalizedMapName = NormalizeName(map.name);
-                    if (normalizedMapName.Contains(normalizedDataName) || normalizedDataName.Contains(normalizedMapName))
-                    {
-                        matchedGameObject = map;
-                        break;
-                    }
-                }
-            }
-            
-            // GameObject 딕셔너리 초기화
-            if (!mapIndexToGameObjectDict.ContainsKey(mapIdx))
-            {
-                mapIndexToGameObjectDict[mapIdx] = new List<GameObject>();
-                mapIndexDirectionToGameObjectDict[mapIdx] = new Dictionary<MapData.MapDirection, GameObject>();
-                if (!uniqueMapIndices.Contains(mapIdx))
-                {
-                    uniqueMapIndices.Add(mapIdx);
-                }
-            }
-            
-            // GameObject 추가 (중복 방지)
-            if (matchedGameObject != null && !mapIndexToGameObjectDict[mapIdx].Contains(matchedGameObject))
-            {
-                mapIndexToGameObjectDict[mapIdx].Add(matchedGameObject);
-                Logger.Log($"Matched MapData '{mapData.mapName}' with GameObject '{matchedGameObject.name}' (Index: {mapIdx}, Direction: {mapData.direction})");
-            }
-            
-            // 방향별 딕셔너리에 추가 (같은 GameObject를 여러 방향에 매핑)
-            if (matchedGameObject != null && mapData.direction != MapData.MapDirection.None)
-            {
-                mapIndexDirectionToGameObjectDict[mapIdx][mapData.direction] = matchedGameObject;
-            }
-        }
-
         // 인덱스 정렬
         uniqueMapIndices.Sort();
 
@@ -193,9 +103,16 @@ public class MapManager : MonoBehaviour
         foreach (var idx in uniqueMapIndices)
         {
             int dataCount = mapIndexToDataDict.ContainsKey(idx) ? mapIndexToDataDict[idx].Count : 0;
-            int goCount = mapIndexToGameObjectDict.ContainsKey(idx) ? mapIndexToGameObjectDict[idx].Count : 0;
-            Logger.Log($"  Map Index {idx}: {goCount} GameObjects, {dataCount} MapData");
+            Logger.Log($"  Map Index {idx}: {dataCount} MapData");
         }
+    }
+
+    /// <summary>
+    /// 맵 인덱스에서 씬 주소 생성 (예: 0 -> "Map00", 1 -> "Map01")
+    /// </summary>
+    private string GetMapSceneAddress(int mapIndex)
+    {
+        return $"Map{mapIndex:D2}";
     }
 
     /// <summary>
@@ -259,55 +176,61 @@ public class MapManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 지정된 맵 인덱스와 방향의 맵 활성화
+    /// 맵 씬을 비동기로 로드
     /// </summary>
-    private void ActivateMapByIndex(int mapIndex, MapData.MapDirection direction = MapData.MapDirection.None)
+    private IEnumerator LoadMapScene(int mapIndex, MapData.MapDirection direction = MapData.MapDirection.None)
     {
-        // 모든 맵 비활성화
-        foreach (var mapList in mapIndexToGameObjectDict.Values)
+        // 현재 맵 씬이 로드되어 있으면 언로드
+        if (currentMapSceneHandle.IsValid())
         {
-            foreach (var map in mapList)
-            {
-                if (map != null)
-                {
-                    map.SetActive(false);
-                }
-            }
+            Logger.Log($"Unloading current map scene: Map{currentMapIndex:D2}");
+            yield return Addressables.UnloadSceneAsync(currentMapSceneHandle);
         }
 
-        // 지정된 인덱스의 맵 활성화 (같은 GameObject이므로 방향과 무관하게 활성화)
-        if (mapIndexToGameObjectDict.ContainsKey(mapIndex))
+        // 새 맵 씬 주소 생성
+        string sceneAddress = GetMapSceneAddress(mapIndex);
+        Logger.Log($"Loading map scene: {sceneAddress}");
+
+        // Addressable에서 씬 로드 (Additive 모드)
+        currentMapSceneHandle = Addressables.LoadSceneAsync(sceneAddress, LoadSceneMode.Additive, false);
+
+        // 로드 완료 대기
+        yield return currentMapSceneHandle;
+
+        if (currentMapSceneHandle.Status == AsyncOperationStatus.Succeeded)
         {
-            // 같은 인덱스의 모든 GameObject 활성화 (보통 하나)
-            foreach (var map in mapIndexToGameObjectDict[mapIndex])
-            {
-                if (map != null)
-                {
-                    map.SetActive(true);
-                    Logger.Log($"Activated map: {map.name} (Index: {mapIndex}, Direction: {direction})");
-                }
-            }
+            // 씬 활성화
+            yield return currentMapSceneHandle.Result.ActivateAsync();
+            Logger.Log($"Map scene loaded and activated: {sceneAddress}");
         }
         else
         {
-            Logger.LogWarning($"Map index {mapIndex} not found in dictionary");
+            Logger.LogError($"Failed to load map scene: {sceneAddress}");
         }
     }
 
     /// <summary>
-    /// 지정된 맵으로 전환하고 플레이어를 해당 위치로 이동
+    /// 지정된 맵으로 전환하고 플레이어를 해당 위치로 이동 (비동기)
     /// </summary>
     public void TransitionToMap(int mapIndex, Transform playerTransform, MapData.MapDirection direction = MapData.MapDirection.None)
+    {
+        StartCoroutine(TransitionToMapCoroutine(mapIndex, playerTransform, direction));
+    }
+
+    /// <summary>
+    /// 맵 전환 코루틴
+    /// </summary>
+    private IEnumerator TransitionToMapCoroutine(int mapIndex, Transform playerTransform, MapData.MapDirection direction = MapData.MapDirection.None)
     {
         // 범위 검사
         if (!uniqueMapIndices.Contains(mapIndex))
         {
             Logger.LogWarning($"Invalid map index: {mapIndex}. Available map indices: {string.Join(", ", uniqueMapIndices)}");
-            return;
+            yield break;
         }
 
-        // 맵 전환 (방향 고려)
-        ActivateMapByIndex(mapIndex, direction);
+        // 맵 씬 로드
+        yield return StartCoroutine(LoadMapScene(mapIndex, direction));
 
         // 플레이어 위치 설정 (방향 고려)
         if (playerTransform != null)
@@ -376,21 +299,7 @@ public class MapManager : MonoBehaviour
         }
         else
         {
-            // MapData가 없으면 첫 번째 GameObject의 위치 사용 (fallback)
-            if (mapIndexToGameObjectDict.ContainsKey(mapIndex) && mapIndexToGameObjectDict[mapIndex].Count > 0)
-            {
-                GameObject targetMap = mapIndexToGameObjectDict[mapIndex][0];
-                if (targetMap != null)
-                {
-                    Vector3 mapCenter = targetMap.transform.position;
-                    playerTransform.position = new Vector3(mapCenter.x, playerTransform.position.y, mapCenter.z);
-                    Logger.Log($"Player spawned at map center (fallback): {playerTransform.position}");
-                }
-            }
-            else
-            {
-                Logger.LogWarning($"Cannot set spawn position: invalid map index {mapIndex}");
-            }
+            Logger.LogWarning($"Cannot set spawn position: MapData not found for map index {mapIndex}");
         }
     }
 
