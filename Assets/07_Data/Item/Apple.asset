@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 516aad6351aaed0498aa36db76c869c3, type: 3}
-  m_Name: RedCrystal
+  m_Name: Apple
   m_EditorClassIdentifier: 
   itemName: Apple
   itemImage: {fileID: -2003004324, guid: 5edc8cf08e46bda4198daa14b45ba813, type: 3}
   StatName: Heal
-  StatValue: 10
+  StatValue: 100

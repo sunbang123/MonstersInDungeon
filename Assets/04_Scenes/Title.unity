@@ -148,6 +148,15 @@ MonoBehaviour:
   - GroupName: Prefabs
     LabelReference:
       m_LabelString: Item
+  - GroupName: Prefabs
+    LabelReference:
+      m_LabelString: preload
+  - GroupName: BuiltInData
+    LabelReference:
+      m_LabelString: preload
+  DelayBetweenGroups: 0.8
+  DelayPerAsset: 0.1
+  MinAssetLoadingDuration: 3
   Title: {fileID: 7777571089886170852}
   LoadingSlider: {fileID: 6838132519610014674}
   LoadingProgressTxt: {fileID: 6838132518919621697}
@@ -1385,7 +1394,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.29
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

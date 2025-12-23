@@ -35,8 +35,17 @@ public class Player : Unit
         set
         {
             _playerHp = Mathf.Clamp(value, 0f, maxHp);
-            var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
-            data.HP = _playerHp;
+            // UserDataManager가 초기화되어 있을 때만 데이터 업데이트
+            if (UserDataManager.Instance != null)
+            {
+                var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
+                if (data != null)
+                {
+                    data.HP = _playerHp;
+                }
+            }
+            // HP 변경 이벤트 발생 (UI 업데이트를 위해)
+            OnHealthChanged?.Invoke(_playerHp, maxHp);
         }
     }
 
@@ -106,18 +115,25 @@ public class Player : Unit
     void Start()
     {
         var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
+        if (data == null)
+        {
+            Debug.LogError("[Player] UserPlayerStatusData를 찾을 수 없습니다!");
+            return;
+        }
+        
         transform.position = data.Position;
 
         // 초기화 시 데이터에서 값 불러오기
+        // 레벨과 위치처럼 직접 필드에 할당 (setter 거치지 않음)
         _playerHp = Mathf.Clamp(data.HP, 0f, maxHp);
         _playerPp = Mathf.Clamp(_playerPp, 0f, maxMp);
-
-        // 초기 HP 설정 (속성 사용으로 데이터 저장 자동 처리)
-        playerHp = _playerHp;
 
         // 레벨과 경험치 로드
         _level = data.Level;
         _currentExp = data.CurrentExp;
+        
+        // HP 변경 이벤트 발생 (UI 업데이트를 위해)
+        OnHealthChanged?.Invoke(_playerHp, maxHp);
         expToNextLevel = CalculateExpForNextLevel(_level);
         
         // 레벨과 경험치 이벤트 발생

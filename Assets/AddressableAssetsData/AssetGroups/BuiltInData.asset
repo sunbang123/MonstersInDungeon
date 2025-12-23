@@ -17,16 +17,6 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: ff9bedcca8e5e094ea73fe141672a0f3
   m_SerializeEntries:
-  - m_GUID: abe3993f37afdd34fb64f3186377dcdb
-    m_Address: Assets/07_Data/Item/RedCrystal.asset
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - preload
-  - m_GUID: 1d6fe42816b43f94fa707aaf7362755e
-    m_Address: Assets/07_Data/Item/Item.asset
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - preload
   - m_GUID: 16714ac937d849b4eb7fae7694e1bf30
     m_Address: Assets/07_Data/Map/Map00.asset
     m_ReadOnly: 0

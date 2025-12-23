@@ -35,12 +35,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - Tutorial
     - preload
-  - m_GUID: 8b35e0f63aa978f4eaedd989d698c19e
-    m_Address: QuestSlot.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Tutorial
-    - preload
   - m_GUID: 32566dc45e6461943b6288b9bf70728e
     m_Address: battleEffect.prefab
     m_ReadOnly: 0

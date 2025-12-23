@@ -47,6 +47,7 @@ public class UserPlayerStatusData : IUserData
     {
         try
         {
+            Debug.Log($"[UserPlayerStatusData.SaveData] 저장 시작 - HP: {HP}");
             PlayerPrefs.SetFloat("PlayerHP", HP);
             PlayerPrefs.SetFloat("PlayerPosX", Position.x);
             PlayerPrefs.SetFloat("PlayerPosY", Position.y);
@@ -59,8 +60,13 @@ public class UserPlayerStatusData : IUserData
             PlayerPrefs.SetFloat("PlayerCurrentExp", CurrentExp);
 
             PlayerPrefs.Save();
+            Debug.Log($"[UserPlayerStatusData.SaveData] 저장 완료 - PlayerPrefs에 저장된 HP: {PlayerPrefs.GetFloat("PlayerHP")}");
             return true;
         }
-        catch { return false; }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[UserPlayerStatusData.SaveData] 저장 실패: {e.Message}");
+            return false;
+        }
     }
 }

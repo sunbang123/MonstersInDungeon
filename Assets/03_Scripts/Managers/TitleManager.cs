@@ -32,6 +32,14 @@ public class TitleManager : MonoBehaviour
     [Header("Addressable Groups to Load")]
     public List<AddressableGroup> GroupsToLoad = new List<AddressableGroup>();
 
+    [Header("Loading Settings")]
+    [Tooltip("각 에셋 그룹 로딩 사이의 딜레이 시간 (초)")]
+    public float DelayBetweenGroups = 0.8f;
+    [Tooltip("각 에셋 로딩 후 딜레이 시간 (초)")]
+    public float DelayPerAsset = 0.1f;
+    [Tooltip("최소 에셋 로딩 시간 (초) - 실제 로딩이 빨라도 이 시간만큼은 보장")]
+    public float MinAssetLoadingDuration = 3.0f;
+
     // 타이틀
     public GameObject Title;
     public Slider LoadingSlider;
@@ -185,6 +193,19 @@ public class TitleManager : MonoBehaviour
 
     private IEnumerator PreloadAssetGroups()
     {
+        if (GroupsToLoad.Count == 0)
+        {
+            OnLoadingProgressChanged?.Invoke(0.7f);
+            yield break;
+        }
+
+        float startTime = Time.time;
+        int totalGroups = GroupsToLoad.Count;
+        int currentGroupIndex = 0;
+        
+        // 모든 그룹의 로드된 에셋 정보를 저장할 리스트
+        List<(string groupName, string assetName)> allLoadedAssets = new List<(string, string)>();
+
         foreach (var group in GroupsToLoad)
         {
             if (group?.LabelReference == null)
@@ -193,13 +214,20 @@ public class TitleManager : MonoBehaviour
             OnLoadingTextChanged?.Invoke($"Loading {group.GroupName}...");
 
             // BuiltInData + Prefab 모두 로드
+            string labelString = group.LabelReference.labelString;
+            Debug.Log($"[TitleManager] Loading assets with label: {labelString}");
+            
             var handle = Addressables.LoadAssetsAsync<object>(
-                group.LabelReference.labelString,
+                labelString,
                 loadedAsset =>
                 {
+                    string assetName = "Unknown";
+                    
                     // Prefab을 등록하는 로직
                     if (loadedAsset is GameObject go)
                     {
+                        assetName = go.name;
+                        Debug.Log($"[TitleManager] Loaded GameObject: {assetName}");
                         GameManager.Instance.RegisterPrefab(group.GroupName, go);
 
                         if (go.TryGetComponent<Item>(out var item))
@@ -208,18 +236,97 @@ public class TitleManager : MonoBehaviour
                     // MapData를 임시 저장 (나중에 MapManager에 전달)
                     else if (loadedAsset is MapData mapData)
                     {
+                        assetName = mapData != null ? mapData.name : "MapData";
+                        Debug.Log($"[TitleManager] Loaded MapData: {assetName}");
                         if (mapData != null && !m_LoadedMapData.Contains(mapData))
                         {
                             m_LoadedMapData.Add(mapData);
                         }
                     }
+                    else if (loadedAsset != null)
+                    {
+                        assetName = loadedAsset.GetType().Name;
+                        Debug.Log($"[TitleManager] Loaded Asset: {assetName} (Type: {loadedAsset.GetType().Name})");
+                    }
+                    
+                    // 로드된 에셋 정보를 리스트에 추가
+                    allLoadedAssets.Add((group.GroupName, assetName));
                 }
             );
+            
+            Debug.Log($"[TitleManager] Started loading {labelString}, total assets in list: {allLoadedAssets.Count}");
 
             m_PreloadHandles.Add(handle);
-            yield return handle;
+
+            // 로딩 진행률을 실시간으로 업데이트
+            while (!handle.IsDone)
+            {
+                float elapsedTime = Time.time - startTime;
+                
+                // 실제 로딩 진행률
+                float actualProgress = handle.PercentComplete;
+                
+                // 시간 기반 최소 진행률 (최소 시간 동안 천천히 증가)
+                float timeBasedProgress = Mathf.Clamp01(elapsedTime / MinAssetLoadingDuration);
+                
+                // 그룹별 진행률 계산 (0~0.7 사이, 씬 로딩이 0.7~1.0)
+                float groupProgress = (currentGroupIndex + actualProgress) / totalGroups;
+                float targetProgress = groupProgress * 0.7f;
+                
+                // 시간 기반 진행률이 더 작으면 그것을 사용 (천천히 증가)
+                float displayProgress = Mathf.Min(targetProgress, timeBasedProgress * 0.7f);
+                
+                OnLoadingProgressChanged?.Invoke(displayProgress);
+                yield return null;
+            }
+            
+            currentGroupIndex++;
+            
+            // 그룹 사이 딜레이
+            if (currentGroupIndex < totalGroups)
+            {
+                yield return new WaitForSeconds(DelayBetweenGroups);
+            }
+        }
+        
+        // 모든 에셋이 로드된 후 순차적으로 표시
+        int displayedAssetIndex = 0;
+        float displayStartTime = Time.time;
+        
+        while (displayedAssetIndex < allLoadedAssets.Count || (Time.time - startTime) < MinAssetLoadingDuration)
+        {
+            float elapsedTime = Time.time - startTime;
+            
+            // 아직 표시하지 않은 에셋이 있으면 표시
+            if (displayedAssetIndex < allLoadedAssets.Count)
+            {
+                var (groupName, assetName) = allLoadedAssets[displayedAssetIndex];
+                OnLoadingTextChanged?.Invoke($"Loading {groupName}...\n{assetName}");
+                displayedAssetIndex++;
+                
+                // 각 에셋 표시 후 딜레이
+                if (DelayPerAsset > 0)
+                {
+                    yield return new WaitForSeconds(DelayPerAsset);
+                }
+            }
+            
+            // 시간 기반 최소 진행률 (최소 시간 동안 천천히 증가)
+            float timeBasedProgress = Mathf.Clamp01(elapsedTime / MinAssetLoadingDuration);
+            
+            // 표시된 에셋 비율 기반 진행률
+            float assetDisplayProgress = allLoadedAssets.Count > 0 
+                ? (float)displayedAssetIndex / allLoadedAssets.Count 
+                : 1f;
+            
+            // 두 진행률 중 작은 값 사용
+            float displayProgress = Mathf.Min(assetDisplayProgress, timeBasedProgress) * 0.7f;
+            OnLoadingProgressChanged?.Invoke(displayProgress);
+            
+            yield return null;
         }
 
         OnLoadingTextChanged?.Invoke("All Assets Loaded!");
+        OnLoadingProgressChanged?.Invoke(0.7f); // 에셋 로딩 완료 = 70%
     }
 }
