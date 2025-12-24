@@ -45,6 +45,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - preload
+  - m_GUID: 10708efe199c43b48a11cb69eac35349
+    m_Address: Assets/05_Prefabs/Effect/poisonEffect.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - preload
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 54ebaec88757d7249babc70c251f28d2, type: 2}
   m_SchemaSet:
