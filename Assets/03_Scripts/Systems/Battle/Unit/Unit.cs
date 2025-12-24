@@ -50,11 +50,11 @@ public abstract class Unit : MonoBehaviour
     private IEnumerator DelayedEnemyDeath()
     {
         // "적에게 큰 데미지!" 같은 데미지 메시지가 먼저 표시되도록 약간의 지연
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(GameConstants.Battle.TURN_DELAY);
         
         // "적이 쓰러졌습니다" 메시지 표시 (줄바꿈 후 추가)
         BattleUIController.OnBattleLogAppended?.Invoke($"적이 쓰러졌습니다.\n");
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(GameConstants.Battle.TURN_DELAY);
         
         // 그 다음 죽음 처리
         Die();

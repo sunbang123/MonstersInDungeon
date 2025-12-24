@@ -54,8 +54,8 @@ public class PoisonArea : MonoBehaviour
             if (playerRenderer != null && hasOriginalColor)
             {
                 Color currentColor = playerRenderer.material.color;
-                // 색상이 원본 색상과 비슷하면 복원된 것으로 간주
-                if (ColorDistance(currentColor, originalPlayerColor) < 0.1f)
+            // 색상이 원본 색상과 비슷하면 복원된 것으로 간주
+            if (ColorDistance(currentColor, originalPlayerColor) < GameConstants.PoisonArea.COLOR_DISTANCE_THRESHOLD)
                 {
                     hasPoisonEffectSpawned = false;
                 }
@@ -163,7 +163,7 @@ public class PoisonArea : MonoBehaviour
 
     bool IsValidPlayer(Collider2D collider)
     {
-        return collider.CompareTag("Player");
+        return collider.CompareTag(GameConstants.TAG_PLAYER);
     }
 
     void SetupPlayer(GameObject player)
@@ -287,14 +287,15 @@ public class PoisonArea : MonoBehaviour
         // 방법 1: GameManager에서 이미 로드된 프리팹 확인 (preload로 이미 로드되어 있을 수 있음, 경고 없이)
         if (GameManager.Instance != null)
         {
-            effectPrefab = GameManager.Instance.TryGetPrefabByName("poisonEffect");
+            string prefabName = GameConstants.PATH_POISON_EFFECT_PREFAB.Replace(".prefab", "");
+            effectPrefab = GameManager.Instance.TryGetPrefabByName(prefabName);
         }
 
         // 방법 2: GameManager에 없으면 Addressable에서 직접 로드
         if (effectPrefab == null)
         {
             // Addressable Address 시도: 먼저 짧은 주소로 시도
-            AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>("poisonEffect.prefab");
+            AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>(GameConstants.PATH_POISON_EFFECT_PREFAB);
 
             // 로드 완료 대기
             yield return handle;
@@ -302,22 +303,22 @@ public class PoisonArea : MonoBehaviour
             if (handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null)
             {
                 effectPrefab = handle.Result;
-                Debug.Log($"[이펙트 로드 성공] poisonEffect.prefab을 Addressable에서 로드했습니다.");
+                Debug.Log($"[이펙트 로드 성공] {GameConstants.PATH_POISON_EFFECT_PREFAB}을 Addressable에서 로드했습니다.");
             }
             else
             {
                 // 짧은 주소로 실패하면 전체 경로로 재시도
-                handle = Addressables.LoadAssetAsync<GameObject>("Assets/05_Prefabs/Effect/poisonEffect.prefab");
+                handle = Addressables.LoadAssetAsync<GameObject>(GameConstants.PATH_POISON_EFFECT_FULL);
                 yield return handle;
 
                 if (handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null)
                 {
                     effectPrefab = handle.Result;
-                    Debug.Log($"[이펙트 로드 성공] poisonEffect.prefab을 전체 경로로 Addressable에서 로드했습니다.");
+                    Debug.Log($"[이펙트 로드 성공] {GameConstants.PATH_POISON_EFFECT_FULL}을 전체 경로로 Addressable에서 로드했습니다.");
                 }
                 else
                 {
-                    Debug.LogWarning($"[이펙트 로드 실패] poisonEffect.prefab을 찾을 수 없습니다. Addressable에 등록되어 있고 빌드되었는지 확인하세요.");
+                    Debug.LogWarning($"[이펙트 로드 실패] {GameConstants.PATH_POISON_EFFECT_PREFAB}을 찾을 수 없습니다. Addressable에 등록되어 있고 빌드되었는지 확인하세요.");
                     yield break;
                 }
             }
@@ -341,7 +342,7 @@ public class PoisonArea : MonoBehaviour
             
             // 애니메이션 길이 확인하여 자동 제거
             float animationDuration = GetAnimationDuration(effectInstance);
-            StartDestroyPoisonEffectCoroutine(effectInstance, animationDuration > 0f ? animationDuration : 0.5f);
+            StartDestroyPoisonEffectCoroutine(effectInstance, animationDuration > 0f ? animationDuration : GameConstants.PoisonArea.DEFAULT_ANIMATION_DURATION_FALLBACK);
         }
     }
 
@@ -408,7 +409,7 @@ public class PoisonArea : MonoBehaviour
         {
             // 애니메이션 길이 확인
             float animationDuration = GetAnimationDuration(currentPoisonEffect);
-            float delay = animationDuration > 0f ? animationDuration : 0.5f;
+            float delay = animationDuration > 0f ? animationDuration : GameConstants.PoisonArea.DEFAULT_ANIMATION_DURATION_FALLBACK;
             
             // 파괴 코루틴 재시작 (기존 것을 중지하고 새로 시작)
             StartDestroyPoisonEffectCoroutine(currentPoisonEffect, delay);

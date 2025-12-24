@@ -154,6 +154,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         return Instantiate(prefab, position, rotation);
     }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     /// <summary>
     /// 로드된 모든 프리팹 목록 출력 (디버깅용)
     /// </summary>
@@ -173,6 +174,17 @@ public class GameManager : SingletonBehaviour<GameManager>
     }
 
     /// <summary>
+    /// 풀 초기화 (디버깅용)
+    /// </summary>
+    public void ClearPool()
+    {
+        prefabPool.Clear();
+        prefabByName.Clear();
+        Logger.Log("Prefab pool cleared");
+    }
+#endif
+
+    /// <summary>
     /// 특정 카테고리가 로드되었는지 확인
     /// </summary>
     public bool IsCategoryLoaded(string category)
@@ -186,15 +198,5 @@ public class GameManager : SingletonBehaviour<GameManager>
     public bool IsPrefabLoaded(string prefabName)
     {
         return prefabByName.ContainsKey(prefabName);
-    }
-
-    /// <summary>
-    /// 풀 초기화
-    /// </summary>
-    public void ClearPool()
-    {
-        prefabPool.Clear();
-        prefabByName.Clear();
-        Logger.Log("Prefab pool cleared");
     }
 }

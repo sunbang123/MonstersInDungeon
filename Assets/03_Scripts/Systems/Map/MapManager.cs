@@ -58,7 +58,7 @@ public class MapManager : SingletonBehaviour<MapManager>
             for (int i = 0; i < SceneManager.sceneCount; i++)
             {
                 var scene = SceneManager.GetSceneAt(i);
-                if (scene.name.StartsWith("Map"))
+                if (scene.name.StartsWith(GameConstants.MAP_SCENE_PREFIX))
                 {
                     hasMapScene = true;
                     break;
@@ -103,7 +103,12 @@ public class MapManager : SingletonBehaviour<MapManager>
         }
         
         // 맵 로드 (성공할 때까지 시도)
-        int[] mapIndicesToTry = { targetMapIndex, 0, 1, 2, 3, 4 };
+        int[] mapIndicesToTry = new int[GameConstants.MapLoading.FALLBACK_MAP_INDICES.Length + 1];
+        mapIndicesToTry[0] = targetMapIndex;
+        for (int j = 0; j < GameConstants.MapLoading.FALLBACK_MAP_INDICES.Length; j++)
+        {
+            mapIndicesToTry[j + 1] = GameConstants.MapLoading.FALLBACK_MAP_INDICES[j];
+        }
         
         for (int i = 0; i < mapIndicesToTry.Length; i++)
         {
@@ -163,7 +168,7 @@ public class MapManager : SingletonBehaviour<MapManager>
     /// </summary>
     private string GetMapSceneAddress(int mapIndex)
     {
-        return $"Map{mapIndex:D2}";
+        return string.Format(GameConstants.MAP_SCENE_FORMAT, mapIndex);
     }
 
     /// <summary>
@@ -199,7 +204,7 @@ public class MapManager : SingletonBehaviour<MapManager>
         for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
         {
             var scene = SceneManager.GetSceneAt(i);
-            if (scene.name.StartsWith("Map") && scene.name != sceneAddress && scene.IsValid())
+            if (scene.name.StartsWith(GameConstants.MAP_SCENE_PREFIX) && scene.name != sceneAddress && scene.IsValid())
             {
                 yield return SceneManager.UnloadSceneAsync(scene);
             }
@@ -363,7 +368,7 @@ public class MapManager : SingletonBehaviour<MapManager>
         for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
         {
             var scene = SceneManager.GetSceneAt(i);
-            if (scene.name.StartsWith("Map") && scene.IsValid())
+            if (scene.name.StartsWith(GameConstants.MAP_SCENE_PREFIX) && scene.IsValid())
             {
                 yield return SceneManager.UnloadSceneAsync(scene);
             }

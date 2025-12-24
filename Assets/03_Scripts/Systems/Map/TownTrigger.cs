@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TownTrigger : MonoBehaviour
@@ -12,7 +11,7 @@ public class TownTrigger : MonoBehaviour
     
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag("Player"))
+        if (!other.CompareTag(GameConstants.TAG_PLAYER))
             return;
 
         // 마을 이름 표시 (이벤트 기반)

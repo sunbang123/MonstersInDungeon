@@ -33,79 +33,143 @@ public class BattleFlowController : MonoBehaviour
     /// </summary>
     public IEnumerator StartBattle(Enemy e)
     {
+        InitializeBattle(e);
+        yield return StartCoroutine(BattleStartSequence());
+        yield return StartCoroutine(BattleLoop());
+        yield return StartCoroutine(BattleEndSequence());
+        EndBattle();
+    }
+
+    /// <summary>
+    /// 전투 초기화
+    /// </summary>
+    private void InitializeBattle(Enemy e)
+    {
         enemy = e;
         e.SetTarget(player);
-
         turnExecutor.SetCombatants(player, enemy);
-
         uiController.ShowBattleUI();
         playerController.SetMovementMode(MovementMode.Stop);
+        SubscribeBattleEvents();
+        InitializeEnemyUI();
+        stateMachine.ChangeState(BattleState.Start);
+    }
 
-        // Player 이벤트 구독 (전투 종료 시에만 사용하는 것만)
-        // Player UI 업데이트는 BattleUIController의 Start에서 이미 구독됨
-        player.OnPlayerDeath += () => stateMachine.ChangeState(BattleState.Lose);
-
-        // Enemy 이벤트 구독
+    /// <summary>
+    /// 전투 이벤트 구독
+    /// </summary>
+    private void SubscribeBattleEvents()
+    {
+        player.OnPlayerDeath += OnPlayerDeath;
         enemy.OnHealthChanged += uiController.UpdateEnemyHealthSlider;
         enemy.OnPPChanged += uiController.UpdateEnemyPPSlider;
         enemy.OnLevelChanged += uiController.UpdateEnemyLevel;
         enemy.OnPortraitChanged += uiController.UpdateEnemyPortrait;
         enemy.OnEnemyDeath += OnEnemyDefeated;
-        
-        // Enemy 초기값 설정 (속성을 통해 이벤트 발생)
-        enemy.enemyHp = enemy.enemyHp; // 이미 설정되어 있지만 이벤트 발생을 위해
+    }
+
+    /// <summary>
+    /// Enemy UI 초기화
+    /// </summary>
+    private void InitializeEnemyUI()
+    {
+        enemy.enemyHp = enemy.enemyHp;
         enemy.enemyPp = enemy.enemyPp;
         enemy.level = enemy.level;
         enemy.portrait = enemy.portrait;
+    }
 
-        stateMachine.ChangeState(BattleState.Start);
+    /// <summary>
+    /// 플레이어 사망 처리
+    /// </summary>
+    private void OnPlayerDeath()
+    {
+        stateMachine.ChangeState(BattleState.Lose);
+    }
 
-        // 전투 시작 메시지
+    /// <summary>
+    /// 전투 시작 시퀀스
+    /// </summary>
+    private IEnumerator BattleStartSequence()
+    {
         BattleUIController.OnBattleLogChanged?.Invoke("Battle Start!");
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(GameConstants.Battle.BATTLE_START_DELAY);
+        stateMachine.ChangeState(BattleState.PlayerTurn);
+    }
+
+    /// <summary>
+    /// 전투 루프
+    /// </summary>
+    private IEnumerator BattleLoop()
+    {
+        while (!IsBattleEnd())
+        {
+            yield return StartCoroutine(ExecuteCurrentTurn());
+        }
+    }
+
+    /// <summary>
+    /// 현재 턴 실행
+    /// </summary>
+    private IEnumerator ExecuteCurrentTurn()
+    {
+        switch (stateMachine.BattleState)
+        {
+            case BattleState.PlayerTurn:
+                yield return StartCoroutine(ExecutePlayerTurn());
+                break;
+            case BattleState.EnemyTurn:
+                yield return StartCoroutine(ExecuteEnemyTurn());
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 플레이어 턴 실행
+    /// </summary>
+    private IEnumerator ExecutePlayerTurn()
+    {
+        BattleUIController.OnBattleLogChanged?.Invoke($"전투 상태: {stateMachine.BattleState}\n");
+        yield return StartCoroutine(turnExecutor.ExecutePlayerTurn());
+
+        if (CheckBattleEnd()) yield break;
+
+        if (stateMachine.BattleState == BattleState.PlayerTurn)
+        {
+            stateMachine.ChangeState(BattleState.EnemyTurn);
+        }
+    }
+
+    /// <summary>
+    /// 적 턴 실행
+    /// </summary>
+    private IEnumerator ExecuteEnemyTurn()
+    {
+        BattleUIController.OnBattleLogChanged?.Invoke($"전투 상태: {stateMachine.BattleState}\n");
+        yield return StartCoroutine(turnExecutor.ExecuteEnemyTurn());
+
+        if (CheckBattleEnd()) yield break;
 
         stateMachine.ChangeState(BattleState.PlayerTurn);
-        while (stateMachine.BattleState != BattleState.Win &&
-               stateMachine.BattleState != BattleState.Lose)
-        {
-            switch (stateMachine.BattleState)
-            {
-                case BattleState.PlayerTurn:
-                    BattleUIController.OnBattleLogChanged?.Invoke($"전투 상태: {stateMachine.BattleState}\n");
-                    yield return StartCoroutine(turnExecutor.ExecutePlayerTurn());
+    }
 
-                    // 승부 확인
-                    if (CheckBattleEnd())
-                        break;
+    /// <summary>
+    /// 전투 종료 여부 확인
+    /// </summary>
+    private bool IsBattleEnd()
+    {
+        return stateMachine.BattleState == BattleState.Win || 
+               stateMachine.BattleState == BattleState.Lose;
+    }
 
-                    // PlayerTurn 완료 후 EnemyTurn으로 전환
-                    // 단, 이미 EnemyTurn으로 변경되었으면 (아이템 사용, 공격 등) 변경하지 않음
-                    if (stateMachine.BattleState == BattleState.PlayerTurn)
-                    {
-                        stateMachine.ChangeState(BattleState.EnemyTurn);
-                    }
-                    break;
-
-                case BattleState.EnemyTurn:
-                    BattleUIController.OnBattleLogChanged?.Invoke($"전투 상태: {stateMachine.BattleState}\n");
-                    yield return StartCoroutine(turnExecutor.ExecuteEnemyTurn());
-
-                    // 승부 확인
-                    if (CheckBattleEnd())
-                        break;
-
-                    // EnemyTurn 완료 후 PlayerTurn으로 전환
-                    stateMachine.ChangeState(BattleState.PlayerTurn);
-                    break;
-            }
-        }
-
-        // 전투 종료
-        yield return new WaitForSeconds(1f);
+    /// <summary>
+    /// 전투 종료 시퀀스
+    /// </summary>
+    private IEnumerator BattleEndSequence()
+    {
+        yield return new WaitForSeconds(GameConstants.Battle.BATTLE_END_DELAY);
         BattleUIController.OnBattleLogChanged?.Invoke($"Battle End: {stateMachine.BattleState}");
-        yield return new WaitForSeconds(1f);
-
-        EndBattle();
+        yield return new WaitForSeconds(GameConstants.Battle.BATTLE_END_DELAY);
     }
 
     /// <summary>
@@ -148,7 +212,7 @@ public class BattleFlowController : MonoBehaviour
     {
         // 이미 "적이 쓰러졌습니다" 메시지가 표시되었으므로
         // 잠시 대기 후 경험치 표시
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(GameConstants.Battle.ENEMY_DEFEAT_MESSAGE_DELAY);
         
         // 경험치 획득
         if (player != null && enemy != null)
@@ -165,18 +229,38 @@ public class BattleFlowController : MonoBehaviour
     /// </summary>
     private void EndBattle()
     {
-        // Player 이벤트 구독 해제
-        player.OnPlayerDeath -= () => stateMachine.ChangeState(BattleState.Lose);
+        UnsubscribeBattleEvents();
+        RestorePlayerState();
+        HideEnemy();
+    }
 
-        // Enemy 이벤트 구독 해제
+    /// <summary>
+    /// 전투 이벤트 구독 해제
+    /// </summary>
+    private void UnsubscribeBattleEvents()
+    {
+        player.OnPlayerDeath -= OnPlayerDeath;
         enemy.OnHealthChanged -= uiController.UpdateEnemyHealthSlider;
         enemy.OnPPChanged -= uiController.UpdateEnemyPPSlider;
         enemy.OnLevelChanged -= uiController.UpdateEnemyLevel;
         enemy.OnPortraitChanged -= uiController.UpdateEnemyPortrait;
         enemy.OnEnemyDeath -= OnEnemyDefeated;
+    }
 
+    /// <summary>
+    /// 플레이어 상태 복원
+    /// </summary>
+    private void RestorePlayerState()
+    {
         uiController.HideBattleUI();
         playerController.SetMovementMode(MovementMode.Walk);
+    }
+
+    /// <summary>
+    /// 적 숨기기
+    /// </summary>
+    private void HideEnemy()
+    {
         enemy.gameObject.SetActive(false);
     }
 }

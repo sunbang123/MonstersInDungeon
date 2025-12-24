@@ -70,7 +70,7 @@ public class BattleManager : MonoBehaviour
         else
         {
             // 2. 태그로 플레이어 찾기 (더 효율적)
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            GameObject playerObj = GameObject.FindGameObjectWithTag(GameConstants.TAG_PLAYER);
             if (playerObj != null)
             {
                 player = playerObj.GetComponent<Player>();

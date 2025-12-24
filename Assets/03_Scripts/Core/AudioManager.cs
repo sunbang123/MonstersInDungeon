@@ -21,7 +21,7 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     public Transform BGMTrs;
     public Transform SFXTrs;
     //오디오 파일의 로드 경로 설정
-    private const string AUDIO_PATH = "Audio";
+    private const string AUDIO_PATH = GameConstants.PATH_AUDIO;
 
     //모든 BGM 오디오 플레이어를 담을 딕셔너리 변수 선언
     private Dictionary<BGM, AudioSource> m_BGMPlayer = new Dictionary<BGM, AudioSource>();
@@ -146,12 +146,12 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     {
         foreach (var audioSourceItem in m_BGMPlayer)
         {
-            audioSourceItem.Value.volume = 0f;
+            audioSourceItem.Value.volume = GameConstants.Audio.MUTED_VOLUME;
         }
 
         foreach (var audioSourceItem in m_SFXPlayer)
         {
-            audioSourceItem.Value.volume = 0f;
+            audioSourceItem.Value.volume = GameConstants.Audio.MUTED_VOLUME;
         }
     }
 
@@ -160,12 +160,12 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     {
         foreach (var audioSourceItem in m_BGMPlayer)
         {
-            audioSourceItem.Value.volume = 1f;
+            audioSourceItem.Value.volume = GameConstants.Audio.DEFAULT_VOLUME;
         }
 
         foreach (var audioSourceItem in m_SFXPlayer)
         {
-            audioSourceItem.Value.volume = 1f;
+            audioSourceItem.Value.volume = GameConstants.Audio.DEFAULT_VOLUME;
         }
     }
 }
