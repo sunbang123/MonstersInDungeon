@@ -8,6 +8,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 [System.Serializable]
 public class AddressableGroup
@@ -19,12 +20,30 @@ public class AddressableGroup
 public class TitleManager : MonoBehaviour
 {
     // 로고
+    public Image LogoImg;
     public Animator LogoAnimator;
     public TextMeshProUGUI LogoTxt;
+    
+    // 배경 카메라
+    [Header("Camera Settings")]
+    [Tooltip("배경 카메라 (없으면 Main Camera 사용)")]
+    public Camera BackgroundCamera;
 
     [Header("Animation Settings")]
     public string LogoAnimationStateName = "LogoAnimation";
-    public float LogoAnimationDuration = 0.7f;
+    public float LogoAnimationDuration = 0.2f;
+    [Tooltip("로고 페이드 인 시간 (초)")]
+    public float LogoFadeInDuration = 0.5f;
+    [Tooltip("로고 확대축소 애니메이션 시간 (초)")]
+    public float LogoScaleDuration = 0.5f;
+    [Tooltip("로고 시작 스케일")]
+    public float LogoStartScale = 0.5f;
+    [Tooltip("로고 페이드 아웃 시간 (초)")]
+    public float LogoFadeOutDuration = 0.5f;
+    [Tooltip("배경 카메라 페이드 시간 (초)")]
+    public float BackgroundFadeDuration = 0.5f;
+    [Tooltip("Title 자식 요소 페이드 인 시간 (초)")]
+    public float TitleFadeInDuration = 0.5f;
 
     [Header("Addressable Settings")]
     public AssetReference LobbySceneReference; // Addressable 시스템 사용 권장
@@ -56,6 +75,11 @@ public class TitleManager : MonoBehaviour
     public event Action<bool> OnLogoVisibilityChanged;
     public event Action<bool> OnTitleVisibilityChanged;
 
+    private Camera m_BackgroundCamera;
+    private Color m_OriginalBackgroundColor;
+    private CanvasGroup m_LogoCanvasGroup;
+    private Color m_OriginalLogoTextColor;
+
     private void Awake()
     {
         // 이벤트 구독
@@ -63,6 +87,51 @@ public class TitleManager : MonoBehaviour
         OnTitleVisibilityChanged += UpdateTitleVisibility;
         OnLoadingTextChanged += UpdateLoadingText;
         OnLoadingProgressChanged += UpdateLoadingProgress;
+
+        // 배경 카메라 설정
+        if (BackgroundCamera != null)
+        {
+            m_BackgroundCamera = BackgroundCamera;
+        }
+        else
+        {
+            m_BackgroundCamera = Camera.main;
+        }
+        
+        if (m_BackgroundCamera != null)
+        {
+            m_OriginalBackgroundColor = m_BackgroundCamera.backgroundColor;
+        }
+
+        // 로고 이미지 초기 상태 설정
+        if (LogoImg != null)
+        {
+            // 초기 상태: 투명하고 작게 설정 (페이드 인 및 확대 효과를 위해)
+            LogoImg.color = new Color(LogoImg.color.r, LogoImg.color.g, LogoImg.color.b, 0f);
+            LogoImg.transform.localScale = Vector3.one * LogoStartScale;
+        }
+
+        // 로고 CanvasGroup 설정 (LogoAnimator용)
+        if (LogoAnimator != null)
+        {
+            m_LogoCanvasGroup = LogoAnimator.GetComponent<CanvasGroup>();
+            if (m_LogoCanvasGroup == null)
+            {
+                m_LogoCanvasGroup = LogoAnimator.gameObject.AddComponent<CanvasGroup>();
+            }
+            m_LogoCanvasGroup.alpha = 1f;
+        }
+
+        // 로고 텍스트 초기 색상 저장 및 초기 상태 설정
+        if (LogoTxt != null)
+        {
+            m_OriginalLogoTextColor = LogoTxt.color;
+            // 초기 상태: 투명하고 작게 설정
+            Color textColor = m_OriginalLogoTextColor;
+            textColor.a = 0f;
+            LogoTxt.color = textColor;
+            LogoTxt.transform.localScale = Vector3.one * LogoStartScale;
+        }
 
         OnLogoVisibilityChanged?.Invoke(true);
         OnTitleVisibilityChanged?.Invoke(false);
@@ -102,7 +171,55 @@ public class TitleManager : MonoBehaviour
     private void UpdateTitleVisibility(bool isVisible)
     {
         if (Title != null)
+        {
             Title.SetActive(isVisible);
+            
+            // Title이 활성화될 때 자식 요소들의 알파를 0으로 설정 (페이드 인 준비)
+            if (isVisible)
+            {
+                SetChildrenAlphaToZero(Title);
+            }
+        }
+    }
+
+    private void SetChildrenAlphaToZero(GameObject parent)
+    {
+        if (parent == null)
+            return;
+
+        foreach (Transform child in parent.GetComponentsInChildren<Transform>(true))
+        {
+            if (child.gameObject == parent)
+                continue;
+
+            // CanvasGroup이 있으면 알파 0으로 설정
+            CanvasGroup canvasGroup = child.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                canvasGroup.alpha = 0f;
+                continue;
+            }
+
+            // TextMeshProUGUI가 있으면 알파 0으로 설정
+            TextMeshProUGUI textMesh = child.GetComponent<TextMeshProUGUI>();
+            if (textMesh != null)
+            {
+                Color textColor = textMesh.color;
+                textColor.a = 0f;
+                textMesh.color = textColor;
+                continue;
+            }
+
+            // Image가 있으면 알파 0으로 설정
+            Image image = child.GetComponent<Image>();
+            if (image != null)
+            {
+                Color imageColor = image.color;
+                imageColor.a = 0f;
+                image.color = imageColor;
+                continue;
+            }
+        }
     }
 
     private void UpdateLoadingText(string text)
@@ -128,12 +245,25 @@ public class TitleManager : MonoBehaviour
 
     private IEnumerator LoadGameCo()
     {
-        // 1) 로고 애니메이션
+        // 1) 로고 페이드 인 및 확대 (통통튀는 효과)
+        PlayLogoFadeInAnimation();
+        yield return new WaitForSeconds(Mathf.Max(LogoFadeInDuration, LogoScaleDuration));
+        
+        // 1-1) 로고 애니메이션
         LogoAnimator.Play(LogoAnimationStateName);
         yield return new WaitForSeconds(LogoAnimationDuration);
 
+        // 1-1) 로고 페이드 아웃 및 배경 카메라 어둡게 (동시에 실행)
+        yield return StartCoroutine(FadeOutLogoAndBackground());
+
         OnLogoVisibilityChanged?.Invoke(false);
         OnTitleVisibilityChanged?.Invoke(true);
+
+        // 1-2) Title 자식 요소들 페이드 인
+        if (Title != null)
+        {
+            yield return StartCoroutine(Utils.FadeInChildrenUI(this, Title, TitleFadeInDuration));
+        }
 
         // 2) 에셋프리로드
         OnLoadingTextChanged?.Invoke("Loading Assets...");
@@ -328,5 +458,65 @@ public class TitleManager : MonoBehaviour
 
         OnLoadingTextChanged?.Invoke("All Assets Loaded!");
         OnLoadingProgressChanged?.Invoke(0.7f); // 에셋 로딩 완료 = 70%
+    }
+
+    private void PlayLogoFadeInAnimation()
+    {
+        // 로고 이미지 페이드 인 및 확대
+        if (LogoImg != null)
+        {
+            Sequence logoImageSequence = DOTween.Sequence();
+            logoImageSequence.Append(LogoImg.DOFade(1f, LogoFadeInDuration));
+            logoImageSequence.Join(LogoImg.transform.DOScale(Vector3.one, LogoScaleDuration).SetEase(Ease.OutBack));
+        }
+
+        // 로고 텍스트 페이드 인 및 확대
+        if (LogoTxt != null)
+        {
+            Sequence textSequence = DOTween.Sequence();
+            textSequence.Append(LogoTxt.DOFade(1f, LogoFadeInDuration));
+            textSequence.Join(LogoTxt.transform.DOScale(Vector3.one, LogoScaleDuration).SetEase(Ease.OutBack));
+        }
+    }
+
+    private IEnumerator FadeOutLogoAndBackground()
+    {
+        // 배경 카메라 타겟 색상 계산
+        Color targetBackgroundColor = Color.white;
+        if (m_BackgroundCamera != null)
+        {
+            Color startBackgroundColor = m_BackgroundCamera.backgroundColor;
+            targetBackgroundColor = new Color(
+                startBackgroundColor.r * 0.2f,
+                startBackgroundColor.g * 0.2f,
+                startBackgroundColor.b * 0.2f,
+                startBackgroundColor.a
+            );
+        }
+
+        // 모든 페이드 효과를 동시에 실행
+        var fadeCoroutines = new List<Coroutine>();
+
+        // 로고 이미지 페이드
+        if (LogoImg != null)
+        {
+            fadeCoroutines.Add(StartCoroutine(Utils.FadeImage(LogoImg, 0f, LogoFadeOutDuration)));
+        }
+
+        // 로고 텍스트 페이드
+        if (LogoTxt != null)
+        {
+            fadeCoroutines.Add(StartCoroutine(Utils.FadeTextMeshProUGUI(LogoTxt, 0f, LogoFadeOutDuration)));
+        }
+
+        // 배경 카메라 페이드
+        if (m_BackgroundCamera != null)
+        {
+            fadeCoroutines.Add(StartCoroutine(Utils.FadeCameraBackground(m_BackgroundCamera, targetBackgroundColor, BackgroundFadeDuration)));
+        }
+
+        // 모든 페이드 효과가 완료될 때까지 대기
+        float maxDuration = Mathf.Max(LogoFadeOutDuration, BackgroundFadeDuration);
+        yield return new WaitForSeconds(maxDuration);
     }
 }

@@ -135,10 +135,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f50a8dcfaec32f4996672c3769506b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LogoImg: {fileID: 1478216301}
   LogoAnimator: {fileID: 1478216303}
   LogoTxt: {fileID: 621283396}
+  BackgroundCamera: {fileID: 291796900}
   LogoAnimationStateName: LogoAnimation
-  LogoAnimationDuration: 2
+  LogoAnimationDuration: 1
+  LogoFadeInDuration: 0.5
+  LogoScaleDuration: 0.5
+  LogoStartScale: 0.5
+  LogoFadeOutDuration: 0.25
+  BackgroundFadeDuration: 0.25
+  TitleFadeInDuration: 0.5
   LobbySceneReference:
     m_AssetGUID: 2cda990e2423bbf4892e6590ba056729
     m_SubObjectName: 

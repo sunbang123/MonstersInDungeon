@@ -167,7 +167,7 @@ GameObject:
   - component: {fileID: 101751119}
   - component: {fileID: 101751118}
   m_Layer: 5
-  m_Name: Option_btn
+  m_Name: Feedback_btn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3058,9 +3058,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41095cbf09064504a816deb539dce45d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Logo: {fileID: 1686961175}
+  LobbyPanel: {fileID: 1686961173}
   ContinueButton: {fileID: 2025528494}
   NewGameButton: {fileID: 195295684}
-  OptionButton: {fileID: 101751118}
+  FeedbackButton: {fileID: 101751118}
+  FadeInDuration: 0.5
+  ScaleDuration: 0.5
+  StartScale: 0.8
+  ButtonDelay: 0.1
   InGameSceneReference:
     m_AssetGUID: f24d8f4069f7f774cbb49d71b6dc823e
     m_SubObjectName: 
@@ -3124,7 +3130,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u2667 \uC635\uC158 \u2667"
+  m_text: "\u2667 \uD53C\uB4DC\uBC31 \uC81C\uACF5 \u2667"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 45c0cfa4f7261ab48acb55ba8c16c550, type: 2}
   m_sharedMaterial: {fileID: -3180020203624462729, guid: 45c0cfa4f7261ab48acb55ba8c16c550, type: 2}
@@ -5081,7 +5087,7 @@ GameObject:
   - component: {fileID: 1686961176}
   - component: {fileID: 1686961175}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Logo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// 게임 전반에서 사용되는 유틸리티 메소드 모음
@@ -161,6 +162,134 @@ public static class Utils
         }
 
         canvasGroup.alpha = targetAlpha;
+    }
+
+    /// <summary>
+    /// TextMeshProUGUI의 알파 값 페이드
+    /// </summary>
+    public static IEnumerator FadeTextMeshProUGUI(TextMeshProUGUI text, float targetAlpha, float duration)
+    {
+        if (text == null)
+            yield break;
+
+        Color startColor = text.color;
+        float startAlpha = startColor.a;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float normalizedTime = time / duration;
+            Color color = startColor;
+            color.a = Mathf.Lerp(startAlpha, targetAlpha, normalizedTime);
+            text.color = color;
+            yield return null;
+        }
+
+        Color finalColor = startColor;
+        finalColor.a = targetAlpha;
+        text.color = finalColor;
+    }
+
+    /// <summary>
+    /// 카메라 배경색 페이드
+    /// </summary>
+    public static IEnumerator FadeCameraBackground(Camera camera, Color targetColor, float duration)
+    {
+        if (camera == null)
+            yield break;
+
+        Color startColor = camera.backgroundColor;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float normalizedTime = time / duration;
+            camera.backgroundColor = Color.Lerp(startColor, targetColor, normalizedTime);
+            yield return null;
+        }
+
+        camera.backgroundColor = targetColor;
+    }
+
+    /// <summary>
+    /// Image의 알파 값 페이드
+    /// </summary>
+    public static IEnumerator FadeImage(Image image, float targetAlpha, float duration)
+    {
+        if (image == null)
+            yield break;
+
+        Color startColor = image.color;
+        float startAlpha = startColor.a;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float normalizedTime = time / duration;
+            Color color = startColor;
+            color.a = Mathf.Lerp(startAlpha, targetAlpha, normalizedTime);
+            image.color = color;
+            yield return null;
+        }
+
+        Color finalColor = startColor;
+        finalColor.a = targetAlpha;
+        image.color = finalColor;
+    }
+
+    /// <summary>
+    /// 게임오브젝트의 모든 자식 UI 요소들을 페이드 인
+    /// </summary>
+    public static IEnumerator FadeInChildrenUI(MonoBehaviour monoBehaviour, GameObject parent, float duration)
+    {
+        if (parent == null)
+            yield break;
+
+        List<Coroutine> fadeCoroutines = new List<Coroutine>();
+
+        // 모든 자식 요소들을 재귀적으로 찾아서 페이드 인
+        foreach (Transform child in parent.GetComponentsInChildren<Transform>(true))
+        {
+            if (child.gameObject == parent)
+                continue;
+
+            // CanvasGroup이 있으면 CanvasGroup으로 페이드
+            CanvasGroup canvasGroup = child.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                canvasGroup.alpha = 0f;
+                fadeCoroutines.Add(monoBehaviour.StartCoroutine(FadeUIElement(monoBehaviour, canvasGroup, 1f, duration)));
+                continue;
+            }
+
+            // TextMeshProUGUI가 있으면 텍스트로 페이드
+            TextMeshProUGUI textMesh = child.GetComponent<TextMeshProUGUI>();
+            if (textMesh != null)
+            {
+                Color textColor = textMesh.color;
+                textColor.a = 0f;
+                textMesh.color = textColor;
+                fadeCoroutines.Add(monoBehaviour.StartCoroutine(FadeTextMeshProUGUI(textMesh, 1f, duration)));
+                continue;
+            }
+
+            // Image가 있으면 이미지로 페이드
+            Image image = child.GetComponent<Image>();
+            if (image != null)
+            {
+                Color imageColor = image.color;
+                imageColor.a = 0f;
+                image.color = imageColor;
+                fadeCoroutines.Add(monoBehaviour.StartCoroutine(FadeImage(image, 1f, duration)));
+                continue;
+            }
+        }
+
+        // 모든 페이드 효과가 완료될 때까지 대기
+        yield return new WaitForSeconds(duration);
     }
 
     /// <summary>
