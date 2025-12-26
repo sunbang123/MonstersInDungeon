@@ -74,7 +74,29 @@ public class BattleUIController : MonoBehaviour
         if (player != null)
         {
             player.OnHealthChanged += UpdatePlayerHealthSlider;
+            player.OnPPChanged += UpdatePlayerPPSlider;
+            player.OnLevelChanged += UpdatePlayerLevel;
+            player.OnExpChanged += UpdatePlayerExpSlider;
+            player.OnPortraitChanged += UpdatePlayerPortrait;
+            
+            // 초기값 설정 (Player.Start()가 실행된 후)
+            UpdatePlayerHealthSlider(player.playerHp, player.maxHp);
+            UpdatePlayerPPSlider(player.playerPp, player.maxMp);
+            UpdatePlayerLevel(player.level);
+            UpdatePlayerExpSlider(player.currentExp, player.expToNextLevel);
+            UpdatePlayerPortrait(player.portrait);
         }
+
+        // InventoryManager 이벤트 구독
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.OnBattleSlotVisibilityChanged += OnBattleSlotVisibilityChanged;
+            InventoryManager.Instance.OnInventoryChanged += OnInventoryChanged;
+        }
+
+        // 전투 로그 이벤트 구독
+        OnBattleLogChanged += SetBattleLog;
+        OnBattleLogAppended += AppendBattleLog;
 
         SetButtonsInteractable(false);
     }
@@ -149,9 +171,55 @@ public class BattleUIController : MonoBehaviour
             defense_btn.interactable = interactable;
     }
 
+    /// <summary>
+    /// 특정 아이템 버튼의 활성화 상태를 설정하는 메서드
+    /// </summary>
+    /// <param name="itemIndex">아이템 버튼 인덱스</param>
+    /// <param name="interactable">활성화 여부</param>
+    public void SetItemButtonInteractable(int itemIndex, bool interactable)
+    {
+        if (item_btn != null && itemIndex >= 0 && itemIndex < item_btn.Count)
+        {
+            if (item_btn[itemIndex] != null)
+            {
+                item_btn[itemIndex].interactable = interactable;
+            }
+        }
+    }
 
     /// <summary>
-    /// 전투 UI 상태 토글
+    /// 배틀 인벤토리 슬롯 가시성 변경 이벤트 핸들러
+    /// </summary>
+    private void OnBattleSlotVisibilityChanged(int slotIndex, bool isVisible)
+    {
+        if (item_btn != null && slotIndex >= 0 && slotIndex < item_btn.Count)
+        {
+            if (item_btn[slotIndex] != null)
+            {
+                // 아이템 사용 중이거나 다른 액션 중이면 버튼을 활성화하지 않음
+                bool shouldBeInteractable = isVisible;
+                
+                // BattleStateMachine을 찾아서 현재 전투 상태 확인
+                BattleStateMachine stateMachine = FindObjectOfType<BattleStateMachine>();
+                if (stateMachine != null)
+                {
+                    // 아이템 사용 중이거나 다른 액션 중이면 비활성화 유지
+                    if (stateMachine.PlayerState == PlayerState.ItemUse ||
+                        stateMachine.PlayerState == PlayerState.Attack ||
+                        stateMachine.PlayerState == PlayerState.Defense ||
+                        stateMachine.BattleState != BattleState.PlayerTurn)
+                    {
+                        shouldBeInteractable = false;
+                    }
+                }
+                
+                item_btn[slotIndex].interactable = shouldBeInteractable;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 인벤토리 변경 이벤트 핸들러 - 버튼을 다시 가져와서 바인딩
     /// </summary>
     private void OnInventoryChanged()
     {

@@ -31,8 +31,16 @@ public abstract class Unit : MonoBehaviour
         // 쓰러짐 확인
         if (currentHp <= 0f && !isDead)
         {
-            Debug.Log($"[사망] {gameObject.name}이(가) 사망했습니다.");
-            Die();
+            Debug.Log($"[쓰러짐] {gameObject.name}이(가) 쓰러졌습니다.");
+            // 적인 경우 코루틴으로 지연 처리
+            if (this is Enemy)
+            {
+                StartCoroutine(DelayedEnemyDeath());
+            }
+            else
+            {
+                Die();
+            }
         }
     }
 

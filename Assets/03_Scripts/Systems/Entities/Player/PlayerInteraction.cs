@@ -101,13 +101,13 @@ public class PlayerInteraction : MonoBehaviour
         {
             _sprite.enabled = false;
             _controll.enabled = false;
-            hideText.text = "나가기";
+            hideText.text = GameConstants.UI.BUTTON_TEXT_SHOW;
         }
         else if (_sprite.enabled == false)
         {
             _sprite.enabled = true;
             _controll.enabled = true;
-            hideText.text = "숨기";
+            hideText.text = GameConstants.UI.BUTTON_TEXT_HIDE;
         }
     }
 

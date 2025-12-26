@@ -126,8 +126,49 @@ public class Player : Unit
         _playerHp = Mathf.Clamp(data.HP, 0f, maxHp);
         _playerPp = Mathf.Clamp(_playerPp, 0f, maxMp);
 
-        // 초기 HP 설정 (속성 사용으로 데이터 저장 자동 처리)
-        playerHp = _playerHp;
+        // 레벨과 경험치 로드
+        _level = data.Level;
+        _currentExp = data.CurrentExp;
+        
+        // HP 변경 이벤트 발생 (UI 업데이트를 위해)
+        OnHealthChanged?.Invoke(_playerHp, maxHp);
+        expToNextLevel = CalculateExpForNextLevel(_level);
+        
+        // 레벨과 경험치 이벤트 발생
+        OnLevelChanged?.Invoke(_level);
+        OnExpChanged?.Invoke(_currentExp, expToNextLevel);
+
+        // PlayerAppearance 이벤트 구독
+        SubscribeToPlayerAppearance();
+    }
+
+    /// <summary>
+    /// PlayerAppearance의 스프라이트 변경을 구독
+    /// </summary>
+    private void SubscribeToPlayerAppearance()
+    {
+        PlayerAppearance appearance = GetComponent<PlayerAppearance>();
+        if (appearance == null)
+            appearance = GetComponentInParent<PlayerAppearance>();
+        if (appearance == null)
+            appearance = GetComponentInChildren<PlayerAppearance>();
+
+        if (appearance != null)
+        {
+            // PlayerAppearance의 스프라이트 변경 이벤트 구독
+            appearance.OnSpriteChanged += OnAppearanceSpriteChanged;
+        }
+    }
+
+    /// <summary>
+    /// PlayerAppearance의 스프라이트가 변경되었을 때 호출
+    /// </summary>
+    private void OnAppearanceSpriteChanged(Sprite newSprite)
+    {
+        if (newSprite != null)
+        {
+            portrait = newSprite; // 속성을 통해 설정하면 OnPortraitChanged 이벤트가 자동 발생
+        }
     }
 
     // Update 메소드 제거 - 더 이상 필요 없음
@@ -147,14 +188,45 @@ public class Player : Unit
         => OnHealthChanged?.Invoke(current, max);
     protected override void InvokeDeath() => OnPlayerDeath?.Invoke();
 
+    /// <summary>
+    /// 경험치 획득
+    /// </summary>
+    public void GainExperience(float exp)
+    {
+        currentExp += exp;
+    }
+
+#if UNITY_EDITOR
+    [ContextMenu("경험치 50 추가")]
+    private void EditorAddExp50()
+    {
+        GainExperience(50f);
+    }
+
+    [ContextMenu("경험치 100 추가")]
+    private void EditorAddExp100()
+    {
+        GainExperience(100f);
+    }
+
+    [ContextMenu("경험치 200 추가")]
+    private void EditorAddExp200()
+    {
+        GainExperience(200f);
+    }
+#endif
+
+    /// <summary>
+    /// 다음 레벨까지 필요한 경험치 계산
+    /// </summary>
+    private float CalculateExpForNextLevel(int currentLevel)
+    {
+        // 기본 공식: 레벨이 올라갈수록 더 많은 경험치 필요
+        return GameConstants.Player.BASE_EXP_REQUIREMENT * Mathf.Pow(GameConstants.Player.EXP_MULTIPLIER, currentLevel - 1);
+    }
+
     void OnDestroy()
     {
-        // �ڷ�ƾ ����
-        if (regenCoroutine != null)
-        {
-            appearance.OnSpriteChanged -= OnAppearanceSpriteChanged;
-        }
-
         // PlayerAppearance 이벤트 구독 해제
         PlayerAppearance appearance = GetComponent<PlayerAppearance>();
         if (appearance == null)
