@@ -79,7 +79,7 @@ public class OptionController : MonoBehaviour
         }
 
         // 현재 맵 인덱스 저장
-        var mapManager = FindObjectOfType<MapManager>();
+        var mapManager = MapManager.Instance;
         if (mapManager != null)
         {
             var data = UserDataManager.Instance.Get<UserPlayerStatusData>();

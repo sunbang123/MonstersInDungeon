@@ -61,6 +61,15 @@ public class BattleUIController : MonoBehaviour
         BindButtons();
 
         // Player 찾기 및 이벤트 구독 (전투/비전투 모두)
+        // Start()보다 늦게 실행되도록 코루틴 사용
+        StartCoroutine(InitializePlayerUI());
+    }
+    
+    private System.Collections.IEnumerator InitializePlayerUI()
+    {
+        // Player가 초기화될 때까지 대기
+        yield return null;
+        
         Player player = FindObjectOfType<Player>();
         if (player != null)
         {
@@ -70,7 +79,7 @@ public class BattleUIController : MonoBehaviour
             player.OnExpChanged += UpdatePlayerExpSlider;
             player.OnPortraitChanged += UpdatePlayerPortrait;
             
-            // 초기값 설정
+            // 초기값 설정 (Player.Start()가 실행된 후)
             UpdatePlayerHealthSlider(player.playerHp, player.maxHp);
             UpdatePlayerPPSlider(player.playerPp, player.maxMp);
             UpdatePlayerLevel(player.level);
@@ -283,8 +292,7 @@ public class BattleUIController : MonoBehaviour
             playerHealthSlider.maxValue = maxHp;
             playerHealthSlider.value = currentHp;
         }
-        var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
-        data.HP = currentHp;
+        // 데이터는 playerHp setter에서 자동으로 업데이트되므로 여기서는 업데이트하지 않음
     }
     public void UpdateEnemyHealthSlider(float currentHp, float maxHp)
     {

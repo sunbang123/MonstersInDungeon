@@ -1,4 +1,5 @@
 using System.Collections;
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -10,6 +11,7 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     private BattleUIController uiController;
     private Player player;
     private Enemy enemy;
+    
     public void Initialize(BattleStateMachine sm, BattleUIController ui)
     {
         stateMachine = sm;
@@ -23,6 +25,47 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     {
         player = p;
         enemy = e;
+    }
+
+    /// <summary>
+    /// 공통 액션 실행 패턴 (상태 변경, 로그, 대기, 액션 실행)
+    /// </summary>
+    private IEnumerator ExecuteActionSequence(
+        Action onStart,
+        Action onAction,
+        Action onComplete,
+        float delay = -1f)
+    {
+        if (delay < 0f)
+            delay = GameConstants.Battle.TURN_DELAY;
+
+        onStart?.Invoke();
+        yield return new WaitForSeconds(delay);
+        
+        onAction?.Invoke();
+        yield return new WaitForSeconds(delay);
+        
+        onComplete?.Invoke();
+    }
+
+    /// <summary>
+    /// 데미지를 주는 공통 메서드
+    /// </summary>
+    private void ApplyDamage(Unit target, float damage, PlayerState playerState, EnemyState enemyState, string logMessage)
+    {
+        if (target == null) return;
+
+        if (target is Player)
+        {
+            stateMachine.ChangeState(playerState);
+        }
+        else if (target is Enemy)
+        {
+            stateMachine.ChangeState(enemyState);
+        }
+
+        BattleUIController.OnBattleLogAppended?.Invoke(logMessage);
+        target.TakeDamage(damage);
     }
 
     /// <summary>
@@ -48,30 +91,29 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     /// </summary>
     public IEnumerator ExecuteEnemyTurn()
     {
-        // 버튼 비활성화
         uiController.SetButtonsInteractable(false);
 
-        yield return new WaitForSeconds(1f);
-
-        stateMachine.ChangeState(EnemyState.Attack);
-        BattleUIController.OnBattleLogAppended?.Invoke($"적이 {stateMachine.EnemyState}했다!\n");
-
-        yield return new WaitForSeconds(1f);
-
-        if (player != null)
-        {
-            float enemyAttackDamage = 20f; // 임시 데미지
-            player.TakeDamage(enemyAttackDamage);
-        }
-
-        stateMachine.ChangeState(PlayerState.Damaged);
-        BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 {stateMachine.PlayerState} 되었다.\n");
-
-        yield return new WaitForSeconds(1f);
-
-        // PlayerState 리셋 후 BattleState 변경
-        stateMachine.ChangeState(PlayerState.None);
-        stateMachine.ChangeState(BattleState.PlayerTurn);
+        yield return ExecuteActionSequence(
+            onStart: () =>
+            {
+                stateMachine.ChangeState(EnemyState.Attack);
+                BattleUIController.OnBattleLogAppended?.Invoke($"적이 {EnemyState.Attack}했다!\n");
+            },
+            onAction: () =>
+            {
+                if (player != null)
+                {
+                    ApplyDamage(player, GameConstants.Battle.DEFAULT_ENEMY_ATTACK_DAMAGE, 
+                        PlayerState.Damaged, EnemyState.None, 
+                        $"플레이어가 {PlayerState.Damaged} 되었다.\n");
+                }
+            },
+            onComplete: () =>
+            {
+                stateMachine.ChangeState(PlayerState.None);
+                stateMachine.ChangeState(BattleState.PlayerTurn);
+            }
+        );
     }
 
     /// <summary>
@@ -81,25 +123,27 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     {
         uiController.SetButtonsInteractable(false);
 
-        stateMachine.ChangeState(PlayerState.Attack);
-        BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 {stateMachine.PlayerState}를 했다.\n");
-
-        yield return new WaitForSeconds(1f);
-
-        if (enemy != null)
-        {
-            float playerAttackDamage = 30f;
-            enemy.TakeDamage(playerAttackDamage);
-        }
-
-        stateMachine.ChangeState(EnemyState.Damaged);
-        BattleUIController.OnBattleLogAppended?.Invoke($"적 {stateMachine.EnemyState}!\n");
-
-        yield return new WaitForSeconds(1f);
-
-        // PlayerState 리셋 후 BattleState 변경
-        stateMachine.ChangeState(PlayerState.None);
-        stateMachine.ChangeState(BattleState.EnemyTurn);
+        yield return ExecuteActionSequence(
+            onStart: () =>
+            {
+                stateMachine.ChangeState(PlayerState.Attack);
+                BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 {PlayerState.Attack}를 했다.\n");
+            },
+            onAction: () =>
+            {
+                if (enemy != null)
+                {
+                    ApplyDamage(enemy, GameConstants.Battle.DEFAULT_PLAYER_ATTACK_DAMAGE,
+                        PlayerState.None, EnemyState.Damaged,
+                        $"적 {EnemyState.Damaged}!\n");
+                }
+            },
+            onComplete: () =>
+            {
+                stateMachine.ChangeState(PlayerState.None);
+                stateMachine.ChangeState(BattleState.EnemyTurn);
+            }
+        );
     }
 
     /// <summary>
@@ -118,36 +162,43 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
         
         if (itemData == null)
         {
-            BattleUIController.OnBattleLogAppended?.Invoke($"아이템을 찾을 수 없습니다.\n");
-            stateMachine.ChangeState(PlayerState.None);
-            stateMachine.ChangeState(BattleState.PlayerTurn);
-            uiController.SetButtonsInteractable(true);
+            HandleItemUseFailure();
             yield break;
         }
 
         // 버튼은 이미 BattleManager에서 비활성화됨 (중복 클릭 방지)
-        // PlayerState.ItemUse를 설정하여 ExecutePlayerTurn에서 버튼이 다시 활성화되지 않도록 함
         stateMachine.ChangeState(PlayerState.ItemUse);
         
-        BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 {itemData.itemName}을(를) 사용했다.\n");
+        yield return ExecuteActionSequence(
+            onStart: () =>
+            {
+                BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 {itemData.itemName}을(를) 사용했다.\n");
+            },
+            onAction: () =>
+            {
+                ApplyItemEffect(itemData);
+                if (InventoryManager.Instance != null)
+                {
+                    InventoryManager.Instance.RemoveBattleSlotItem(itemIndex);
+                }
+            },
+            onComplete: () =>
+            {
+                stateMachine.ChangeState(PlayerState.None);
+                stateMachine.ChangeState(BattleState.EnemyTurn);
+            }
+        );
+    }
 
-        yield return new WaitForSeconds(1f);
-
-        // 아이템 효과 적용
-        ApplyItemEffect(itemData);
-
-        // 아이템 사용 후 인벤토리에서 제거
-        if (InventoryManager.Instance != null)
-        {
-            InventoryManager.Instance.RemoveBattleSlotItem(itemIndex);
-        }
-
-        yield return new WaitForSeconds(1f);
-
-        // 아이템 사용 완료 - PlayerState 리셋 후 BattleState 변경
+    /// <summary>
+    /// 아이템 사용 실패 처리
+    /// </summary>
+    private void HandleItemUseFailure()
+    {
+        BattleUIController.OnBattleLogAppended?.Invoke($"아이템을 찾을 수 없습니다.\n");
         stateMachine.ChangeState(PlayerState.None);
-        // BattleState를 EnemyTurn으로 변경하여 ExecutePlayerTurn의 WaitUntil이 깨지도록 함
-        stateMachine.ChangeState(BattleState.EnemyTurn);
+        stateMachine.ChangeState(BattleState.PlayerTurn);
+        uiController.SetButtonsInteractable(true);
     }
 
     /// <summary>
@@ -155,33 +206,61 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     /// </summary>
     private void ApplyItemEffect(ItemData itemData)
     {
+        if (itemData == null) return;
+
         string statName = itemData.StatName;
         int statValue = itemData.StatValue;
-
-        // 대소문자 구분 없이 비교
         string statNameLower = statName.ToLower();
 
-        if (statNameLower.Contains("heal") || statNameLower.Contains("회복"))
+        if (IsHealItem(statNameLower))
         {
-            // 플레이어 회복
-            if (player != null)
-            {
-                float healAmount = statValue;
-                float newHp = Mathf.Min(player.playerHp + healAmount, player.maxHp);
-                player.playerHp = newHp;
-                BattleUIController.OnBattleLogAppended?.Invoke($"플레이어 체력이 {healAmount} 회복되었습니다.\n");
-            }
+            ApplyHealEffect(statValue);
         }
-        else if (statNameLower.Contains("damage") || statNameLower.Contains("attack") || statNameLower.Contains("데미지") || statNameLower.Contains("공격"))
+        else if (IsDamageItem(statNameLower))
         {
-            // 적에게 데미지
-            if (enemy != null)
-            {
-                enemy.TakeDamage(statValue);
-                stateMachine.ChangeState(EnemyState.Damaged);
-                BattleUIController.OnBattleLogAppended?.Invoke($"아이템으로 적에게 {statValue}의 데미지를 주었습니다.\n");
-            }
+            ApplyDamageEffect(statValue);
         }
+    }
+
+    /// <summary>
+    /// 회복 아이템인지 확인
+    /// </summary>
+    private bool IsHealItem(string statNameLower)
+    {
+        return statNameLower.Contains("heal") || statNameLower.Contains("회복");
+    }
+
+    /// <summary>
+    /// 데미지 아이템인지 확인
+    /// </summary>
+    private bool IsDamageItem(string statNameLower)
+    {
+        return statNameLower.Contains("damage") || statNameLower.Contains("attack") || 
+               statNameLower.Contains("데미지") || statNameLower.Contains("공격");
+    }
+
+    /// <summary>
+    /// 회복 효과 적용
+    /// </summary>
+    private void ApplyHealEffect(int healAmount)
+    {
+        if (player == null) return;
+
+        float newHp = Mathf.Min(player.playerHp + healAmount, player.maxHp);
+        player.playerHp = newHp;
+        BattleUIController.OnBattleLogAppended?.Invoke($"플레이어 체력이 {healAmount} 회복되었습니다.\n");
+    }
+
+    /// <summary>
+    /// 데미지 효과 적용
+    /// </summary>
+    private void ApplyDamageEffect(int damage)
+    {
+        if (enemy == null) return;
+
+        enemy.TakeDamage(damage);
+        stateMachine.ChangeState(EnemyState.Damaged);
+        BattleUIController.OnBattleLogAppended?.Invoke($"아이템으로 적에게 {damage}의 데미지를 주었습니다.\n");
     }
 
     /// <summary>
@@ -191,14 +270,19 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     {
         uiController.SetButtonsInteractable(false);
 
-        stateMachine.ChangeState(PlayerState.Defense);
-        BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 방어 자세를 취했다.\n");
-
-        yield return new WaitForSeconds(1f);
-
-        // PlayerState 리셋 후 BattleState 변경
-        stateMachine.ChangeState(PlayerState.None);
-        stateMachine.ChangeState(BattleState.EnemyTurn);
+        yield return ExecuteActionSequence(
+            onStart: () =>
+            {
+                stateMachine.ChangeState(PlayerState.Defense);
+                BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 방어 자세를 취했다.\n");
+            },
+            onAction: null,
+            onComplete: () =>
+            {
+                stateMachine.ChangeState(PlayerState.None);
+                stateMachine.ChangeState(BattleState.EnemyTurn);
+            }
+        );
     }
 
     /// <summary>
@@ -210,21 +294,17 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
 
         stateMachine.ChangeState(PlayerState.Attack);
         BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 특수 공격을 했다!\n");
-
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(GameConstants.Battle.TURN_DELAY);
 
         if (enemy != null)
         {
-            float specialAttackDamage = 50f; // 임시 데미지
-            enemy.TakeDamage(specialAttackDamage);
+            stateMachine.ChangeState(EnemyState.Damaged);
+            BattleUIController.OnBattleLogAppended?.Invoke($"적에게 큰 데미지!\n");
+            yield return null; // 데미지 메시지가 먼저 표시된 후 데미지 적용
+            enemy.TakeDamage(GameConstants.Battle.DEFAULT_SPECIAL_ATTACK_DAMAGE);
         }
 
-        stateMachine.ChangeState(EnemyState.Damaged);
-        BattleUIController.OnBattleLogAppended?.Invoke($"적에게 큰 데미지!\n");
-
-        yield return new WaitForSeconds(1f);
-
-        // PlayerState 리셋 후 BattleState 변경
+        yield return new WaitForSeconds(GameConstants.Battle.TURN_DELAY);
         stateMachine.ChangeState(PlayerState.None);
         stateMachine.ChangeState(BattleState.EnemyTurn);
     }

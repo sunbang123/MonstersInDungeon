@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -27,12 +28,36 @@ public abstract class Unit : MonoBehaviour
 
         InvokeHealthChanged(currentHp, maxHp);
 
-        // 사망 확인
+        // 쓰러짐 확인
         if (currentHp <= 0f && !isDead)
         {
-            Debug.Log($"[사망] {gameObject.name}이(가) 죽었습니다.");
-            Die();
+            Debug.Log($"[쓰러짐] {gameObject.name}이(가) 쓰러졌습니다.");
+            // 적인 경우 코루틴으로 지연 처리
+            if (this is Enemy)
+            {
+                StartCoroutine(DelayedEnemyDeath());
+            }
+            else
+            {
+                Die();
+            }
         }
+    }
+
+    /// <summary>
+    /// 적의 죽음을 지연시키는 코루틴 (메시지 표시 후 죽음 처리)
+    /// </summary>
+    private IEnumerator DelayedEnemyDeath()
+    {
+        // "적에게 큰 데미지!" 같은 데미지 메시지가 먼저 표시되도록 약간의 지연
+        yield return new WaitForSeconds(GameConstants.Battle.TURN_DELAY);
+        
+        // "적이 쓰러졌습니다" 메시지 표시 (줄바꿈 후 추가)
+        BattleUIController.OnBattleLogAppended?.Invoke($"적이 쓰러졌습니다.\n");
+        yield return new WaitForSeconds(GameConstants.Battle.TURN_DELAY);
+        
+        // 그 다음 죽음 처리
+        Die();
     }
 
     /// <summary>

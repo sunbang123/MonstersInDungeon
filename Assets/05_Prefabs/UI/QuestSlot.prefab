@@ -147,6 +147,7 @@ GameObject:
   - component: {fileID: 518213013477437866}
   - component: {fileID: 518213013477437867}
   - component: {fileID: 518213013477437865}
+  - component: {fileID: 169122407}
   m_Layer: 0
   m_Name: QuestSlot
   m_TagString: Untagged
@@ -256,16 +257,17 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 518213013477437867}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
+--- !u!114 &169122407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 518213013477437869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc2fd13e1abd7b848bb907b31c2d6a07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  questPanel: {fileID: 0}

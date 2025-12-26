@@ -24,8 +24,8 @@ public class PlayerInteraction : MonoBehaviour
 
     [Header("Text")]
     [SerializeField] private TMP_Text hideText;
-    [SerializeField] private string walkButtonText = "달리기";
-    [SerializeField] private string runButtonText = "걷기";
+    [SerializeField] private string walkButtonText = GameConstants.UI.BUTTON_TEXT_WALK;
+    [SerializeField] private string runButtonText = GameConstants.UI.BUTTON_TEXT_RUN;
 
     [Header("Image")]
     [SerializeField] public Image newItemText;
@@ -101,13 +101,13 @@ public class PlayerInteraction : MonoBehaviour
         {
             _sprite.enabled = false;
             _controll.enabled = false;
-            hideText.text = "나타나기";
+            hideText.text = GameConstants.UI.BUTTON_TEXT_SHOW;
         }
         else if (_sprite.enabled == false)
         {
             _sprite.enabled = true;
             _controll.enabled = true;
-            hideText.text = "숨기기";
+            hideText.text = GameConstants.UI.BUTTON_TEXT_HIDE;
         }
     }
 
@@ -183,12 +183,12 @@ public class PlayerInteraction : MonoBehaviour
     //버튼 활성화 비활성화
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Hide"))
+        if (collision.gameObject.CompareTag(GameConstants.TAG_HIDE))
         {
             hideButton.gameObject.SetActive(true);
             interButton.gameObject.SetActive(false);
         }
-        else if (collision.gameObject.CompareTag("Item"))
+        else if (collision.gameObject.CompareTag(GameConstants.TAG_ITEM))
         {
             pickUpButton.gameObject.SetActive(true);
             interButton.gameObject.SetActive(false);
@@ -196,12 +196,12 @@ public class PlayerInteraction : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Hide"))
+        if (collision.gameObject.CompareTag(GameConstants.TAG_HIDE))
         {
             hideButton.gameObject.SetActive(false);
             interButton.gameObject.SetActive(true);
         }
-        else if (collision.gameObject.CompareTag("Item"))
+        else if (collision.gameObject.CompareTag(GameConstants.TAG_ITEM))
         {
             pickUpButton.gameObject.SetActive(false);
             interButton.gameObject.SetActive(true);

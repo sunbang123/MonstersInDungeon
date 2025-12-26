@@ -62,7 +62,6 @@ public class TextManager : MonoBehaviour
     void Start()
     {
         StartCoroutine(FadeIn());
-        LoadCurrentStory();
         
         // 이벤트 구독
         OnDialogueChanged += UpdateDialogueText;
@@ -70,6 +69,8 @@ public class TextManager : MonoBehaviour
         OnDialogPanelVisibilityChanged += UpdateDialogPanelVisibility;
         OnSelectPanelVisibilityChanged += UpdateSelectPanelVisibility;
         OnSelectionCursorChanged += UpdateSelectionCursor;
+
+        LoadCurrentStory();
 
         // 초기 상태 설정
         OnSelectPanelVisibilityChanged?.Invoke(false);

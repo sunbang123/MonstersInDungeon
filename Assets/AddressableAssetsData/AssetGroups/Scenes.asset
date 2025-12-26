@@ -38,6 +38,31 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Scene
+  - m_GUID: e72e2d659ef07f641b99f3367408096c
+    m_Address: Map01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Scene
+  - m_GUID: df14a914f866f324c998d20857a0ca73
+    m_Address: Map02
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Scene
+  - m_GUID: 9e5bf78cd0fbbdb4f9528df9073f4366
+    m_Address: Map03
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Scene
+  - m_GUID: fd0abde3f64b7ba48a5aa24325107ebd
+    m_Address: Map04
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Scene
+  - m_GUID: 60ee5c95d5c0b6b4b85d6a816416eb66
+    m_Address: Map00
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Scene
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 54ebaec88757d7249babc70c251f28d2, type: 2}
   m_SchemaSet:

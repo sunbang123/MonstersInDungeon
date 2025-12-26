@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TownTrigger : MonoBehaviour
@@ -10,16 +9,9 @@ public class TownTrigger : MonoBehaviour
     [Tooltip("전환할 맵 인덱스 (MapManager의 mapIndex와 동일)")]
     public int mapIndex;
     
-    private MapManager mapManager;
-
-    void Awake()
-    {
-        mapManager = FindObjectOfType<MapManager>();
-    }
-    
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag("Player"))
+        if (!other.CompareTag(GameConstants.TAG_PLAYER))
             return;
 
         // 마을 이름 표시 (이벤트 기반)
@@ -29,19 +21,19 @@ public class TownTrigger : MonoBehaviour
         }
 
         // MapManager를 통해 맵 전환
-        if (mapManager != null)
+        if (MapManager.Instance != null)
         {
             // 현재 맵과 다른 맵으로 전환하는 경우만
-            if (mapManager.GetCurrentMapIndex() != mapIndex || mapData == null)
+            if (MapManager.Instance.GetCurrentMapIndex() != mapIndex || mapData == null)
             {
                 // MapData의 방향 정보 사용
                 MapData.MapDirection direction = mapData != null ? mapData.direction : MapData.MapDirection.None;
-                mapManager.TransitionToMap(mapIndex, other.transform, direction);
+                MapManager.Instance.TransitionToMap(mapIndex, other.transform, direction);
             }
         }
         else
         {
-            Logger.LogWarning("TownTrigger: MapManager not found!");
+            Logger.LogWarning("TownTrigger: MapManager.Instance is null!");
         }
     }
 }

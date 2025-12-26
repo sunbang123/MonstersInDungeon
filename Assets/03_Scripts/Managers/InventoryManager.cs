@@ -9,7 +9,7 @@ public class InventoryManager : MonoBehaviour
     [Header("Inventory Settings")]
     [SerializeField] private Transform itemSlotParent;
     [SerializeField] private GameObject itemSlotPrefab;
-    [SerializeField] private int maxSlots = 20;
+    [SerializeField] private int maxSlots = GameConstants.Inventory.DEFAULT_MAX_SLOTS;
 
     [Header("Inventory Data Settings")]
     [SerializeField] private TextMeshProUGUI ItemName;
@@ -20,7 +20,7 @@ public class InventoryManager : MonoBehaviour
     [Header("Battle Inventory Settings")]
     [SerializeField] private Transform b_ItemSlotParent;
     [SerializeField] private GameObject b_ItemSlotPrefab;
-    [SerializeField] private int b_MaxSlots = 20;
+    [SerializeField] private int b_MaxSlots = GameConstants.Inventory.DEFAULT_BATTLE_MAX_SLOTS;
 
     private List<ItemData> items = new List<ItemData>();
     private List<ItemSlot> slots = new List<ItemSlot>();

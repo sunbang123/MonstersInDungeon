@@ -5,16 +5,16 @@ using UnityEngine;
 public class Player : Unit
 {
     [Header("Health & Mana")]
-    [SerializeField] private float _playerHp = 500f;
-    public float maxHp = 500f;
-    [SerializeField] private float _playerPp = 100f;
-    public float maxMp = 100f;
+    [SerializeField] private float _playerHp = GameConstants.Player.DEFAULT_MAX_HP;
+    public float maxHp = GameConstants.Player.DEFAULT_MAX_HP;
+    [SerializeField] private float _playerPp = GameConstants.Player.DEFAULT_MAX_MP;
+    public float maxMp = GameConstants.Player.DEFAULT_MAX_MP;
 
     [Header("Level & Experience")]
-    [SerializeField] private int _level = 1;
-    [SerializeField] private float _currentExp = 0f;
+    [SerializeField] private int _level = GameConstants.Player.DEFAULT_LEVEL;
+    [SerializeField] private float _currentExp = GameConstants.Player.DEFAULT_EXP;
     [Tooltip("다음 레벨까지 필요한 경험치")]
-    public float expToNextLevel = 100f;
+    public float expToNextLevel = GameConstants.Player.BASE_EXP_REQUIREMENT;
 
     [Header("Portrait")]
     [SerializeField] private Sprite _portrait;
@@ -35,8 +35,17 @@ public class Player : Unit
         set
         {
             _playerHp = Mathf.Clamp(value, 0f, maxHp);
-            var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
-            data.HP = _playerHp;
+            // UserDataManager가 초기화되어 있을 때만 데이터 업데이트
+            if (UserDataManager.Instance != null)
+            {
+                var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
+                if (data != null)
+                {
+                    data.HP = _playerHp;
+                }
+            }
+            // HP 변경 이벤트 발생 (UI 업데이트를 위해)
+            OnHealthChanged?.Invoke(_playerHp, maxHp);
         }
     }
 
@@ -101,23 +110,28 @@ public class Player : Unit
 
     public event Action OnPlayerDeath;
 
-    private Coroutine regenCoroutine;
-
     void Start()
     {
         var data = UserDataManager.Instance.Get<UserPlayerStatusData>();
+        if (data == null)
+        {
+            Debug.LogError("[Player] UserPlayerStatusData를 찾을 수 없습니다!");
+            return;
+        }
+        
         transform.position = data.Position;
 
         // 초기화 시 데이터에서 값 불러오기
+        // 레벨과 위치처럼 직접 필드에 할당 (setter 거치지 않음)
         _playerHp = Mathf.Clamp(data.HP, 0f, maxHp);
         _playerPp = Mathf.Clamp(_playerPp, 0f, maxMp);
-
-        // 초기 HP 설정 (속성 사용으로 데이터 저장 자동 처리)
-        playerHp = _playerHp;
 
         // 레벨과 경험치 로드
         _level = data.Level;
         _currentExp = data.CurrentExp;
+        
+        // HP 변경 이벤트 발생 (UI 업데이트를 위해)
+        OnHealthChanged?.Invoke(_playerHp, maxHp);
         expToNextLevel = CalculateExpForNextLevel(_level);
         
         // 레벨과 경험치 이벤트 발생
@@ -208,17 +222,11 @@ public class Player : Unit
     private float CalculateExpForNextLevel(int currentLevel)
     {
         // 기본 공식: 레벨이 올라갈수록 더 많은 경험치 필요
-        return 100f * Mathf.Pow(1.2f, currentLevel - 1);
+        return GameConstants.Player.BASE_EXP_REQUIREMENT * Mathf.Pow(GameConstants.Player.EXP_MULTIPLIER, currentLevel - 1);
     }
 
     void OnDestroy()
     {
-        // 코루틴 정리
-        if (regenCoroutine != null)
-        {
-            StopCoroutine(regenCoroutine);
-        }
-
         // PlayerAppearance 이벤트 구독 해제
         PlayerAppearance appearance = GetComponent<PlayerAppearance>();
         if (appearance == null)

@@ -16,7 +16,23 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: d7754b773ac34c14ab04320b499653cf
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 1d6fe42816b43f94fa707aaf7362755e
+    m_Address: Assets/07_Data/Item/Item.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7f1704b0c365dfd4cb06da79c42efb94
+    m_Address: Assets/07_Data/Item/Berry.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 35c922f3bd1935242818b68f66737678
+    m_Address: Assets/07_Data/Item/Medicine.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: abe3993f37afdd34fb64f3186377dcdb
+    m_Address: Assets/07_Data/Item/Apple.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 54ebaec88757d7249babc70c251f28d2, type: 2}
   m_SchemaSet:

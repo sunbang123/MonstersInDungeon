@@ -12,20 +12,20 @@ public class UserPlayerStatusData : IUserData
     public string SelectedElement; // "FIRE", "WATER", "PLANT"
     public void SetDefaultData()
     {
-        HP = 500f;
+        HP = GameConstants.Player.DEFAULT_MAX_HP;
         Position = Vector3.zero;
         TutorialEnd = false;
-        CurrentMapIndex = 0; // 기본값은 첫 번째 맵
+        CurrentMapIndex = GameConstants.DEFAULT_MAP_INDEX; // 기본값은 첫 번째 맵
         SelectedElement = ""; // 기본값
-        Level = 1;
-        CurrentExp = 0f;
+        Level = GameConstants.Player.DEFAULT_LEVEL;
+        CurrentExp = GameConstants.Player.DEFAULT_EXP;
     }
 
     public bool LoadData()
     {
         try
         {
-            HP = PlayerPrefs.GetFloat("PlayerHP", 500f);
+            HP = PlayerPrefs.GetFloat("PlayerHP", GameConstants.Player.DEFAULT_MAX_HP);
 
             float x = PlayerPrefs.GetFloat("PlayerPosX", 0f);
             float y = PlayerPrefs.GetFloat("PlayerPosY", 0f);
@@ -34,9 +34,9 @@ public class UserPlayerStatusData : IUserData
 
             TutorialEnd = PlayerPrefs.GetInt("TutorialEnd", 0) == 1;
             SelectedElement = PlayerPrefs.GetString("SelectedElement", "");
-            CurrentMapIndex = PlayerPrefs.GetInt("CurrentMapIndex", 0);
-            Level = PlayerPrefs.GetInt("PlayerLevel", 1);
-            CurrentExp = PlayerPrefs.GetFloat("PlayerCurrentExp", 0f);
+            CurrentMapIndex = PlayerPrefs.GetInt("CurrentMapIndex", GameConstants.DEFAULT_MAP_INDEX);
+            Level = PlayerPrefs.GetInt("PlayerLevel", GameConstants.Player.DEFAULT_LEVEL);
+            CurrentExp = PlayerPrefs.GetFloat("PlayerCurrentExp", GameConstants.Player.DEFAULT_EXP);
 
             return true;
         }
@@ -47,6 +47,7 @@ public class UserPlayerStatusData : IUserData
     {
         try
         {
+            Debug.Log($"[UserPlayerStatusData.SaveData] 저장 시작 - HP: {HP}");
             PlayerPrefs.SetFloat("PlayerHP", HP);
             PlayerPrefs.SetFloat("PlayerPosX", Position.x);
             PlayerPrefs.SetFloat("PlayerPosY", Position.y);
@@ -59,8 +60,13 @@ public class UserPlayerStatusData : IUserData
             PlayerPrefs.SetFloat("PlayerCurrentExp", CurrentExp);
 
             PlayerPrefs.Save();
+            Debug.Log($"[UserPlayerStatusData.SaveData] 저장 완료 - PlayerPrefs에 저장된 HP: {PlayerPrefs.GetFloat("PlayerHP")}");
             return true;
         }
-        catch { return false; }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[UserPlayerStatusData.SaveData] 저장 실패: {e.Message}");
+            return false;
+        }
     }
 }

@@ -36,6 +36,8 @@ public class LobbyManager : MonoBehaviour
         }
 
         Debug.Log("Continue Game");
+        // 계속하기 전에 저장된 데이터를 다시 로드
+        UserDataManager.Instance.LoadUserData();
         LoadInGameScene();
     }
 

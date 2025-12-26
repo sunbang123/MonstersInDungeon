@@ -4,8 +4,8 @@ using UnityEngine;
 public class Enemy : Unit
 {
     [Header("Health")]
-    [SerializeField] private float _enemyHp = 50f;
-    public float maxHp = 50f;
+    [SerializeField] private float _enemyHp = GameConstants.Enemy.DEFAULT_MAX_HP;
+    public float maxHp = GameConstants.Enemy.DEFAULT_MAX_HP;
 
     public float enemyHp
     {
@@ -18,13 +18,13 @@ public class Enemy : Unit
     }
 
     [Header("Mana")]
-    [SerializeField] private float _enemyPp = 50f;
-    public float maxPp = 50f;
+    [SerializeField] private float _enemyPp = GameConstants.Enemy.DEFAULT_MAX_PP;
+    public float maxPp = GameConstants.Enemy.DEFAULT_MAX_PP;
 
     [Header("Level & Experience")]
-    [SerializeField] private int _level = 1;
+    [SerializeField] private int _level = GameConstants.Enemy.DEFAULT_LEVEL;
     [Tooltip("이 적을 물리치면 얻는 경험치")]
-    public float expReward = 50f;
+    public float expReward = GameConstants.Enemy.DEFAULT_EXP_REWARD;
 
     public int level
     {
@@ -69,14 +69,13 @@ public class Enemy : Unit
     public GameObject dropItemPrefab;
     [Tooltip("아이템 드롭 확률 (0 ~ 1)")]
     [Range(0f, 1f)]
-    public float dropChance = 1f;
+    public float dropChance = GameConstants.Enemy.DEFAULT_DROP_CHANCE;
 
-    private Player targetPlayer;
     private bool battleStarted = false;
 
     public void SetTarget(Player player)
     {
-        targetPlayer = player;
+        // 타겟 설정 (현재는 사용되지 않지만 향후 확장을 위해 유지)
     }
 
     /// <summary>
@@ -130,7 +129,7 @@ public class Enemy : Unit
     // 플레이어와 충돌 시 전투 시작
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && !battleStarted)
+        if (other.CompareTag(GameConstants.TAG_PLAYER) && !battleStarted)
         {
             battleStarted = true;
             BattleManager.Instance.StartBattle(this);
