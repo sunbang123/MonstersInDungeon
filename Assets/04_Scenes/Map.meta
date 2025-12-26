@@ -1,8 +1,14 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/04_Scenes/Map.meta
 guid: f12c8a7ddd81b39428c8e632d93b2674
 folderAsset: yes
 DefaultImporter:
+========
+guid: 87cadfa713c62a449b702131639bfaec
+NativeFormatImporter:
+>>>>>>>> main:Assets/06_Anim/fire_vender_0.controller.meta
   externalObjects: {}
+  mainObjectFileID: 9100000
   userData: 
   assetBundleName: 
   assetBundleVariant: 

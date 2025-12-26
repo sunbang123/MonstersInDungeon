@@ -34,9 +34,7 @@ public class UserPlayerStatusData : IUserData
 
             TutorialEnd = PlayerPrefs.GetInt("TutorialEnd", 0) == 1;
             SelectedElement = PlayerPrefs.GetString("SelectedElement", "");
-            CurrentMapIndex = PlayerPrefs.GetInt("CurrentMapIndex", GameConstants.DEFAULT_MAP_INDEX);
-            Level = PlayerPrefs.GetInt("PlayerLevel", GameConstants.Player.DEFAULT_LEVEL);
-            CurrentExp = PlayerPrefs.GetFloat("PlayerCurrentExp", GameConstants.Player.DEFAULT_EXP);
+            CurrentMapIndex = PlayerPrefs.GetInt("CurrentMapIndex", 0);
 
             return true;
         }

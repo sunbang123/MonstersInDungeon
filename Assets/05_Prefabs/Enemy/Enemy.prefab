@@ -292,6 +292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff6df25aff5f6b74b8708b6d8413ad67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
   _enemyHp: 300
   maxHp: 300
   _enemyPp: 50
@@ -299,6 +300,15 @@ MonoBehaviour:
   _level: 1
   expReward: 50
   _portrait: {fileID: 0}
+=======
+  enemyHp: 50
+  maxHp: 300
+  _enemyPp: 50
+  maxPp: 50
+  level: 1
+  expReward: 50
+  portrait: {fileID: 0}
+>>>>>>> main
   dropItemPrefab: {fileID: 3725843781917847819, guid: b6c86ad1da796044c9e3be7cbf90c225, type: 3}
   dropChance: 1
 --- !u!61 &6934010650892995291

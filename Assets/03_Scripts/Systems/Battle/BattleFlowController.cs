@@ -62,22 +62,9 @@ public class BattleFlowController : MonoBehaviour
     {
         player.OnPlayerDeath += OnPlayerDeath;
         enemy.OnHealthChanged += uiController.UpdateEnemyHealthSlider;
-        enemy.OnPPChanged += uiController.UpdateEnemyPPSlider;
-        enemy.OnLevelChanged += uiController.UpdateEnemyLevel;
-        enemy.OnPortraitChanged += uiController.UpdateEnemyPortrait;
-        enemy.OnEnemyDeath += OnEnemyDefeated;
-    }
+        uiController.UpdateEnemyHealthSlider(enemy.enemyHp, enemy.maxHp);
 
-    /// <summary>
-    /// Enemy UI 초기화
-    /// </summary>
-    private void InitializeEnemyUI()
-    {
-        enemy.enemyHp = enemy.enemyHp;
-        enemy.enemyPp = enemy.enemyPp;
-        enemy.level = enemy.level;
-        enemy.portrait = enemy.portrait;
-    }
+        enemy.OnEnemyDeath += () => stateMachine.ChangeState(BattleState.Win);
 
     /// <summary>
     /// 플레이어 사망 처리
@@ -87,80 +74,43 @@ public class BattleFlowController : MonoBehaviour
         stateMachine.ChangeState(BattleState.Lose);
     }
 
-    /// <summary>
-    /// 전투 시작 시퀀스
-    /// </summary>
-    private IEnumerator BattleStartSequence()
-    {
-        BattleUIController.OnBattleLogChanged?.Invoke("Battle Start!");
-        yield return new WaitForSeconds(GameConstants.Battle.BATTLE_START_DELAY);
+        // 전투 시작 메시지
+        uiController.SetBattleLog("Battle Start!");
+        yield return new WaitForSeconds(1f);
+
         stateMachine.ChangeState(BattleState.PlayerTurn);
-    }
-
-    /// <summary>
-    /// 전투 루프
-    /// </summary>
-    private IEnumerator BattleLoop()
-    {
-        while (!IsBattleEnd())
+        while (stateMachine.BattleState != BattleState.Win &&
+               stateMachine.BattleState != BattleState.Lose)
         {
-            yield return StartCoroutine(ExecuteCurrentTurn());
-        }
-    }
+            switch (stateMachine.BattleState)
+            {
+                case BattleState.PlayerTurn:
+                    uiController.SetBattleLog($"전투 상황: {stateMachine.BattleState}\n");
+                    yield return StartCoroutine(turnExecutor.ExecutePlayerTurn());
 
-    /// <summary>
-    /// 현재 턴 실행
-    /// </summary>
-    private IEnumerator ExecuteCurrentTurn()
-    {
-        switch (stateMachine.BattleState)
-        {
-            case BattleState.PlayerTurn:
-                yield return StartCoroutine(ExecutePlayerTurn());
-                break;
-            case BattleState.EnemyTurn:
-                yield return StartCoroutine(ExecuteEnemyTurn());
-                break;
-        }
-    }
+                    // 사망 체크
+                    if (CheckBattleEnd())
+                        break;
 
-    /// <summary>
-    /// 플레이어 턴 실행
-    /// </summary>
-    private IEnumerator ExecutePlayerTurn()
-    {
-        BattleUIController.OnBattleLogChanged?.Invoke($"전투 상태: {stateMachine.BattleState}\n");
-        yield return StartCoroutine(turnExecutor.ExecutePlayerTurn());
+                    // PlayerTurn 완료 후 EnemyTurn으로 전환
+                    stateMachine.ChangeState(BattleState.EnemyTurn);
+                    break;
 
-        if (CheckBattleEnd()) yield break;
+                case BattleState.EnemyTurn:
+                    uiController.SetBattleLog($"전투 상황: {stateMachine.BattleState}\n");
+                    yield return StartCoroutine(turnExecutor.ExecuteEnemyTurn());
 
-        if (stateMachine.BattleState == BattleState.PlayerTurn)
-        {
-            stateMachine.ChangeState(BattleState.EnemyTurn);
-        }
-    }
-
-    /// <summary>
-    /// 적 턴 실행
-    /// </summary>
-    private IEnumerator ExecuteEnemyTurn()
-    {
-        BattleUIController.OnBattleLogChanged?.Invoke($"전투 상태: {stateMachine.BattleState}\n");
-        yield return StartCoroutine(turnExecutor.ExecuteEnemyTurn());
-
-        if (CheckBattleEnd()) yield break;
+                    // 사망 체크
+                    if (CheckBattleEnd())
+                        break;
 
         stateMachine.ChangeState(BattleState.PlayerTurn);
     }
 
-    /// <summary>
-    /// 전투 종료 여부 확인
-    /// </summary>
-    private bool IsBattleEnd()
-    {
-        return stateMachine.BattleState == BattleState.Win || 
-               stateMachine.BattleState == BattleState.Lose;
-    }
+        // 전투 종료
+        yield return new WaitForSeconds(1f);
+        uiController.SetBattleLog($"Battle End: {stateMachine.BattleState}");
+        yield return new WaitForSeconds(1f);
 
     /// <summary>
     /// 전투 종료 시퀀스
@@ -183,14 +133,9 @@ public class BattleFlowController : MonoBehaviour
             return true;
         }
 
-        // 적의 HP가 0 이하이거나 이미 죽은 경우
-        if (enemy != null && (enemy.enemyHp <= 0f || enemy.IsDead()))
+        if (enemy.IsDead())
         {
-            // 아직 Win 상태가 아니면 Win 상태로 변경 (중복 방지)
-            if (stateMachine.BattleState != BattleState.Win)
-            {
-                stateMachine.ChangeState(BattleState.Win);
-            }
+            stateMachine.ChangeState(BattleState.Win);
             return true;
         }
 
@@ -198,54 +143,15 @@ public class BattleFlowController : MonoBehaviour
     }
 
     /// <summary>
-    /// 적이 패배했을 때 호출 (코루틴으로 메시지 표시 후 전투 종료)
-    /// </summary>
-    private void OnEnemyDefeated()
-    {
-        StartCoroutine(HandleEnemyDefeat());
-    }
-
-    /// <summary>
-    /// 적 패배 처리 코루틴 (경험치 처리만 담당)
-    /// </summary>
-    private IEnumerator HandleEnemyDefeat()
-    {
-        // 이미 "적이 쓰러졌습니다" 메시지가 표시되었으므로
-        // 잠시 대기 후 경험치 표시
-        yield return new WaitForSeconds(GameConstants.Battle.ENEMY_DEFEAT_MESSAGE_DELAY);
-        
-        // 경험치 획득
-        if (player != null && enemy != null)
-        {
-            player.GainExperience(enemy.expReward);
-            BattleUIController.OnBattleLogChanged?.Invoke($"경험치 {enemy.expReward} 획득!");
-        }
-        
-        // Win 상태는 CheckBattleEnd()에서 이미 변경됨
-    }
-
-    /// <summary>
     /// 전투 종료 처리
     /// </summary>
     private void EndBattle()
     {
-        UnsubscribeBattleEvents();
-        RestorePlayerState();
-        HideEnemy();
-    }
-
-    /// <summary>
-    /// 전투 이벤트 구독 해제
-    /// </summary>
-    private void UnsubscribeBattleEvents()
-    {
-        player.OnPlayerDeath -= OnPlayerDeath;
+        player.OnHealthChanged -= uiController.UpdatePlayerHealthSlider;
         enemy.OnHealthChanged -= uiController.UpdateEnemyHealthSlider;
-        enemy.OnPPChanged -= uiController.UpdateEnemyPPSlider;
-        enemy.OnLevelChanged -= uiController.UpdateEnemyLevel;
-        enemy.OnPortraitChanged -= uiController.UpdateEnemyPortrait;
-        enemy.OnEnemyDeath -= OnEnemyDefeated;
-    }
+
+        player.OnPlayerDeath -= () => stateMachine.ChangeState(BattleState.Lose);
+        enemy.OnEnemyDeath -= () => stateMachine.ChangeState(BattleState.Win);
 
     /// <summary>
     /// 플레이어 상태 복원
