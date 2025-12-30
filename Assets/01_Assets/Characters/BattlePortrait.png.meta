@@ -131,10 +131,10 @@ TextureImporter:
       name: BattlePortrait_0
       rect:
         serializedVersion: 2
-        x: 75
-        y: 757
-        width: 565
-        height: 198
+        x: 70
+        y: 755
+        width: 573
+        height: 199
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -142,8 +142,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 44fb31f1b906e15419036452405b4760
-      internalID: 691648142
+      spriteID: 5d1e2fc66163fab4e87951f30c9e86bc
+      internalID: -1724544303
       vertices: []
       indices: 
       edges: []
@@ -152,10 +152,10 @@ TextureImporter:
       name: BattlePortrait_1
       rect:
         serializedVersion: 2
-        x: 70
-        y: 454
-        width: 310
-        height: 260
+        x: 68
+        y: 453
+        width: 307
+        height: 255
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -163,8 +163,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fb4d1f3e68f850249becd47611828908
-      internalID: -1853783687
+      spriteID: d31d80aa406209444badc8e368fa9bf0
+      internalID: 1784812655
       vertices: []
       indices: 
       edges: []
@@ -173,10 +173,10 @@ TextureImporter:
       name: BattlePortrait_2
       rect:
         serializedVersion: 2
-        x: 425
-        y: 449
-        width: 432
-        height: 260
+        x: 426
+        y: 448
+        width: 427
+        height: 257
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -184,8 +184,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a4493f725b0c59849a4d87f3420801e4
-      internalID: 197717662
+      spriteID: 16b43d94ac747e14499132e2ee8cc30f
+      internalID: 1111868877
       vertices: []
       indices: 
       edges: []
@@ -194,10 +194,10 @@ TextureImporter:
       name: BattlePortrait_3
       rect:
         serializedVersion: 2
-        x: 875
-        y: 448
-        width: 379
-        height: 260
+        x: 874
+        y: 447
+        width: 380
+        height: 258
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -205,8 +205,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6cb3132befa334b40822c172a92be707
-      internalID: 1808319594
+      spriteID: d9624d7cab8286a438a76086770167a6
+      internalID: -1879460125
       vertices: []
       indices: 
       edges: []
@@ -215,10 +215,10 @@ TextureImporter:
       name: BattlePortrait_4
       rect:
         serializedVersion: 2
-        x: 64
-        y: 121
-        width: 343
-        height: 281
+        x: 67
+        y: 122
+        width: 340
+        height: 278
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -226,8 +226,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 09c860af6bfdf7a40a5a48e48ce0db27
-      internalID: -1986428802
+      spriteID: 6aade7c3feb4bb64f9d0349bdc994471
+      internalID: -2070097241
       vertices: []
       indices: 
       edges: []
@@ -236,10 +236,10 @@ TextureImporter:
       name: BattlePortrait_5
       rect:
         serializedVersion: 2
-        x: 452
-        y: 147
-        width: 334
-        height: 245
+        x: 460
+        y: 145
+        width: 328
+        height: 249
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -247,8 +247,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9069d5eb39cb8dc428c5067650908c0e
-      internalID: -847342919
+      spriteID: c6059235503f3bc42abb3d4d58a21580
+      internalID: 119645278
       vertices: []
       indices: 
       edges: []
@@ -257,10 +257,10 @@ TextureImporter:
       name: BattlePortrait_6
       rect:
         serializedVersion: 2
-        x: 872
-        y: 122
-        width: 372
-        height: 269
+        x: 867
+        y: 121
+        width: 391
+        height: 262
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -268,8 +268,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0d11957a2ee17dd4eaf66ab43466ef17
-      internalID: -1018617001
+      spriteID: 44cb5d2bbaa8f014689c89431039ceb5
+      internalID: 1663784912
       vertices: []
       indices: 
       edges: []
@@ -285,13 +285,13 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      BattlePortrait_4: 309118010
-      BattlePortrait_0: 385119314
-      BattlePortrait_5: -1157456927
-      BattlePortrait_3: -1951409106
-      BattlePortrait_2: 1804024511
-      BattlePortrait_1: 1476008195
-      BattlePortrait_6: -389890017
+      BattlePortrait_4: -2070097241
+      BattlePortrait_0: -1724544303
+      BattlePortrait_5: 119645278
+      BattlePortrait_3: -1879460125
+      BattlePortrait_2: 1111868877
+      BattlePortrait_1: 1784812655
+      BattlePortrait_6: 1663784912
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

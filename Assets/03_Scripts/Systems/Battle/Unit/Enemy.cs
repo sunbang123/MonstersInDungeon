@@ -132,7 +132,23 @@ public class Enemy : Unit
         if (other.CompareTag(GameConstants.TAG_PLAYER) && !battleStarted)
         {
             battleStarted = true;
-            BattleManager.Instance.StartBattle(this);
+            
+            // BattleStarter 또는 BattleManager 찾기
+            BattleStarter battleStarter = FindObjectOfType<BattleStarter>();
+            if (battleStarter != null)
+            {
+                // InGame 씬: BattleStarter 사용 (씬 전환만)
+                battleStarter.StartBattle(this);
+            }
+            else if (BattleManager.Instance != null)
+            {
+                // InBattle 씬: BattleManager 사용 (실제 전투)
+                BattleManager.Instance.StartBattle(this);
+            }
+            else
+            {
+                Logger.LogWarning("BattleStarter 또는 BattleManager를 찾을 수 없습니다.");
+            }
         }
     }
 }

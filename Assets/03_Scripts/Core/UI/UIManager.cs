@@ -3,13 +3,74 @@ using UnityEngine;
 
 public class UIManager : SingletonBehaviour<UIManager>
 {
-    public Transform UICanvasTrs;
-    public Transform ClosedUITrs;
+    // 캐시된 Transform 참조
+    private Transform uiCanvasTrs;
+    private Transform closedUITrs;
 
     private BaseUI m_FrontUI; // UI화면에 보이는 최상위 UI인데 그것이 무엇인지 저장하고 있는 변수.
 
     private Dictionary<System.Type, GameObject> m_OpenUIPool = new Dictionary<System.Type, GameObject>();
     private Dictionary<System.Type, GameObject> m_ClosedUIPool = new Dictionary<System.Type, GameObject>();
+
+    /// <summary>
+    /// UI Canvas Transform 프로퍼티 - 자동으로 찾아서 반환
+    /// </summary>
+    private Transform UICanvasTrs
+    {
+        get
+        {
+            if (uiCanvasTrs == null)
+            {
+                // Canvas 찾기
+                Canvas canvas = FindObjectOfType<Canvas>();
+                if (canvas != null)
+                    uiCanvasTrs = canvas.transform;
+                else
+                {
+                    // Canvas가 없으면 새로 생성
+                    GameObject canvasObj = new GameObject("UICanvas");
+                    Canvas newCanvas = canvasObj.AddComponent<Canvas>();
+                    newCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                    canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
+                    canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+                    uiCanvasTrs = canvasObj.transform;
+                    Logger.LogWarning("UICanvas를 찾을 수 없어 새로 생성했습니다.");
+                }
+            }
+            return uiCanvasTrs;
+        }
+    }
+
+    /// <summary>
+    /// Closed UI Transform 프로퍼티 - 자동으로 찾아서 반환
+    /// </summary>
+    private Transform ClosedUITrs
+    {
+        get
+        {
+            if (closedUITrs == null)
+            {
+                // ClosedUI라는 이름의 자식 오브젝트 찾기
+                if (UICanvasTrs != null)
+                {
+                    Transform found = UICanvasTrs.Find("ClosedUI");
+                    if (found == null)
+                    {
+                        // 없으면 새로 생성
+                        GameObject closedUIObj = new GameObject("ClosedUI");
+                        closedUIObj.transform.SetParent(UICanvasTrs);
+                        closedUITrs = closedUIObj.transform;
+                        closedUIObj.SetActive(false);
+                    }
+                    else
+                    {
+                        closedUITrs = found;
+                    }
+                }
+            }
+            return closedUITrs;
+        }
+    }
 
     // 제네릭으로 타입을 받아서 반환하고 있는데 이렇게 out 매개변수를 사용.
     private BaseUI GetUI<T>(out bool isAlreadyOpen)

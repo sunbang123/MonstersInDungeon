@@ -17,12 +17,6 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: e8a91a1db51e72b498ad9495fe96ec47
   m_SerializeEntries:
-  - m_GUID: b6c86ad1da796044c9e3be7cbf90c225
-    m_Address: RedCrystal.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Item
-    - preload
   - m_GUID: c4ebce43adbc0c94aa60227c81658f88
     m_Address: WarnTrigger.prefab
     m_ReadOnly: 0
@@ -46,9 +40,25 @@ MonoBehaviour:
     m_SerializedLabels:
     - preload
   - m_GUID: 10708efe199c43b48a11cb69eac35349
-    m_Address: Assets/05_Prefabs/Effect/poisonEffect.prefab
+    m_Address: poisonEffect
     m_ReadOnly: 0
     m_SerializedLabels:
+    - preload
+  - m_GUID: 74f46e9437ead56468d7eede46c9bc41
+    m_Address: BattleItemSlot
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - preload
+  - m_GUID: 2f87bc5eb600ca14ca398d6493f82b03
+    m_Address: ItemSlot
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - preload
+  - m_GUID: b6c86ad1da796044c9e3be7cbf90c225
+    m_Address: Assets/05_Prefabs/Item/RedCrystal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
     - preload
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 54ebaec88757d7249babc70c251f28d2, type: 2}

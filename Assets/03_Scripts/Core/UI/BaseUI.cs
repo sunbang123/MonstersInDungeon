@@ -13,13 +13,26 @@ public class BaseUIData
 
 public class BaseUI: MonoBehaviour
 {
-    // UI가 열릴 때 재생할 애니메이션 변수
-    public Animation m_UIOpenAnim;
+    // 캐시된 Animation 참조
+    private Animation uiOpenAnim;
 
     // 화면이 열 때 처리해야할 데이터
     // 화면이 닫을 때 처리해야할 액션 데이터 저장
     private Action m_OnShow;
     private Action m_OnClose;
+
+    /// <summary>
+    /// UI가 열릴 때 재생할 애니메이션 프로퍼티 - 자동으로 찾아서 반환
+    /// </summary>
+    protected Animation UIOpenAnim
+    {
+        get
+        {
+            if (uiOpenAnim == null)
+                uiOpenAnim = GetComponent<Animation>();
+            return uiOpenAnim;
+        }
+    }
     // 각 화면에서 화면이 열 때 매개변수로 전달된 UIData 클래스를
     // 저장하고 있는 OnShow와 OnClose 바로 BaseUI 클래스에 있는 m_OnShow와...
     // m_OnShow = uiData.OnShow; 이렇게
@@ -59,9 +72,10 @@ public class BaseUI: MonoBehaviour
     // UI 화면이 열릴 때 처리해서 화면에 표시하는 함수
     public virtual void ShowUI()
     {
-        if(m_UIOpenAnim)
+        Animation anim = UIOpenAnim;
+        if(anim != null)
         {
-            m_UIOpenAnim.Play();
+            anim.Play();
         }
 
         m_OnShow?.Invoke(); // m_OnShow가 null이 아니면 m_OnShow 호출

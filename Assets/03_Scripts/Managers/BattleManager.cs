@@ -1,4 +1,8 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 배틀 시스템을 관리하는 메인 매니저
@@ -8,96 +12,260 @@ public class BattleManager : MonoBehaviour
     [Header("Dependencies")]
     [SerializeField] private BattleUIController uiController;
 
-    // 플레이어 참조 (인스펙터에서 설정하거나 자동 찾기)
-    [SerializeField] private Player playerReference;
+    [Header("Scene References")]
+    [SerializeField] private AssetReference inBattleSceneReference;
+    [SerializeField] private AssetReference inGameSceneReference;
 
-    // 컴포넌트들
-    private BattleStateMachine stateMachine;
-    private TurnExecutor turnExecutor;
-    private BattleFlowController flowController;
+    // 컴포넌트 프로퍼티 (런타임에 자동으로 찾아서 설정)
+    private BattleStateMachine _stateMachine;
+    private TurnExecutor _turnExecutor;
+    private BattleFlowController _flowController;
 
-    // 플레이어 관련 컴포넌트들
-    private PlayerController playerController;
-    private PlayerInteraction playerInteraction;
-    private Player player;
+    /// <summary>
+    /// BattleUIController 참조 (런타임에 설정 가능)
+    /// </summary>
+    public BattleUIController UIController
+    {
+        get => uiController;
+        set
+        {
+            uiController = value;
+            // 참조가 변경되면 관련 컴포넌트 재초기화
+            if (uiController != null && StateMachine != null && TurnExecutor != null && FlowController != null)
+            {
+                TurnExecutor.Initialize(StateMachine, uiController);
+                FlowController.Initialize(StateMachine, uiController, TurnExecutor);
+                SubscribeUIEvents();
+            }
+        }
+    }
+
+    /// <summary>
+    /// BattleStateMachine 프로퍼티 (자동으로 찾아서 반환)
+    /// </summary>
+    public BattleStateMachine StateMachine
+    {
+        get
+        {
+            if (_stateMachine == null)
+            {
+                _stateMachine = GetComponent<BattleStateMachine>();
+            }
+            return _stateMachine;
+        }
+    }
+
+    /// <summary>
+    /// TurnExecutor 프로퍼티 (자동으로 찾아서 반환)
+    /// </summary>
+    public TurnExecutor TurnExecutor
+    {
+        get
+        {
+            if (_turnExecutor == null)
+            {
+                _turnExecutor = GetComponent<TurnExecutor>();
+            }
+            return _turnExecutor;
+        }
+    }
+
+    /// <summary>
+    /// BattleFlowController 프로퍼티 (자동으로 찾아서 반환)
+    /// </summary>
+    public BattleFlowController FlowController
+    {
+        get
+        {
+            if (_flowController == null)
+            {
+                _flowController = GetComponent<BattleFlowController>();
+            }
+            return _flowController;
+        }
+    }
+
+    /// <summary>
+    /// InBattle 씬 참조 (런타임에 설정 가능)
+    /// </summary>
+    public AssetReference InBattleSceneReference
+    {
+        get => inBattleSceneReference;
+        set => inBattleSceneReference = value;
+    }
+
+    /// <summary>
+    /// InGame 씬 참조 (런타임에 설정 가능)
+    /// </summary>
+    public AssetReference InGameSceneReference
+    {
+        get => inGameSceneReference;
+        set => inGameSceneReference = value;
+    }
+
 
     // 싱글톤 인스턴스
-    protected static BattleManager m_Instance;
+    private static BattleManager m_Instance;
 
     public static BattleManager Instance
     {
-        get { return m_Instance; }
+        get 
+        { 
+            if (m_Instance == null)
+            {
+                m_Instance = FindObjectOfType<BattleManager>();
+            }
+            return m_Instance; 
+        }
     }
 
     protected void Awake()
     {
         Init();
     }
+
+    private void Start()
+    {
+        // InBattle 씬이 로드되면 자동으로 전투 시작
+        if (BattleDataTransfer.IsBattleActive())
+        {
+            StartBattleFromData();
+        }
+    }
+
     protected void Init()
     {
-        if (m_Instance == null)
+        // 싱글톤 중복 방지
+        if (m_Instance != null && m_Instance != this)
         {
-            m_Instance = (BattleManager)this;
+            Logger.LogWarning("BattleManager 인스턴스가 이미 존재합니다. 중복 인스턴스를 제거합니다.");
+            Destroy(gameObject);
+            return;
+        }
+        
+        m_Instance = this;
+
+        // UI Controller가 인스펙터에서 설정되지 않았으면 자동으로 찾기
+        if (uiController == null)
+        {
+            uiController = FindObjectOfType<BattleUIController>();
+            if (uiController == null)
+            {
+                Logger.LogWarning("BattleUIController를 찾을 수 없습니다. 런타임에 UIController property로 설정해주세요.");
+            }
         }
 
-        // 플레이어 참조 설정
-        SetupPlayerReferences();
+        // 컴포넌트 초기화 (프로퍼티를 통해 자동으로 가져옴)
+        if (uiController != null && StateMachine != null && TurnExecutor != null && FlowController != null)
+        {
+            TurnExecutor.Initialize(StateMachine, uiController);
+            FlowController.Initialize(StateMachine, uiController, TurnExecutor);
+            FlowController.SetSceneReferences(inBattleSceneReference, inGameSceneReference);
 
-        // 게임 오브젝트의 컴포넌트들 가져오기
-        stateMachine = GetComponent<BattleStateMachine>();
-        turnExecutor = GetComponent<TurnExecutor>();
-        flowController = GetComponent<BattleFlowController>();
-
-        // 컴포넌트 초기화
-        turnExecutor.Initialize(stateMachine, uiController);
-        flowController.Initialize(stateMachine, uiController, turnExecutor);
-        flowController.SetPlayerReferences(player, playerController);
-
-        // UI 이벤트 구독
-        SubscribeUIEvents();
+            // UI 이벤트 구독
+            SubscribeUIEvents();
+        }
     }
 
     /// <summary>
-    /// 플레이어 참조 설정 (인스펙터 우선, 없으면 자동 찾기)
+    /// BattleDataTransfer에서 데이터를 읽어 전투 시작
     /// </summary>
-    private void SetupPlayerReferences()
+    private void StartBattleFromData()
     {
-        // 1. 인스펙터에서 설정된 참조 사용
-        if (playerReference != null)
+        if (FlowController == null)
         {
-            player = playerReference;
+            Logger.LogError("BattleFlowController가 초기화되지 않았습니다.");
+            return;
+        }
+        if (uiController == null)
+        {
+            Logger.LogError("BattleUIController가 설정되지 않았습니다.");
+            return;
+        }
+
+        // Enemy 데이터 가져오기
+        var enemyData = BattleDataTransfer.GetEnemyData();
+        if (!enemyData.HasValue)
+        {
+            Logger.LogError("Enemy 데이터를 찾을 수 없습니다.");
+            return;
+        }
+
+        Logger.Log($"비전투씬에서 전달받은 적 정보 - HP: {enemyData.Value.enemyHp}/{enemyData.Value.maxHp}, Level: {enemyData.Value.level}");
+
+        // InBattle 씬에서 Enemy 찾기 또는 생성
+        Enemy enemy = FindObjectOfType<Enemy>();
+        
+        if (enemy == null)
+        {
+            // Enemy가 없으면 생성
+            enemy = CreateEnemyFromData(enemyData.Value);
+            if (enemy == null)
+            {
+                Logger.LogError("Enemy를 생성할 수 없습니다.");
+                return;
+            }
+            Logger.Log("Enemy를 새로 생성했습니다.");
         }
         else
         {
-            // 2. 태그로 플레이어 찾기 (더 효율적)
-            GameObject playerObj = GameObject.FindGameObjectWithTag(GameConstants.TAG_PLAYER);
-            if (playerObj != null)
+            // Enemy가 있으면 데이터만 적용 (비전투씬에서 충돌한 적의 정보로 업데이트)
+            BattleDataTransfer.ApplyEnemyData(enemy, enemyData.Value);
+            Logger.Log($"기존 Enemy에 비전투씬 데이터 적용 완료 - HP: {enemy.enemyHp}/{enemy.maxHp}, Level: {enemy.level}");
+        }
+
+        // 전투 시작
+        Logger.Log("InBattle 씬에서 전투 자동 시작");
+        StartCoroutine(FlowController.StartBattle(enemy));
+    }
+
+    /// <summary>
+    /// Enemy 데이터로부터 Enemy 오브젝트 생성
+    /// </summary>
+    private Enemy CreateEnemyFromData(BattleDataTransfer.EnemyData data)
+    {
+        GameObject enemyObj = null;
+
+        // 1. GameManager에서 Enemy 프리팹 가져오기
+        if (GameManager.Instance != null)
+        {
+            GameObject prefab = GameManager.Instance.TryGetPrefabByName("Enemy");
+            if (prefab != null)
             {
-                player = playerObj.GetComponent<Player>();
+                enemyObj = Instantiate(prefab);
+            }
+        }
+
+        // 2. 프리팹이 없으면 빈 게임오브젝트에 Enemy 컴포넌트 추가
+        if (enemyObj == null)
+        {
+            // InBattle 씬에서 "Enemy" 이름을 가진 빈 게임오브젝트 찾기
+            GameObject existingObj = GameObject.Find("Enemy");
+            if (existingObj != null)
+            {
+                enemyObj = existingObj;
             }
             else
             {
-                // 3. 최후의 수단으로 FindObjectOfType 사용 (비효율적)
-                Logger.LogWarning("Player reference not set in inspector, using FindObjectOfType");
-                player = FindObjectOfType<Player>();
+                // 없으면 새로 생성
+                enemyObj = new GameObject("Enemy");
             }
         }
 
-        // 플레이어 컴포넌트들 가져오기
-        if (player != null)
+        // Enemy 컴포넌트 추가 또는 가져오기
+        Enemy enemy = enemyObj.GetComponent<Enemy>();
+        if (enemy == null)
         {
-            playerController = player.GetComponent<PlayerController>();
-            playerInteraction = player.GetComponent<PlayerInteraction>();
+            enemy = enemyObj.AddComponent<Enemy>();
+        }
 
-            if (playerController == null)
-                Logger.LogError("PlayerController component not found on Player");
-            if (playerInteraction == null)
-                Logger.LogError("PlayerInteraction component not found on Player");
-        }
-        else
+        // 데이터 적용
+        if (enemy != null)
         {
-            Logger.LogError("Player not found in scene!");
+            BattleDataTransfer.ApplyEnemyData(enemy, data);
         }
+
+        return enemy;
     }
 
     /// <summary>
@@ -105,6 +273,12 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     private void SubscribeUIEvents()
     {
+        if (uiController == null)
+        {
+            Logger.LogWarning("BattleUIController가 null이어서 UI 이벤트를 구독할 수 없습니다.");
+            return;
+        }
+
         uiController.OnAttackClicked += OnAttackClicked;
         uiController.OnItemUseClicked += OnItemUseClicked;
         uiController.OnDefenseClicked += OnDefenseClicked;
@@ -116,32 +290,57 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void StartBattle(Enemy enemy)
     {
-        StartCoroutine(flowController.StartBattle(enemy));
+        if (FlowController == null)
+        {
+            Logger.LogError("BattleFlowController가 초기화되지 않았습니다.");
+            return;
+        }
+        if (uiController == null)
+        {
+            Logger.LogError("BattleUIController가 설정되지 않았습니다. UIController property를 설정해주세요.");
+            return;
+        }
+        StartCoroutine(FlowController.StartBattle(enemy));
     }
 
     // ========== UI 이벤트 핸들러 ==========
 
     private void OnAttackClicked()
     {
-        StartCoroutine(turnExecutor.ExecuteAttack());
+        if (TurnExecutor != null)
+        {
+            StartCoroutine(TurnExecutor.ExecuteAttack());
+        }
     }
 
     private void OnItemUseClicked(int itemIndex)
     {
         // 아이템 사용 시작 시 즉시 모든 버튼 비활성화 (중복 클릭 방지)
-        uiController.SetButtonsInteractable(false);
+        if (uiController != null)
+        {
+            uiController.SetButtonsInteractable(false);
+        }
         
-        StartCoroutine(turnExecutor.ExecuteItemUse(itemIndex));
+        if (TurnExecutor != null)
+        {
+            StartCoroutine(TurnExecutor.ExecuteItemUse(itemIndex));
+        }
     }
 
     private void OnDefenseClicked()
     {
-        StartCoroutine(turnExecutor.ExecuteDefense());
+        if (TurnExecutor != null)
+        {
+            StartCoroutine(TurnExecutor.ExecuteDefense());
+        }
     }
 
     private void OnSpecialAttackClicked()
     {
-        StartCoroutine(turnExecutor.ExecuteSpecialAttack());
+        if (TurnExecutor != null)
+        {
+            StartCoroutine(TurnExecutor.ExecuteSpecialAttack());
+        }
     }
 
     // ========== 정리 ==========
@@ -153,7 +352,6 @@ public class BattleManager : MonoBehaviour
 
     private void Dispose()
     {
-        m_Instance = null;
         // UI 이벤트 구독 해제
         if (uiController != null)
         {
@@ -161,6 +359,12 @@ public class BattleManager : MonoBehaviour
             uiController.OnItemUseClicked -= OnItemUseClicked;
             uiController.OnDefenseClicked -= OnDefenseClicked;
             uiController.OnSpecialAttackClicked -= OnSpecialAttackClicked;
+        }
+
+        // 싱글톤 인스턴스 정리 (현재 인스턴스인 경우에만)
+        if (m_Instance == this)
+        {
+            m_Instance = null;
         }
     }
 }

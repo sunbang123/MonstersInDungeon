@@ -7,24 +7,131 @@ using System;
 public class InventoryManager : MonoBehaviour
 {
     [Header("Inventory Settings")]
-    [SerializeField] private Transform itemSlotParent;
-    [SerializeField] private GameObject itemSlotPrefab;
     [SerializeField] private int maxSlots = GameConstants.Inventory.DEFAULT_MAX_SLOTS;
 
-    [Header("Inventory Data Settings")]
-    [SerializeField] private TextMeshProUGUI ItemName;
-    [SerializeField] private TextMeshProUGUI ItemDescription;
-    [SerializeField] private TextMeshProUGUI StatName;
-    [SerializeField] private TextMeshProUGUI StatValue;
-
     [Header("Battle Inventory Settings")]
-    [SerializeField] private Transform b_ItemSlotParent;
-    [SerializeField] private GameObject b_ItemSlotPrefab;
     [SerializeField] private int b_MaxSlots = GameConstants.Inventory.DEFAULT_BATTLE_MAX_SLOTS;
+
+    // 캐시된 UI 참조들
+    private Transform itemSlotParent;
+    private GameObject itemSlotPrefab;
+    private Transform b_ItemSlotParent;
+    private GameObject b_ItemSlotPrefab;
+    private TextMeshProUGUI itemName;
+    private TextMeshProUGUI itemDescription;
+    private TextMeshProUGUI statName;
+    private TextMeshProUGUI statValue;
 
     private List<ItemData> items = new List<ItemData>();
     private List<ItemSlot> slots = new List<ItemSlot>();
     private List<ItemSlot> b_Slots = new List<ItemSlot>();
+
+    // 프로퍼티: UI 요소들을 자동으로 찾아서 반환
+    private Transform ItemSlotParent
+    {
+        get
+        {
+            if (itemSlotParent == null)
+            {
+                GameObject foundObj = UIHelper.FindChild(transform, "ItemSlotParent");
+                Transform foundTrs = foundObj != null ? foundObj.transform as Transform : null;
+                itemSlotParent = foundTrs != null ? foundTrs : transform;
+            }
+            return itemSlotParent;
+        }
+    }
+
+    private GameObject ItemSlotPrefab
+    {
+        get
+        {
+            if (itemSlotPrefab == null)
+            {
+                // GameManager를 통해 Addressable에서 로드된 프리팹 가져오기
+                if (GameManager.Instance != null)
+                {
+                    itemSlotPrefab = GameManager.Instance.TryGetPrefabByName("ItemSlot");
+                }
+                
+                if (itemSlotPrefab == null)
+                    Logger.LogWarning("ItemSlot 프리팹을 찾을 수 없습니다. Addressable에서 로드되었는지 확인하세요.");
+            }
+            return itemSlotPrefab;
+        }
+    }
+
+    private Transform BattleItemSlotParent
+    {
+        get
+        {
+            if (b_ItemSlotParent == null)
+            {
+                GameObject foundObj = UIHelper.FindChild(transform, "BattleItemSlotParent");
+                Transform foundTrs = foundObj != null ? foundObj.transform as Transform : null;
+                b_ItemSlotParent = foundTrs != null ? foundTrs : transform;
+            }
+            return b_ItemSlotParent;
+        }
+    }
+
+    private GameObject BattleItemSlotPrefab
+    {
+        get
+        {
+            if (b_ItemSlotPrefab == null)
+            {
+                // GameManager를 통해 Addressable에서 로드된 프리팹 가져오기
+                if (GameManager.Instance != null)
+                {
+                    b_ItemSlotPrefab = GameManager.Instance.TryGetPrefabByName("BattleItemSlot");
+                }
+                
+                if (b_ItemSlotPrefab == null)
+                    Logger.LogWarning("BattleItemSlot 프리팹을 찾을 수 없습니다. Addressable에서 로드되었는지 확인하세요.");
+            }
+            return b_ItemSlotPrefab;
+        }
+    }
+
+    private TextMeshProUGUI ItemName
+    {
+        get
+        {
+            if (itemName == null)
+                itemName = UIHelper.FindComponentInChildren<TextMeshProUGUI>(transform, "ItemName");
+            return itemName;
+        }
+    }
+
+    private TextMeshProUGUI ItemDescription
+    {
+        get
+        {
+            if (itemDescription == null)
+                itemDescription = UIHelper.FindComponentInChildren<TextMeshProUGUI>(transform, "ItemDescription");
+            return itemDescription;
+        }
+    }
+
+    private TextMeshProUGUI StatName
+    {
+        get
+        {
+            if (statName == null)
+                statName = UIHelper.FindComponentInChildren<TextMeshProUGUI>(transform, "StatName");
+            return statName;
+        }
+    }
+
+    private TextMeshProUGUI StatValue
+    {
+        get
+        {
+            if (statValue == null)
+                statValue = UIHelper.FindComponentInChildren<TextMeshProUGUI>(transform, "StatValue");
+            return statValue;
+        }
+    }
 
     // 싱글톤 패턴 인스턴스 변수
     protected static InventoryManager m_Instance;
@@ -108,10 +215,21 @@ public class InventoryManager : MonoBehaviour
 
     private void InitializeSlots()
     {
+        GameObject prefab = ItemSlotPrefab;
+        Transform parent = ItemSlotParent;
+        
+        if (prefab == null || parent == null)
+        {
+            Logger.LogError("ItemSlot 프리팹 또는 부모 Transform을 찾을 수 없습니다.");
+            return;
+        }
+
         for (int i = 0; i < maxSlots; i++)
         {
-            GameObject slotObj = Instantiate(itemSlotPrefab, itemSlotParent);
-            ItemSlot slot = slotObj.AddComponent<ItemSlot>();
+            GameObject slotObj = Instantiate(prefab, parent);
+            ItemSlot slot = slotObj.GetComponent<ItemSlot>();
+            if (slot == null)
+                slot = slotObj.AddComponent<ItemSlot>();
             slot.Initialize();
             slots.Add(slot);
         }
@@ -119,10 +237,21 @@ public class InventoryManager : MonoBehaviour
 
     private void InitializeBattleSlots()
     {
+        GameObject prefab = BattleItemSlotPrefab;
+        Transform parent = BattleItemSlotParent;
+        
+        if (prefab == null || parent == null)
+        {
+            Logger.LogError("BattleItemSlot 프리팹 또는 부모 Transform을 찾을 수 없습니다.");
+            return;
+        }
+
         for (int i = 0; i < b_MaxSlots; i++)
         {
-            GameObject slotObj = Instantiate(b_ItemSlotPrefab, b_ItemSlotParent);
-            ItemSlot slot = slotObj.AddComponent<ItemSlot>();
+            GameObject slotObj = Instantiate(prefab, parent);
+            ItemSlot slot = slotObj.GetComponent<ItemSlot>();
+            if (slot == null)
+                slot = slotObj.AddComponent<ItemSlot>();
             slot.Initialize();
             b_Slots.Add(slot);
         }

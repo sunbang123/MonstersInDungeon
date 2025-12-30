@@ -23,7 +23,7 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     /// </summary>
     public void SetCombatants(Player p, Enemy e)
     {
-        player = p;
+        player = p; // null일 수 있음 (InBattle 씬에는 Player 오브젝트 없음)
         enemy = e;
     }
 
@@ -101,12 +101,8 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
             },
             onAction: () =>
             {
-                if (player != null)
-                {
-                    ApplyDamage(player, GameConstants.Battle.DEFAULT_ENEMY_ATTACK_DAMAGE, 
-                        PlayerState.Damaged, EnemyState.None, 
-                        $"플레이어가 {PlayerState.Damaged} 되었다.\n");
-                }
+                // Player 오브젝트가 없으므로 BattleDataTransfer를 통해 Player 데이터에 데미지 적용
+                ApplyPlayerDamage(GameConstants.Battle.DEFAULT_ENEMY_ATTACK_DAMAGE);
             },
             onComplete: () =>
             {
@@ -244,11 +240,42 @@ public class TurnExecutor : MonoBehaviour, ITurnExecutor
     /// </summary>
     private void ApplyHealEffect(int healAmount)
     {
-        if (player == null) return;
+        // Player 오브젝트가 없으므로 BattleDataTransfer를 통해 Player 데이터 업데이트
+        var playerData = BattleDataTransfer.GetPlayerData();
+        if (playerData.HasValue)
+        {
+            float newHp = Mathf.Min(playerData.Value.playerHp + healAmount, playerData.Value.maxHp);
+            BattleDataTransfer.SetPlayerHp(newHp);
+            BattleUIController.OnBattleLogAppended?.Invoke($"플레이어 체력이 {healAmount} 회복되었습니다.\n");
+        }
+        else if (player != null)
+        {
+            // Player 오브젝트가 있는 경우 (씬 전환 없이 전투하는 경우)
+            float newHp = Mathf.Min(player.playerHp + healAmount, player.maxHp);
+            player.playerHp = newHp;
+            BattleUIController.OnBattleLogAppended?.Invoke($"플레이어 체력이 {healAmount} 회복되었습니다.\n");
+        }
+    }
 
-        float newHp = Mathf.Min(player.playerHp + healAmount, player.maxHp);
-        player.playerHp = newHp;
-        BattleUIController.OnBattleLogAppended?.Invoke($"플레이어 체력이 {healAmount} 회복되었습니다.\n");
+    /// <summary>
+    /// Player에게 데미지 적용 (BattleDataTransfer 사용)
+    /// </summary>
+    private void ApplyPlayerDamage(float damage)
+    {
+        var playerData = BattleDataTransfer.GetPlayerData();
+        if (playerData.HasValue)
+        {
+            float newHp = Mathf.Max(0f, playerData.Value.playerHp - damage);
+            BattleDataTransfer.SetPlayerHp(newHp);
+            stateMachine.ChangeState(PlayerState.Damaged);
+            BattleUIController.OnBattleLogAppended?.Invoke($"플레이어가 {PlayerState.Damaged} 되었다.\n");
+        }
+        else if (player != null)
+        {
+            // Player 오브젝트가 있는 경우 (씬 전환 없이 전투하는 경우)
+            ApplyDamage(player, damage, PlayerState.Damaged, EnemyState.None, 
+                $"플레이어가 {PlayerState.Damaged} 되었다.\n");
+        }
     }
 
     /// <summary>

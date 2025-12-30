@@ -5,45 +5,33 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 전투 UI를 관리하는 클래스
+/// 전투 UI를 관리하는 클래스 - Data-Driven UI 구조
 /// </summary>
 public class BattleUIController : MonoBehaviour
 {
-    [Header("Canvas References")]
-    public GameObject battle_canvas;
-    public GameObject nonbattle_canvas;
-    public TextMeshProUGUI battle_log;
+    // UI 데이터 모델
+    private BattleUIData uiData;
+    private BattleStateData stateData = new BattleStateData();
 
-    [Header("UI Buttons")]
-    public Button Atk_btn;
-    public GameObject Inventory;
-    public List<Button> item_btn;
-    public Button specialAtk_btn;
-    public Button defense_btn;
+    // 캐시된 UI 참조들
+    private GameObject battleCanvas;
+    private TextMeshProUGUI battleLog;
+    private Button attackButton;
+    private Button specialAttackButton;
+    private Button defenseButton;
+    private GameObject inventoryContainer;
+    private GameObject playerStatus;
+    private Slider playerHealthSlider;
+    private Slider enemyHealthSlider;
+    private Slider playerPPSlider;
+    private Slider enemyPPSlider;
+    private Slider playerExpSlider;
+    private Image playerPortrait;
+    private Image enemyPortrait;
+    private TextMeshProUGUI playerLevelText;
+    private TextMeshProUGUI enemyLevelText;
 
-    [Header("Player Status")]
-    public GameObject playerStatus;
-    public Transform batTransform;
-    public Transform nonBatTransform;
-
-    [Header("Health Sliders")]
-    public Slider playerHealthSlider;
-    public Slider enemyHealthSlider;
-
-    [Header("PP Sliders")]
-    public Slider playerPPSlider;
-    public Slider enemyPPSlider;
-
-    [Header("Experience Slider")]
-    public Slider playerExpSlider;
-
-    [Header("Portraits")]
-    public Image playerPortrait;
-    public Image enemyPortrait;
-
-    [Header("Level Text")]
-    public TextMeshProUGUI playerLevelText;
-    public TextMeshProUGUI enemyLevelText;
+    private List<Button> itemButtons = new List<Button>();
 
     // 버튼 클릭 이벤트
     public event Action OnAttackClicked;
@@ -54,6 +42,191 @@ public class BattleUIController : MonoBehaviour
     // 전투 로그 이벤트 (외부에서 호출 가능하도록 Action으로 변경)
     public static Action<string> OnBattleLogChanged;
     public static Action<string> OnBattleLogAppended;
+
+    // 프로퍼티: UI 요소들을 자동으로 찾아서 반환
+    private GameObject BattleCanvas
+    {
+        get
+        {
+            if (battleCanvas == null)
+            {
+                // Canvas 찾기
+                Canvas canvas = GetComponentInParent<Canvas>();
+                if (canvas == null)
+                    canvas = FindObjectOfType<Canvas>();
+                battleCanvas = canvas != null ? canvas.gameObject : gameObject;
+            }
+            return battleCanvas;
+        }
+    }
+
+    private TextMeshProUGUI BattleLog
+    {
+        get
+        {
+            if (battleLog == null)
+                battleLog = UIHelper.FindComponentInChildren<TextMeshProUGUI>(transform, "BattleLog");
+            return battleLog;
+        }
+    }
+
+    private Button AttackButton
+    {
+        get
+        {
+            if (attackButton == null)
+                attackButton = UIHelper.FindComponentInChildren<Button>(transform, "AttackButton");
+            return attackButton;
+        }
+    }
+
+    private Button SpecialAttackButton
+    {
+        get
+        {
+            if (specialAttackButton == null)
+                specialAttackButton = UIHelper.FindComponentInChildren<Button>(transform, "SpecialAttackButton");
+            return specialAttackButton;
+        }
+    }
+
+    private Button DefenseButton
+    {
+        get
+        {
+            if (defenseButton == null)
+                defenseButton = UIHelper.FindComponentInChildren<Button>(transform, "DefenseButton");
+            return defenseButton;
+        }
+    }
+
+    private GameObject InventoryContainer
+    {
+        get
+        {
+            if (inventoryContainer == null)
+                inventoryContainer = UIHelper.FindChild(transform, "Inventory");
+            return inventoryContainer;
+        }
+    }
+
+    private GameObject PlayerStatus
+    {
+        get
+        {
+            if (playerStatus == null)
+                playerStatus = UIHelper.FindChild(transform, "PlayerStatus");
+            return playerStatus;
+        }
+    }
+
+    private Slider PlayerHealthSlider
+    {
+        get
+        {
+            if (playerHealthSlider == null)
+                playerHealthSlider = UIHelper.FindComponentInChildren<Slider>(transform, "PlayerHealthSlider");
+            return playerHealthSlider;
+        }
+    }
+
+    private Slider EnemyHealthSlider
+    {
+        get
+        {
+            if (enemyHealthSlider == null)
+                enemyHealthSlider = UIHelper.FindComponentInChildren<Slider>(transform, "EnemyHealthSlider");
+            return enemyHealthSlider;
+        }
+    }
+
+    private Slider PlayerPPSlider
+    {
+        get
+        {
+            if (playerPPSlider == null)
+                playerPPSlider = UIHelper.FindComponentInChildren<Slider>(transform, "PlayerPPSlider");
+            return playerPPSlider;
+        }
+    }
+
+    private Slider EnemyPPSlider
+    {
+        get
+        {
+            if (enemyPPSlider == null)
+                enemyPPSlider = UIHelper.FindComponentInChildren<Slider>(transform, "EnemyPPSlider");
+            return enemyPPSlider;
+        }
+    }
+
+    private Slider PlayerExpSlider
+    {
+        get
+        {
+            if (playerExpSlider == null)
+                playerExpSlider = UIHelper.FindComponentInChildren<Slider>(transform, "PlayerExpSlider");
+            return playerExpSlider;
+        }
+    }
+
+    private Image PlayerPortrait
+    {
+        get
+        {
+            if (playerPortrait == null)
+                playerPortrait = UIHelper.FindComponentInChildren<Image>(transform, "PlayerPortrait");
+            return playerPortrait;
+        }
+    }
+
+    private Image EnemyPortrait
+    {
+        get
+        {
+            if (enemyPortrait == null)
+                enemyPortrait = UIHelper.FindComponentInChildren<Image>(transform, "EnemyPortrait");
+            return enemyPortrait;
+        }
+    }
+
+    private TextMeshProUGUI PlayerLevelText
+    {
+        get
+        {
+            if (playerLevelText == null)
+                playerLevelText = UIHelper.FindComponentInChildren<TextMeshProUGUI>(transform, "PlayerLevelText");
+            return playerLevelText;
+        }
+    }
+
+    private TextMeshProUGUI EnemyLevelText
+    {
+        get
+        {
+            if (enemyLevelText == null)
+                enemyLevelText = UIHelper.FindComponentInChildren<TextMeshProUGUI>(transform, "EnemyLevelText");
+            return enemyLevelText;
+        }
+    }
+
+    private List<Button> ItemButtons
+    {
+        get
+        {
+            if (itemButtons == null || itemButtons.Count == 0)
+            {
+                itemButtons.Clear();
+                GameObject container = InventoryContainer;
+                if (container != null)
+                {
+                    Button[] buttons = container.GetComponentsInChildren<Button>();
+                    itemButtons.AddRange(buttons);
+                }
+            }
+            return itemButtons;
+        }
+    }
 
     private void Start()
     {
@@ -73,17 +246,17 @@ public class BattleUIController : MonoBehaviour
         Player player = FindObjectOfType<Player>();
         if (player != null)
         {
-            player.OnHealthChanged += UpdatePlayerHealthSlider;
-            player.OnPPChanged += UpdatePlayerPPSlider;
+            player.OnHealthChanged += UpdatePlayerHealth;
+            player.OnPPChanged += UpdatePlayerPP;
             player.OnLevelChanged += UpdatePlayerLevel;
-            player.OnExpChanged += UpdatePlayerExpSlider;
+            player.OnExpChanged += UpdatePlayerExp;
             player.OnPortraitChanged += UpdatePlayerPortrait;
             
             // 초기값 설정 (Player.Start()가 실행된 후)
-            UpdatePlayerHealthSlider(player.playerHp, player.maxHp);
-            UpdatePlayerPPSlider(player.playerPp, player.maxMp);
+            UpdatePlayerHealth(player.playerHp, player.maxHp);
+            UpdatePlayerPP(player.playerPp, player.maxMp);
             UpdatePlayerLevel(player.level);
-            UpdatePlayerExpSlider(player.currentExp, player.expToNextLevel);
+            UpdatePlayerExp(player.currentExp, player.expToNextLevel);
             UpdatePlayerPortrait(player.portrait);
         }
 
@@ -106,12 +279,12 @@ public class BattleUIController : MonoBehaviour
     /// </summary>
     private void GetInventoryButtons()
     {
-        item_btn.Clear();
-
-        if (Inventory != null)
+        itemButtons.Clear();
+        GameObject container = InventoryContainer;
+        if (container != null)
         {
-            Button[] buttons = Inventory.GetComponentsInChildren<Button>();
-            item_btn.AddRange(buttons);
+            Button[] buttons = container.GetComponentsInChildren<Button>();
+            itemButtons.AddRange(buttons);
         }
     }
 
@@ -120,16 +293,19 @@ public class BattleUIController : MonoBehaviour
     /// </summary>
     private void BindButtons()
     {
-        if (Atk_btn != null)
-            Atk_btn.onClick.AddListener(() => OnAttackClicked?.Invoke());
+        Button atkBtn = AttackButton;
+        if (atkBtn != null)
+            atkBtn.onClick.AddListener(() => OnAttackClicked?.Invoke());
 
         BindItemButtons();
 
-        if (specialAtk_btn != null)
-            specialAtk_btn.onClick.AddListener(() => OnSpecialAttackClicked?.Invoke());
+        Button specialBtn = SpecialAttackButton;
+        if (specialBtn != null)
+            specialBtn.onClick.AddListener(() => OnSpecialAttackClicked?.Invoke());
 
-        if (defense_btn != null)
-            defense_btn.onClick.AddListener(() => OnDefenseClicked?.Invoke());
+        Button defBtn = DefenseButton;
+        if (defBtn != null)
+            defBtn.onClick.AddListener(() => OnDefenseClicked?.Invoke());
     }
 
     /// <summary>
@@ -137,12 +313,14 @@ public class BattleUIController : MonoBehaviour
     /// </summary>
     private void BindItemButtons()
     {
-        if (item_btn != null && item_btn.Count > 0)
+        List<Button> buttons = ItemButtons;
+        if (buttons != null && buttons.Count > 0)
         {
-            for (int i = 0; i < item_btn.Count; i++)
+            for (int i = 0; i < buttons.Count; i++)
             {
                 int index = i; // 클로저 문제 해결
-                item_btn[i].onClick.AddListener(() => OnItemUseClicked?.Invoke(index));
+                if (buttons[i] != null)
+                    buttons[i].onClick.AddListener(() => OnItemUseClicked?.Invoke(index));
             }
         }
     }
@@ -152,23 +330,29 @@ public class BattleUIController : MonoBehaviour
     /// </summary>
     public void SetButtonsInteractable(bool interactable)
     {
-        if (Atk_btn != null)
-            Atk_btn.interactable = interactable;
+        Button atkBtn = AttackButton;
+        if (atkBtn != null)
+            atkBtn.interactable = interactable;
 
-        if (item_btn != null && item_btn.Count > 0)
+        List<Button> buttons = ItemButtons;
+        if (buttons != null && buttons.Count > 0)
         {
-            foreach (var btn in item_btn)
+            foreach (var btn in buttons)
             {
                 if (btn != null)
                     btn.interactable = interactable;
             }
         }
 
-        if (specialAtk_btn != null)
-            specialAtk_btn.interactable = interactable;
+        Button specialBtn = SpecialAttackButton;
+        if (specialBtn != null)
+            specialBtn.interactable = interactable;
 
-        if (defense_btn != null)
-            defense_btn.interactable = interactable;
+        Button defBtn = DefenseButton;
+        if (defBtn != null)
+            defBtn.interactable = interactable;
+
+        stateData.buttonsInteractable = interactable;
     }
 
     /// <summary>
@@ -178,11 +362,12 @@ public class BattleUIController : MonoBehaviour
     /// <param name="interactable">활성화 여부</param>
     public void SetItemButtonInteractable(int itemIndex, bool interactable)
     {
-        if (item_btn != null && itemIndex >= 0 && itemIndex < item_btn.Count)
+        List<Button> buttons = ItemButtons;
+        if (buttons != null && itemIndex >= 0 && itemIndex < buttons.Count)
         {
-            if (item_btn[itemIndex] != null)
+            if (buttons[itemIndex] != null)
             {
-                item_btn[itemIndex].interactable = interactable;
+                buttons[itemIndex].interactable = interactable;
             }
         }
     }
@@ -192,9 +377,10 @@ public class BattleUIController : MonoBehaviour
     /// </summary>
     private void OnBattleSlotVisibilityChanged(int slotIndex, bool isVisible)
     {
-        if (item_btn != null && slotIndex >= 0 && slotIndex < item_btn.Count)
+        List<Button> buttons = ItemButtons;
+        if (buttons != null && slotIndex >= 0 && slotIndex < buttons.Count)
         {
-            if (item_btn[slotIndex] != null)
+            if (buttons[slotIndex] != null)
             {
                 // 아이템 사용 중이거나 다른 액션 중이면 버튼을 활성화하지 않음
                 bool shouldBeInteractable = isVisible;
@@ -213,7 +399,7 @@ public class BattleUIController : MonoBehaviour
                     }
                 }
                 
-                item_btn[slotIndex].interactable = shouldBeInteractable;
+                buttons[slotIndex].interactable = shouldBeInteractable;
             }
         }
     }
@@ -224,9 +410,10 @@ public class BattleUIController : MonoBehaviour
     private void OnInventoryChanged()
     {
         // 기존 아이템 버튼 리스너 제거
-        if (item_btn != null)
+        List<Button> buttons = ItemButtons;
+        if (buttons != null)
         {
-            foreach (var btn in item_btn)
+            foreach (var btn in buttons)
             {
                 if (btn != null)
                     btn.onClick.RemoveAllListeners();
@@ -238,33 +425,16 @@ public class BattleUIController : MonoBehaviour
         BindItemButtons();
     }
 
-
     /// <summary>
     /// 전투 UI 전환 처리
     /// </summary>
-    private bool isBattleMode = false;
-
     public void ToggleBattleUI(bool enableBattle)
     {
-        isBattleMode = enableBattle;
-
-        battle_canvas.SetActive(enableBattle);
-        nonbattle_canvas.SetActive(!enableBattle);
-
-        Transform targetParent = enableBattle ? batTransform : nonBatTransform;
-        bool useWorldSpace = !enableBattle;
-
-        // 스케일 보존을 위해 원래 스케일 저장
-        Vector3 originalScale = playerStatus.transform.localScale;
-
-        playerStatus.transform.SetParent(null, false);
-        playerStatus.transform.SetParent(targetParent, useWorldSpace);
-
-        // 부모 변경 후 스케일 복원 및 위치 오프셋 초기화 (anchor는 유지)
-        playerStatus.transform.localScale = originalScale;
-        RectTransform rectTransform = playerStatus.GetComponent<RectTransform>();
-        rectTransform.offsetMin = Vector2.zero;
-        rectTransform.offsetMax = Vector2.zero;
+        GameObject canvas = BattleCanvas;
+        if (canvas != null)
+        {
+            canvas.SetActive(enableBattle);
+        }
     }
 
     public void ShowBattleUI()
@@ -282,93 +452,139 @@ public class BattleUIController : MonoBehaviour
     /// </summary>
     public void SetBattleLog(string text)
     {
-        if (battle_log != null)
-            battle_log.text = text;
-    }
-    public void UpdatePlayerHealthSlider(float currentHp, float maxHp)
-    {
-        if (playerHealthSlider != null)
-        {
-            playerHealthSlider.maxValue = maxHp;
-            playerHealthSlider.value = currentHp;
-        }
-        // 데이터는 playerHp setter에서 자동으로 업데이트되므로 여기서는 업데이트하지 않음
-    }
-    public void UpdateEnemyHealthSlider(float currentHp, float maxHp)
-    {
-        if (enemyHealthSlider != null)
-        {
-            enemyHealthSlider.maxValue = maxHp;
-            enemyHealthSlider.value = currentHp;
-        }
+        TextMeshProUGUI log = BattleLog;
+        if (log != null)
+            log.text = text;
+        
+        stateData.battleLogText = text;
     }
 
-    public void UpdatePlayerPPSlider(float currentPp, float maxPp)
+    public void UpdatePlayerHealth(float currentHp, float maxHp)
     {
-        if (playerPPSlider != null)
+        Slider slider = PlayerHealthSlider;
+        if (slider != null)
         {
-            playerPPSlider.maxValue = maxPp;
-            playerPPSlider.value = currentPp;
+            slider.maxValue = maxHp;
+            slider.value = currentHp;
         }
+        
+        stateData.playerHealth = currentHp;
+        stateData.playerMaxHealth = maxHp;
     }
 
-    public void UpdateEnemyPPSlider(float currentPp, float maxPp)
+    public void UpdateEnemyHealth(float currentHp, float maxHp)
     {
-        if (enemyPPSlider != null)
+        Slider slider = EnemyHealthSlider;
+        if (slider != null)
         {
-            enemyPPSlider.maxValue = maxPp;
-            enemyPPSlider.value = currentPp;
+            slider.maxValue = maxHp;
+            slider.value = currentHp;
         }
+        
+        stateData.enemyHealth = currentHp;
+        stateData.enemyMaxHealth = maxHp;
+    }
+
+    public void UpdatePlayerPP(float currentPp, float maxPp)
+    {
+        Slider slider = PlayerPPSlider;
+        if (slider != null)
+        {
+            slider.maxValue = maxPp;
+            slider.value = currentPp;
+        }
+        
+        stateData.playerPP = currentPp;
+        stateData.playerMaxPP = maxPp;
+    }
+
+    public void UpdateEnemyPP(float currentPp, float maxPp)
+    {
+        Slider slider = EnemyPPSlider;
+        if (slider != null)
+        {
+            slider.maxValue = maxPp;
+            slider.value = currentPp;
+        }
+        
+        stateData.enemyPP = currentPp;
+        stateData.enemyMaxPP = maxPp;
     }
 
     public void UpdatePlayerPortrait(Sprite portrait)
     {
-        if (playerPortrait != null && portrait != null)
+        Image img = PlayerPortrait;
+        if (img != null && portrait != null)
         {
-            playerPortrait.sprite = portrait;
+            img.sprite = portrait;
         }
+        
+        stateData.playerPortrait = portrait;
     }
 
     public void UpdateEnemyPortrait(Sprite portrait)
     {
-        if (enemyPortrait != null && portrait != null)
+        Image img = EnemyPortrait;
+        if (img != null && portrait != null)
         {
-            enemyPortrait.sprite = portrait;
+            img.sprite = portrait;
         }
+        
+        stateData.enemyPortrait = portrait;
     }
 
     public void UpdatePlayerLevel(int level)
     {
-        if (playerLevelText != null)
+        TextMeshProUGUI text = PlayerLevelText;
+        if (text != null)
         {
-            playerLevelText.text = $"Lv.{level}";
+            text.text = $"Lv.{level}";
         }
+        
+        stateData.playerLevel = level;
     }
 
-    public void UpdatePlayerExpSlider(float currentExp, float maxExp)
+    public void UpdatePlayerExp(float currentExp, float maxExp)
     {
-        if (playerExpSlider != null)
+        Slider slider = PlayerExpSlider;
+        if (slider != null)
         {
-            playerExpSlider.maxValue = maxExp;
-            playerExpSlider.value = currentExp;
+            slider.maxValue = maxExp;
+            slider.value = currentExp;
         }
+        
+        stateData.playerExp = currentExp;
+        stateData.playerExpToNextLevel = maxExp;
     }
 
     public void UpdateEnemyLevel(int level)
     {
-        if (enemyLevelText != null)
+        TextMeshProUGUI text = EnemyLevelText;
+        if (text != null)
         {
-            enemyLevelText.text = $"Lv.{level}";
+            text.text = $"Lv.{level}";
         }
+        
+        stateData.enemyLevel = level;
     }
+
+    // 이전 메서드명 호환성을 위한 래퍼
+    public void UpdatePlayerHealthSlider(float currentHp, float maxHp) => UpdatePlayerHealth(currentHp, maxHp);
+    public void UpdatePlayerPPSlider(float currentPp, float maxPp) => UpdatePlayerPP(currentPp, maxPp);
+    public void UpdatePlayerExpSlider(float currentExp, float maxExp) => UpdatePlayerExp(currentExp, maxExp);
+    public void UpdateEnemyHealthSlider(float currentHp, float maxHp) => UpdateEnemyHealth(currentHp, maxHp);
+    public void UpdateEnemyPPSlider(float currentPp, float maxPp) => UpdateEnemyPP(currentPp, maxPp);
 
     /// <summary>
     /// 전투 로그에 텍스트 추가
     /// </summary>
     public void AppendBattleLog(string text)
     {
-        if (battle_log != null)
-            battle_log.text += text;
+        TextMeshProUGUI log = BattleLog;
+        if (log != null)
+            log.text += text;
+        
+        stateData.battleLogText += text;
     }
 
     private void OnDestroy()
@@ -377,10 +593,10 @@ public class BattleUIController : MonoBehaviour
         Player player = FindObjectOfType<Player>();
         if (player != null)
         {
-            player.OnHealthChanged -= UpdatePlayerHealthSlider;
-            player.OnPPChanged -= UpdatePlayerPPSlider;
+            player.OnHealthChanged -= UpdatePlayerHealth;
+            player.OnPPChanged -= UpdatePlayerPP;
             player.OnLevelChanged -= UpdatePlayerLevel;
-            player.OnExpChanged -= UpdatePlayerExpSlider;
+            player.OnExpChanged -= UpdatePlayerExp;
             player.OnPortraitChanged -= UpdatePlayerPortrait;
         }
 
@@ -396,22 +612,26 @@ public class BattleUIController : MonoBehaviour
         OnBattleLogAppended -= AppendBattleLog;
 
         // 이벤트 리스너 정리
-        if (Atk_btn != null)
-            Atk_btn.onClick.RemoveAllListeners();
+        Button atkBtn = AttackButton;
+        if (atkBtn != null)
+            atkBtn.onClick.RemoveAllListeners();
 
-        if (item_btn != null)
+        List<Button> buttons = ItemButtons;
+        if (buttons != null)
         {
-            foreach (var btn in item_btn)
+            foreach (var btn in buttons)
             {
                 if (btn != null)
                     btn.onClick.RemoveAllListeners();
             }
         }
 
-        if (specialAtk_btn != null)
-            specialAtk_btn.onClick.RemoveAllListeners();
+        Button specialBtn = SpecialAttackButton;
+        if (specialBtn != null)
+            specialBtn.onClick.RemoveAllListeners();
 
-        if (defense_btn != null)
-            defense_btn.onClick.RemoveAllListeners();
+        Button defBtn = DefenseButton;
+        if (defBtn != null)
+            defBtn.onClick.RemoveAllListeners();
     }
 }
